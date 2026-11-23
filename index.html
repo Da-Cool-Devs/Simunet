@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#090c10">
     <title>Cloud Computing Simulator</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/room3d.css">
 </head>
 
 <body>
@@ -74,14 +75,23 @@
 
         <div class="workspace">
             <section class="panel rack-panel">
-                <div class="panel-heading">
+                <div class="panel-heading room-heading">
                     <div>
                         <p class="section-code">FACILITY / A-01</p>
-                        <h2>Server Rack Room</h2>
+                        <h2>3D Server Room</h2>
+                        <p class="room-caption">Drag to orbit · Scroll to zoom · Right-drag to pan</p>
                     </div>
-                    <span id="rackCount" class="count-badge">0 RACKS</span>
+                    <div class="room-tools">
+                        <span id="rackCount" class="count-badge">0 RACKS</span>
+                        <button id="roomResetView" class="text-button" type="button" title="Reset camera view">RESET VIEW</button>
+                    </div>
                 </div>
-                <div id="rackArea" class="rack-area">
+                <div id="serverRoom" class="server-room" role="img" aria-label="Interactive three-dimensional data center. Add a rack to begin building.">
+                    <div class="room-loading" id="roomLoading">INITIALIZING 3D DATA CENTER…</div>
+                    <div class="room-hud" aria-hidden="true"><span>FACILITY A-01</span><span id="roomHardware">NO HARDWARE</span></div>
+                </div>
+                <p id="roomDescription" class="room-description" aria-live="polite">Your data center is empty. Add a rack to start building.</p>
+                <div id="rackArea" class="legacy-rack-area" aria-hidden="true">
                     <div class="empty-rack-state">NO HARDWARE DETECTED</div>
                 </div>
             </section>
@@ -149,6 +159,20 @@
         </div>
     </main>
 
+    <script>
+        // If WebGL or the Three.js CDN is unavailable, restore the original 2D rack view.
+        window.showRoomFallback = function (message) {
+            var room = document.getElementById("serverRoom");
+            var loading = document.getElementById("roomLoading");
+            var rackArea = document.getElementById("rackArea");
+            if (loading) loading.textContent = message || "3D VIEW UNAVAILABLE — SHOWING 2D RACKS";
+            if (room) room.classList.add("room-unavailable");
+            if (rackArea) rackArea.classList.remove("legacy-rack-area");
+            var description = document.getElementById("roomDescription");
+            if (description) description.textContent = "The 3D view could not start in this browser. Your racks are still available in the 2D view below.";
+        };
+    </script>
+    <script type="module" src="js/room3d.js" onerror="window.showRoomFallback('3D LIBRARY FAILED TO LOAD — SHOWING 2D RACKS')"></script>
     <script src="script.js"></script>
 </body>
 </html>
