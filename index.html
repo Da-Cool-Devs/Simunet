@@ -1,174 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cloud Computing Simulator</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#090c10">
+    <title>Cloud Computing Simulator</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">SIMUNET // REGION 01</p>
+            <h1>Cloud Computing Simulator</h1>
+        </div>
+        <div id="systemStatus" class="system-status">
+            <span class="status-dot"></span>
+            SYSTEM OFFLINE
+        </div>
+    </header>
 
-<header>
-    <h1>☁ Cloud Computing Simulator</h1>
-    <p>Build Your Own Cloud Provider</p>
-</header>
+    <main class="dashboard">
+        <aside class="sidebar" aria-label="Cloud infrastructure controls">
+            <section class="panel">
+                <h2>Data Center</h2>
+                <p class="panel-copy">Provision the physical foundation for your cloud provider.</p>
 
-<div class="section">
+                <button id="addRackBtn" class="primary-button">+ Add Server Rack</button>
 
-<div class="card">
-<h2>Step 1: Build Server Rack</h2>
+                <div class="toggle-list">
+                    <label class="toggle-row">
+                        <span>
+                            <strong>Cooling</strong>
+                            <small>Thermal management</small>
+                        </span>
+                        <input id="coolingToggle" type="checkbox">
+                        <span class="toggle" aria-hidden="true"></span>
+                    </label>
 
-<button onclick="addRack()">Add Rack</button>
-<button onclick="addServer()">Install Server</button>
+                    <label class="toggle-row">
+                        <span>
+                            <strong>UPS</strong>
+                            <small>Backup power</small>
+                        </span>
+                        <input id="upsToggle" type="checkbox">
+                        <span class="toggle" aria-hidden="true"></span>
+                    </label>
 
-<div id="rackCount">Racks: 0</div>
-<div id="serverCount">Servers: 0</div>
+                    <label class="toggle-row">
+                        <span>
+                            <strong>Firewall</strong>
+                            <small>Network protection</small>
+                        </span>
+                        <input id="firewallToggle" type="checkbox">
+                        <span class="toggle" aria-hidden="true"></span>
+                    </label>
+                </div>
+            </section>
 
-<div id="rackArea"></div>
-</div>
+            <section class="panel">
+                <h2>Deploy Server</h2>
+                <label class="field-label" for="serverType">Hardware profile</label>
+                <select id="serverType">
+                    <option value="web">Web Server</option>
+                    <option value="database">Database Server</option>
+                    <option value="storage">Storage Server</option>
+                    <option value="backup">Backup Server</option>
+                    <option value="auth">Authentication Server</option>
+                </select>
+                <button id="installServerBtn" class="primary-button">Install Server</button>
+            </section>
+        </aside>
 
-<div class="card">
-<h2>Step 2: Deploy Website</h2>
+        <div class="workspace">
+            <section class="panel rack-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="section-code">FACILITY / A-01</p>
+                        <h2>Server Rack Room</h2>
+                    </div>
+                    <span id="rackCount" class="count-badge">0 RACKS</span>
+                </div>
+                <div id="rackArea" class="rack-area">
+                    <div class="empty-rack-state">NO HARDWARE DETECTED</div>
+                </div>
+            </section>
 
-<button onclick="deploySite()">Deploy Website</button>
+            <section class="metrics-grid" aria-label="Cloud dashboard">
+                <article class="metric-panel">
+                    <div class="metric-label"><span>CPU</span><strong id="cpuValue">0%</strong></div>
+                    <div class="meter"><span id="cpuMeter"></span></div>
+                </article>
+                <article class="metric-panel">
+                    <div class="metric-label"><span>MEMORY</span><strong id="memoryValue">0 GB</strong></div>
+                    <div class="meter"><span id="memoryMeter"></span></div>
+                </article>
+                <article class="metric-panel">
+                    <div class="metric-label"><span>STORAGE</span><strong id="storageValue">0 TB</strong></div>
+                    <div class="meter"><span id="storageMeter"></span></div>
+                </article>
+                <article class="metric-panel">
+                    <div class="metric-label"><span>CUSTOMERS</span><strong id="customersValue">0</strong></div>
+                    <div class="meter"><span id="customersMeter"></span></div>
+                </article>
+            </section>
 
-<p id="siteStatus">
-Website Status: Offline
-</p>
-</div>
+            <section class="lower-grid">
+                <article class="panel services-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="section-code">CLOUD / SERVICES</p>
+                            <h2>Deployment Console</h2>
+                        </div>
+                        <span id="serviceStatus" class="service-status">OFFLINE</span>
+                    </div>
+                    <p id="deployMessage" class="deploy-message">Deploy requires at least 2 servers.</p>
+                    <div class="action-row">
+                        <button id="deployBtn" class="primary-button">Deploy Website</button>
+                        <button id="backupBtn" class="secondary-button">Run Backup</button>
+                    </div>
+                </article>
 
-<div class="card">
-<h2>Step 3: Cloud Dashboard</h2>
+                <article class="panel security-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <p class="section-code">NETWORK / SECURITY</p>
+                            <h2>Threat Monitor</h2>
+                        </div>
+                        <span id="threatLevel" class="threat-level">CLEAR</span>
+                    </div>
+                    <p id="attackStatus" class="deploy-message">No active threats detected.</p>
+                    <button id="attackBtn" class="danger-button">Simulate Attack</button>
+                </article>
+            </section>
 
-<div class="stat" id="cpu">
-CPU Usage: 0%
-</div>
+            <section class="panel event-panel">
+                <div class="panel-heading">
+                    <div>
+                        <p class="section-code">SYSTEM / EVENTS</p>
+                        <h2>Operations Log</h2>
+                    </div>
+                    <button id="clearLogBtn" class="text-button">CLEAR</button>
+                </div>
+                <div id="eventLog" class="event-log" aria-live="polite">
+                    <p><span>00:00:00</span> Simulator initialized.</p>
+                </div>
+            </section>
+        </div>
+    </main>
 
-<div class="stat" id="storage">
-Storage Used: 0 TB
-</div>
-
-<div class="stat" id="customers">
-Customers: 0
-</div>
-</div>
-
-<div class="card">
-<h2>Step 4: Hacker Attack</h2>
-
-<button onclick="startAttack()">
-Launch Hacker Attack
-</button>
-
-<button onclick="enableFirewall()">
-Enable Firewall
-</button>
-
-<p id="attackStatus">
-No attacks detected.
-</p>
-</div>
-
-</div>
-
-<script>
-
-let racks = 0;
-let servers = 0;
-let firewall = false;
-
-function addRack(){
-
-    racks++;
-
-    document.getElementById("rackCount").innerHTML =
-    "Racks: " + racks;
-
-    const rack = document.createElement("div");
-
-    rack.className = "rack";
-
-    document.getElementById("rackArea").appendChild(rack);
-}
-
-function addServer(){
-
-    if(racks === 0){
-        alert("Build a rack first!");
-        return;
-    }
-
-    servers++;
-
-    const racksList =
-    document.getElementsByClassName("rack");
-
-    const targetRack = racksList[0];
-
-    const server =
-    document.createElement("div");
-
-    server.className = "server";
-
-    targetRack.appendChild(server);
-
-    document.getElementById("serverCount").innerHTML =
-    "Servers: " + servers;
-
-    updateStats();
-}
-
-function updateStats(){
-
-    document.getElementById("cpu").innerHTML =
-    "CPU Usage: " +
-    Math.min(servers * 10,100) +
-    "%";
-
-    document.getElementById("storage").innerHTML =
-    "Storage Used: " +
-    (servers * 5) +
-    " TB";
-}
-
-function deploySite(){
-
-    if(servers < 2){
-        alert("Need at least 2 servers!");
-        return;
-    }
-
-    document.getElementById("siteStatus").innerHTML =
-    "<span class='success'>Website Online ✅</span>";
-
-    document.getElementById("customers").innerHTML =
-    "Customers: 1000";
-}
-
-function enableFirewall(){
-
-    firewall = true;
-
-    alert("Firewall Enabled!");
-}
-
-function startAttack(){
-
-    if(!firewall){
-
-        document.getElementById("attackStatus").innerHTML =
-        "<span class='danger'>DDoS Attack Successful! ❌</span>";
-
-    }else{
-
-        document.getElementById("attackStatus").innerHTML =
-        "<span class='success'>Attack Blocked By Firewall ✅</span>";
-
-    }
-}
-
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
