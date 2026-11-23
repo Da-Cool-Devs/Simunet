@@ -1,10 +1,10 @@
-# ☁ Cloud Computing Simulator
+# Cloud Computing Simulator
 
 A fully interactive cloud computing simulation that teaches how modern cloud infrastructure works, from building a physical data center to defending against cyberattacks.
 
 ---
 
-# 🌟 Overview
+# Overview
 
 Cloud Computing Simulator is an educational project designed to help users understand the technologies powering today's internet.
 
@@ -29,7 +29,7 @@ The goal is to provide a hands-on learning experience about cloud computing conc
 
 ---
 
-# 🎯 Objectives
+# Objectives
 
 This project aims to teach:
 
@@ -47,7 +47,7 @@ through interactive gameplay and simulations.
 
 ---
 
-# 🏢 Stage 1 - Data Center Construction
+# Stage 1 - Data Center Construction
 
 Users begin with an empty facility.
 
@@ -78,7 +78,7 @@ Power usage increases dramatically.
 
 ---
 
-# 🖥 Stage 2 - Server Deployment
+# Stage 2 - Server Deployment
 
 After constructing the facility, users install servers.
 
@@ -113,7 +113,7 @@ Each server affects:
 
 ---
 
-# ☁ Stage 3 - Cloud Creation
+# Stage 3 - Cloud Creation
 
 Users transform their infrastructure into a cloud platform.
 
