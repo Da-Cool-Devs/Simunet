@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cloud Computing Simulator</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0f172a;
+    color:white;
+}
+
+header{
+    background:#1e293b;
+    padding:20px;
+    text-align:center;
+}
+
+.section{
+    padding:20px;
+}
+
+.card{
+    background:#1e293b;
+    padding:15px;
+    margin-top:15px;
+    border-radius:10px;
+}
+
+button{
+    padding:10px 20px;
+    margin:5px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    background:#3b82f6;
+    color:white;
+}
+
+button:hover{
+    background:#2563eb;
+}
+
+.rack{
+    width:120px;
+    height:220px;
+    border:3px solid white;
+    margin-top:15px;
+    display:flex;
+    flex-direction:column-reverse;
+    padding:5px;
+}
+
+.server{
+    height:20px;
+    background:lime;
+    margin:2px;
+}
+
+.success{
+    color:lime;
+}
+
+.warning{
+    color:orange;
+}
+
+.danger{
+    color:red;
+}
+
+.stat{
+    margin:10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>☁ Cloud Computing Simulator</h1>
+    <p>Build Your Own Cloud Provider</p>
+</header>
+
+<div class="section">
+
+<div class="card">
+<h2>Step 1: Build Server Rack</h2>
+
+<button onclick="addRack()">Add Rack</button>
+<button onclick="addServer()">Install Server</button>
+
+<div id="rackCount">Racks: 0</div>
+<div id="serverCount">Servers: 0</div>
+
+<div id="rackArea"></div>
+</div>
+
+<div class="card">
+<h2>Step 2: Deploy Website</h2>
+
+<button onclick="deploySite()">Deploy Website</button>
+
+<p id="siteStatus">
+Website Status: Offline
+</p>
+</div>
+
+<div class="card">
+<h2>Step 3: Cloud Dashboard</h2>
+
+<div class="stat" id="cpu">
+CPU Usage: 0%
+</div>
+
+<div class="stat" id="storage">
+Storage Used: 0 TB
+</div>
+
+<div class="stat" id="customers">
+Customers: 0
+</div>
+</div>
+
+<div class="card">
+<h2>Step 4: Hacker Attack</h2>
+
+<button onclick="startAttack()">
+Launch Hacker Attack
+</button>
+
+<button onclick="enableFirewall()">
+Enable Firewall
+</button>
+
+<p id="attackStatus">
+No attacks detected.
+</p>
+</div>
+
+</div>
+
+<script>
+
+let racks = 0;
+let servers = 0;
+let firewall = false;
+
+function addRack(){
+
+    racks++;
+
+    document.getElementById("rackCount").innerHTML =
+    "Racks: " + racks;
+
+    const rack = document.createElement("div");
+
+    rack.className = "rack";
+
+    document.getElementById("rackArea").appendChild(rack);
+}
+
+function addServer(){
+
+    if(racks === 0){
+        alert("Build a rack first!");
+        return;
+    }
+
+    servers++;
+
+    const racksList =
+    document.getElementsByClassName("rack");
+
+    const targetRack = racksList[0];
+
+    const server =
+    document.createElement("div");
+
+    server.className = "server";
+
+    targetRack.appendChild(server);
+
+    document.getElementById("serverCount").innerHTML =
+    "Servers: " + servers;
+
+    updateStats();
+}
+
+function updateStats(){
+
+    document.getElementById("cpu").innerHTML =
+    "CPU Usage: " +
+    Math.min(servers * 10,100) +
+    "%";
+
+    document.getElementById("storage").innerHTML =
+    "Storage Used: " +
+    (servers * 5) +
+    " TB";
+}
+
+function deploySite(){
+
+    if(servers < 2){
+        alert("Need at least 2 servers!");
+        return;
+    }
+
+    document.getElementById("siteStatus").innerHTML =
+    "<span class='success'>Website Online ✅</span>";
+
+    document.getElementById("customers").innerHTML =
+    "Customers: 1000";
+}
+
+function enableFirewall(){
+
+    firewall = true;
+
+    alert("Firewall Enabled!");
+}
+
+function startAttack(){
+
+    if(!firewall){
+
+        document.getElementById("attackStatus").innerHTML =
+        "<span class='danger'>DDoS Attack Successful! ❌</span>";
+
+    }else{
+
+        document.getElementById("attackStatus").innerHTML =
+        "<span class='success'>Attack Blocked By Firewall ✅</span>";
+
+    }
+}
+
+</script>
+
+</body>
+</html>
