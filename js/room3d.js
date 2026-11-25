@@ -5,7 +5,8 @@ const container = document.getElementById("serverRoom");
 const rackArea = document.getElementById("rackArea");
 const roomHardware = document.getElementById("roomHardware");
 const roomDescription = document.getElementById("roomDescription");
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    || document.documentElement.dataset.reducedMotion === "true";
 const scene = new THREE.Scene();
 scene.background = new THREE.Color("#05090e");
 scene.fog = new THREE.Fog("#05090e", 20, 46);

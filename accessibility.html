@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#090c10">
+    <meta name="description" content="Adjust SimuNet's color theme, text size, motion, and link appearance to make the site more comfortable to use.">
+    <title>Accessibility Settings - Cloud Computing Simulator</title>
+    <script src="js/accessibility.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">SIMUNET // REGION 01</p>
+            <h1>Cloud Computing Simulator</h1>
+        </div>
+        <div class="topbar-actions">
+            <nav class="site-nav" aria-label="Primary navigation">
+                <a href="./index.html">Home</a>
+                <a href="./simulator.html">Simulator</a>
+                <a href="./journey.html">Journey</a>
+                <a href="./manual.html">Manual</a>
+                <a class="active" href="./accessibility.html" aria-current="page">Accessibility</a>
+                <a href="./about.html">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="manual-shell accessibility-shell">
+        <section class="about-hero" aria-labelledby="accessibility-title">
+            <p class="section-code">PERSONALIZE / DISPLAY &amp; COMFORT</p>
+            <h2 id="accessibility-title">Make SimuNet work better for you.</h2>
+            <p>Choose display and motion settings that suit you. Preferences are saved in this browser and apply across SimuNet pages.</p>
+        </section>
+
+        <section class="panel accessibility-panel" aria-labelledby="settings-title">
+            <div class="panel-heading">
+                <div>
+                    <p class="section-code">ACCESSIBILITY OPTIONS</p>
+                    <h2 id="settings-title">Display preferences</h2>
+                </div>
+            </div>
+
+            <div class="accessibility-setting">
+                <label for="themePreference">Color theme</label>
+                <p id="themeHelp" class="field-help">Select the color palette used throughout the site.</p>
+                <select id="themePreference" aria-describedby="themeHelp">
+                    <option value="dark">SimuNet dark</option>
+                    <option value="light">Light</option>
+                    <option value="high-contrast">High contrast</option>
+                </select>
+            </div>
+
+            <div class="accessibility-setting">
+                <label for="fontSizePreference">Text size</label>
+                <p id="fontSizeHelp" class="field-help">Increase the size of text across pages.</p>
+                <select id="fontSizePreference" aria-describedby="fontSizeHelp">
+                    <option value="normal">Default</option>
+                    <option value="large">Large</option>
+                    <option value="larger">Largest</option>
+                </select>
+            </div>
+
+            <div class="accessibility-toggle">
+                <input id="reducedMotionPreference" type="checkbox">
+                <label for="reducedMotionPreference">
+                    <strong>Reduce motion</strong>
+                    <small>Limit decorative animation and movement.</small>
+                </label>
+            </div>
+
+            <div class="accessibility-toggle">
+                <input id="underlineLinksPreference" type="checkbox">
+                <label for="underlineLinksPreference">
+                    <strong>Underline links</strong>
+                    <small>Make links easier to distinguish from surrounding text.</small>
+                </label>
+            </div>
+
+            <div class="accessibility-actions">
+                <button id="resetAccessibility" class="secondary-button" type="button">Reset to defaults</button>
+                <p id="accessibilityStatus" class="accessibility-status" role="status" aria-live="polite">Preferences are saved automatically.</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
