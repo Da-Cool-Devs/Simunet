@@ -36,11 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Keep the camera lab discoverable from the simulator and other pages that
     // share this navigation, without duplicating a link already in the markup.
     const primaryNav = document.querySelector(".site-nav");
-    if (primaryNav && !primaryNav.querySelector('a[href="./camera.html"]')) {
+    if (primaryNav && !primaryNav.querySelector('a[href="/camera/"]')) {
         const cameraLink = document.createElement("a");
-        cameraLink.href = "./camera.html";
+        cameraLink.href = "/camera/";
         cameraLink.textContent = "Camera";
-        const manualLink = primaryNav.querySelector('a[href="./manual.html"]');
+        const manualLink = primaryNav.querySelector('a[href="/manual/"]');
         primaryNav.insertBefore(cameraLink, manualLink || null);
     }
 

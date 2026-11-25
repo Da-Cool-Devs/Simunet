@@ -6,8 +6,8 @@
     <meta name="theme-color" content="#090c10">
     <meta name="description" content="Cloud Computing Simulator - build, install, monitor, and deploy a cloud data center.">
     <title>Cloud Computing Simulator</title>
-    <script src="js/accessibility.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <script src="/js/accessibility.js"></script>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <header class="topbar">
@@ -17,13 +17,13 @@
         </div>
         <div class="topbar-actions">
             <nav class="site-nav" aria-label="Primary navigation">
-                <a href="./index.html">Home</a>
-                <a class="active" href="./simulator.html" aria-current="page">Simulator</a>
-                <a href="./journey.html">Journey</a>
-                <a href="./camera.html">Camera</a>
-                <a href="./manual.html">Manual</a>
-                <a href="./accessibility.html">Accessibility</a>
-                <a href="./about.html">About</a>
+                <a href="/">Home</a>
+                <a class="active" href="/simulator/" aria-current="page">Simulator</a>
+                <a href="/journey/">Journey</a>
+                <a href="/camera/">Camera</a>
+                <a href="/manual/">Manual</a>
+                <a href="/accessibility/">Accessibility</a>
+                <a href="/about/">About</a>
             </nav>
             <div id="systemStatus" class="system-status"><span class="status-dot"></span>SYSTEM OFFLINE</div>
         </div>
@@ -41,8 +41,8 @@
                     <li><span>Go live</span> Install a Web server and another server, then deploy.</li>
                 </ol>
                 <div class="quick-start-links">
-                    <a class="manual-link" href="./journey.html">Follow a file through the cloud</a>
-                    <a class="manual-link" href="./manual.html">Read the full manual</a>
+                    <a class="manual-link" href="/journey/">Follow a file through the cloud</a>
+                    <a class="manual-link" href="/manual/">Read the full manual</a>
                 </div>
             </section>
 
@@ -115,7 +115,7 @@
 
     <script>window.showRoomFallback=function(message){var room=document.getElementById("serverRoom");var loading=document.getElementById("roomLoading");if(loading)loading.textContent=message||"3D VIEW UNAVAILABLE — RACK ASSEMBLY IS STILL AVAILABLE";if(room)room.classList.add("room-unavailable");};</script>
     <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}</script>
-    <script type="module" src="js/room3d.js" onerror="window.showRoomFallback('3D LIBRARY FAILED TO LOAD — RACK ASSEMBLY IS STILL AVAILABLE')"></script>
-    <script src="script.js"></script>
+    <script type="module" src="/js/room3d.js" onerror="window.showRoomFallback('3D LIBRARY FAILED TO LOAD — RACK ASSEMBLY IS STILL AVAILABLE')"></script>
+    <script src="/script.js"></script>
 </body>
 </html>

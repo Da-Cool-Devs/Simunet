@@ -10,9 +10,9 @@ Cloud Computing Simulator is an educational project designed to help users under
 
 Instead of reading theory, players actively build and manage their own cloud infrastructure.
 
-New to the simulator? Try the interactive [Cloud Journey](journey.html), or open the [Manual](manual.html) for a step-by-step guide.
+New to the simulator? Try the interactive [Cloud Journey](journey/), or open the [Manual](manual/) for a step-by-step guide.
 
-Adjust the color theme, text size, font, motion, or link appearance in [Accessibility Settings](accessibility.html). Saved settings apply across the site, including the camera lab and interactive 3D server room.
+Adjust the color theme, text size, font, motion, or link appearance in [Accessibility Settings](accessibility/). Saved settings apply across the site, including the camera lab and interactive 3D server room.
 
 The simulator allows users to:
 
