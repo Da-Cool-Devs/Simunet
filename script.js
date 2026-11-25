@@ -9,17 +9,18 @@ const state = {
 };
 
 const serverProfiles = {
-    web: { label: "Web", cpu: 12, memory: 8, storage: 2 },
-    database: { label: "Database", cpu: 18, memory: 16, storage: 8 },
-    storage: { label: "Storage", cpu: 8, memory: 8, storage: 20 },
-    backup: { label: "Backup", cpu: 6, memory: 4, storage: 25 },
-    auth: { label: "Auth", cpu: 10, memory: 8, storage: 3 }
+    web: { label: "Web", description: "Hosts your website. Required to deploy.", cpu: 12, memory: 8, storage: 2 },
+    database: { label: "Database", description: "Stores information used by your website.", cpu: 18, memory: 16, storage: 8 },
+    storage: { label: "Storage", description: "Holds files and other cloud data.", cpu: 8, memory: 8, storage: 20 },
+    backup: { label: "Backup", description: "Keeps recovery copies. Required to run a backup.", cpu: 6, memory: 4, storage: 25 },
+    auth: { label: "Auth", description: "Handles user sign-in and permissions.", cpu: 10, memory: 8, storage: 3 }
 };
 
 const elements = {
     rackArea: document.getElementById("rackArea"),
     rackCount: document.getElementById("rackCount"),
     serverType: document.getElementById("serverType"),
+    serverTypeHelp: document.getElementById("serverTypeHelp"),
     cooling: document.getElementById("coolingToggle"),
     ups: document.getElementById("upsToggle"),
     firewall: document.getElementById("firewallToggle"),
@@ -68,6 +69,10 @@ function addRack() {
     updateDashboard();
 }
 
+function updateServerTypeHelp() {
+    elements.serverTypeHelp.textContent = serverProfiles[elements.serverType.value].description;
+}
+
 function installServer() {
     if (state.racks === 0) {
         addLog("Hardware rejected: add a rack first.");
@@ -96,6 +101,7 @@ function installServer() {
 
     if (smallestCount >= 9) {
         addLog("Rack capacity reached. Add another rack.");
+        elements.deployMessage.textContent = "All racks are full. Build another rack to install more servers.";
         return;
     }
 
@@ -142,14 +148,14 @@ function updateDashboard() {
 
 function deployWebsite() {
     if (state.servers.length < 2) {
-        elements.deployMessage.textContent = "Deployment denied: at least 2 servers required.";
+        elements.deployMessage.textContent = "Add another server. You need at least 2 servers, including a Web server.";
         addLog("Deployment denied: minimum server count not met.");
         return;
     }
 
     const hasWebServer = state.servers.includes("web");
     if (!hasWebServer) {
-        elements.deployMessage.textContent = "Deployment denied: install a web server.";
+        elements.deployMessage.textContent = "Add a Web server to host your site. Keep at least 2 servers installed.";
         addLog("Deployment denied: web server profile missing.");
         return;
     }
@@ -197,6 +203,8 @@ document.getElementById("installServerBtn").addEventListener("click", installSer
 document.getElementById("deployBtn").addEventListener("click", deployWebsite);
 document.getElementById("backupBtn").addEventListener("click", runBackup);
 document.getElementById("attackBtn").addEventListener("click", simulateAttack);
+elements.serverType.addEventListener("change", updateServerTypeHelp);
+updateServerTypeHelp();
 
 elements.cooling.addEventListener("change", () => {
     state.cooling = elements.cooling.checked;

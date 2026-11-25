@@ -18,6 +18,7 @@
         <div class="topbar-actions">
             <nav class="site-nav" aria-label="Primary navigation">
                 <a class="active" href="./index.html" aria-current="page">Simulator</a>
+                <a href="./manual.html">Manual</a>
                 <a href="./about.html">About</a>
             </nav>
             <div id="systemStatus" class="system-status">
@@ -29,17 +30,50 @@
 
     <main class="dashboard">
         <aside class="sidebar" aria-label="Cloud infrastructure controls">
+            <section class="panel quick-start-panel" aria-labelledby="quickStartTitle">
+                <p class="section-code">FIRST TIME HERE?</p>
+                <h2 id="quickStartTitle">Quick start</h2>
+                <ol class="quick-start-list">
+                    <li><span>Build a rack</span> Click <strong>Build a Server Rack</strong>.</li>
+                    <li><span>Install servers</span> Add a Web server and one more server.</li>
+                    <li><span>Protect the room</span> Turn on cooling and the firewall.</li>
+                    <li><span>Go live</span> Click <strong>Deploy Website</strong>.</li>
+                </ol>
+                <a class="manual-link" href="./manual.html">Read the full manual <span aria-hidden="true">→</span></a>
+            </section>
+
             <section class="panel">
-                <h2>Data Center</h2>
-                <p class="panel-copy">Provision the physical foundation for your cloud provider.</p>
+                <p class="section-code">STEP 1 / ROOM</p>
+                <h2>Build your data center</h2>
+                <p class="panel-copy">Add a rack first. Servers are installed inside racks.</p>
 
-                <button id="addRackBtn" class="primary-button">+ Add Server Rack</button>
+                <button id="addRackBtn" class="primary-button">+ Build a Server Rack</button>
+            </section>
 
+            <section class="panel">
+                <p class="section-code">STEP 2 / HARDWARE</p>
+                <h2>Install servers</h2>
+                <label class="field-label" for="serverType">Choose what this server will do</label>
+                <select id="serverType">
+                    <option value="web">Web Server</option>
+                    <option value="database">Database Server</option>
+                    <option value="storage">Storage Server</option>
+                    <option value="backup">Backup Server</option>
+                    <option value="auth">Authentication Server</option>
+                </select>
+                <p id="serverTypeHelp" class="field-help" aria-live="polite"></p>
+                <button id="installServerBtn" class="primary-button">Install Server</button>
+            </section>
+
+            <section class="panel">
+                <p class="section-code">STEP 3 / PROTECTION</p>
+                <h2>Power, cooling &amp; security</h2>
+                <p class="panel-copy">Prepare the room and protect your deployed website.</p>
                 <div class="toggle-list">
                     <label class="toggle-row">
                         <span>
                             <strong>Cooling</strong>
-                            <small>Thermal management</small>
+                            <small>Manage server heat</small>
                         </span>
                         <input id="coolingToggle" type="checkbox">
                         <span class="toggle" aria-hidden="true"></span>
@@ -57,25 +91,12 @@
                     <label class="toggle-row">
                         <span>
                             <strong>Firewall</strong>
-                            <small>Network protection</small>
+                            <small>Block simulated attacks</small>
                         </span>
                         <input id="firewallToggle" type="checkbox">
                         <span class="toggle" aria-hidden="true"></span>
                     </label>
                 </div>
-            </section>
-
-            <section class="panel">
-                <h2>Deploy Server</h2>
-                <label class="field-label" for="serverType">Hardware profile</label>
-                <select id="serverType">
-                    <option value="web">Web Server</option>
-                    <option value="database">Database Server</option>
-                    <option value="storage">Storage Server</option>
-                    <option value="backup">Backup Server</option>
-                    <option value="auth">Authentication Server</option>
-                </select>
-                <button id="installServerBtn" class="primary-button">Install Server</button>
             </section>
         </aside>
 
@@ -125,12 +146,12 @@
                 <article class="panel services-panel">
                     <div class="panel-heading">
                         <div>
-                            <p class="section-code">CLOUD / SERVICES</p>
+                            <p class="section-code">STEP 4 / GO LIVE</p>
                             <h2>Deployment Console</h2>
                         </div>
                         <span id="serviceStatus" class="service-status">OFFLINE</span>
                     </div>
-                    <p id="deployMessage" class="deploy-message">Deploy requires at least 2 servers.</p>
+                    <p id="deployMessage" class="deploy-message">To go live, install a Web server and at least one other server.</p>
                     <div class="action-row">
                         <button id="deployBtn" class="primary-button">Deploy Website</button>
                         <button id="backupBtn" class="secondary-button">Run Backup</button>
