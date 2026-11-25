@@ -3,12 +3,14 @@ const storagePrefix = "simunet.accessibility.";
 const defaults = {
     theme: "dark",
     fontSize: "normal",
+    fontFamily: "mono",
     reducedMotion: "false",
     underlineLinks: "false"
 };
 const allowedValues = {
     theme: ["dark", "light", "high-contrast"],
     fontSize: ["normal", "large", "larger"],
+    fontFamily: ["mono", "arial", "system"],
     reducedMotion: ["true", "false"],
     underlineLinks: ["true", "false"]
 };
@@ -22,6 +24,7 @@ for (const [key, values] of Object.entries(allowedValues)) {
 function applyPreferences() {
     root.dataset.theme = preferences.theme;
     root.dataset.fontSize = preferences.fontSize;
+    root.dataset.fontFamily = preferences.fontFamily;
     root.dataset.reducedMotion = preferences.reducedMotion;
     root.dataset.underlineLinks = preferences.underlineLinks;
 }
@@ -37,6 +40,7 @@ applyPreferences();
 document.addEventListener("DOMContentLoaded", () => {
     const themeSelect = document.getElementById("themePreference");
     const fontSizeSelect = document.getElementById("fontSizePreference");
+    const fontFamilySelect = document.getElementById("fontFamilyPreference");
     const reducedMotionCheckbox = document.getElementById("reducedMotionPreference");
     const underlineLinksCheckbox = document.getElementById("underlineLinksPreference");
     const status = document.getElementById("accessibilityStatus");
@@ -46,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     themeSelect.value = preferences.theme;
     fontSizeSelect.value = preferences.fontSize;
+    fontFamilySelect.value = preferences.fontFamily;
     reducedMotionCheckbox.checked = preferences.reducedMotion === "true";
     underlineLinksCheckbox.checked = preferences.underlineLinks === "true";
 
@@ -56,6 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
     fontSizeSelect.addEventListener("change", () => {
         storePreference("fontSize", fontSizeSelect.value);
         status.textContent = "Text size updated and saved.";
+    });
+    fontFamilySelect.addEventListener("change", () => {
+        storePreference("fontFamily", fontFamilySelect.value);
+        status.textContent = "Font family updated and saved.";
     });
     reducedMotionCheckbox.addEventListener("change", () => {
         const value = String(reducedMotionCheckbox.checked);
@@ -73,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         themeSelect.value = defaults.theme;
         fontSizeSelect.value = defaults.fontSize;
+        fontFamilySelect.value = defaults.fontFamily;
         reducedMotionCheckbox.checked = false;
         underlineLinksCheckbox.checked = false;
         status.textContent = "Preferences reset to defaults.";
