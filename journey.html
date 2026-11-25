@@ -8,8 +8,8 @@
     <title>Cloud Journey - Cloud Computing Simulator</title>
     <script src="js/accessibility.js"></script>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/journey-animation.css">
 </head>
-
 <body>
     <header class="topbar">
         <div>
@@ -31,201 +31,91 @@
         <section class="about-hero journey-hero" aria-labelledby="journey-title">
             <p class="section-code">INTERACTIVE LESSON / NETWORKS &amp; CLOUD</p>
             <h2 id="journey-title">Follow one file on its journey through the cloud.</h2>
-            <p>
-                See what happens when you upload a file: how it travels, how it is protected,
-                and how copies help bring it back if a server fails.
-            </p>
+            <p>Watch a person release a paper file into the sky. Follow it through the network to a cloud data center, where real racks of servers store and protect it.</p>
         </section>
 
         <section class="journey-panel panel" aria-labelledby="journey-panel-title">
             <div class="journey-panel-heading">
-                <div>
-                    <p class="section-code">GUIDED SIMULATION</p>
-                    <h2 id="journey-panel-title">Cloud delivery sequence</h2>
-                </div>
+                <div><p class="section-code">GUIDED SIMULATION</p><h2 id="journey-panel-title">Cloud delivery sequence</h2></div>
                 <span id="journeyStepLabel" class="count-badge">STEP 1 / 8</span>
             </div>
 
-            <div
-                id="journeyProgress"
-                class="journey-progress"
-                role="progressbar"
-                aria-label="Cloud journey progress"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow="0"
-                aria-valuetext="Step 1 of 8"
-            >
-                <span id="journeyProgressBar"></span>
-            </div>
+            <div id="journeyProgress" class="journey-progress" role="progressbar" aria-label="Cloud journey progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="Step 1 of 8"><span id="journeyProgressBar"></span></div>
 
             <div class="journey-layout">
-                <nav class="journey-rail" aria-label="Journey steps">
-                    <ol>
-                        <li data-journey-step="0" aria-current="step"><span>01</span> Upload</li>
-                        <li data-journey-step="1"><span>02</span> Packets</li>
-                        <li data-journey-step="2"><span>03</span> Routing</li>
-                        <li data-journey-step="3"><span>04</span> Encryption</li>
-                        <li data-journey-step="4"><span>05</span> Firewall</li>
-                        <li data-journey-step="5"><span>06</span> Replication</li>
-                        <li data-journey-step="6"><span>07</span> Recovery</li>
-                        <li data-journey-step="7"><span>08</span> Download</li>
-                    </ol>
-                </nav>
+                <nav class="journey-rail" aria-label="Journey steps"><ol>
+                    <li data-journey-step="0" aria-current="step"><span>01</span> Upload</li>
+                    <li data-journey-step="1"><span>02</span> Packets</li>
+                    <li data-journey-step="2"><span>03</span> Routing</li>
+                    <li data-journey-step="3"><span>04</span> Encryption</li>
+                    <li data-journey-step="4"><span>05</span> Firewall</li>
+                    <li data-journey-step="5"><span>06</span> Replication</li>
+                    <li data-journey-step="6"><span>07</span> Recovery</li>
+                    <li data-journey-step="7"><span>08</span> Download</li>
+                </ol></nav>
 
                 <div class="journey-stage-window" id="journeyStageWindow" aria-live="polite">
                     <section class="journey-stage" id="journeyStage1" aria-labelledby="journeyStageTitle1">
                         <p class="section-code">YOUR DEVICE / START</p>
-                        <h2 id="journeyStageTitle1">1. Upload your file</h2>
-                        <p>Select the sample file to send it from your device to the cloud.</p>
-                        <div class="journey-visual upload-visual" id="uploadVisual">
-                            <div class="journey-device">
-                                <span class="visual-icon file-icon" aria-hidden="true">FILE</span>
-                                <strong>YOUR DEVICE</strong>
-                                <small>project-report.pdf</small>
+                        <h2 id="journeyStageTitle1">1. Let your file go</h2>
+                        <p>Press upload and watch a paper file leave its owner, travel through the sky, and arrive at a cloud data center.</p>
+                        <div class="journey-visual upload-visual" id="uploadVisual" aria-label="An animated person releases a paper file toward a cloud data center">
+                            <div class="upload-sky" aria-hidden="true">
+                                <span class="sky-cloud sky-cloud-one"></span><span class="sky-cloud sky-cloud-two"></span>
+                                <div class="upload-person"><span class="person-head"></span><span class="person-body"></span><span class="person-arm"></span><span class="person-leg person-leg-left"></span><span class="person-leg person-leg-right"></span></div>
+                                <div class="paper-file" id="uploadPaper"><span class="paper-fold"></span><span class="paper-lines"></span><span class="paper-name">PROJECT<br>REPORT.PDF</span><span class="paper-upload-mark" aria-hidden="true">↑</span></div>
+                                <div class="cloud-destination"><span class="cloud-puff cloud-puff-left"></span><span class="cloud-puff cloud-puff-right"></span><span class="cloud-puff cloud-puff-center"></span>
+                                    <div class="cloud-data-center"><span class="data-center-sign">CLOUD DATA CENTER</span><div class="data-center-racks"><span class="data-rack"><i></i><i></i><i></i></span><span class="data-rack"><i></i><i></i><i></i></span><span class="data-rack"><i></i><i></i><i></i></span></div><span class="data-center-status"><i></i> READY TO RECEIVE</span></div>
+                                </div>
+                                <span class="flight-trail"></span><span class="sky-label label-device">YOUR DEVICE</span><span class="sky-label label-cloud">CLOUD DATA CENTER</span>
                             </div>
-                            <span class="journey-link-line" aria-hidden="true"></span>
-                            <div class="journey-cloud">
-                                <span class="visual-icon cloud-icon" aria-hidden="true">CLOUD</span>
-                                <strong>CLOUD EDGE</strong>
-                                <small>Waiting for upload</small>
-                            </div>
+                            <div class="upload-caption"><span><b>1</b> Release the file</span><span class="caption-arrow" aria-hidden="true">→</span><span><b>2</b> Data center receives it</span></div>
                         </div>
-                        <button id="uploadAction" class="primary-button" type="button">Upload sample file</button>
+                        <details class="journey-settings" id="journeySettings">
+                            <summary>Animation &amp; journey settings</summary>
+                            <div class="journey-setting-row"><label for="journeySpeed">Animation speed</label><select id="journeySpeed"><option value="slow">Slow</option><option value="normal" selected>Normal</option><option value="fast">Fast</option></select></div>
+                            <label class="journey-setting-toggle"><input id="journeyAutoAdvance" type="checkbox" checked><span><strong>Auto-advance steps</strong><small>Continue to the next lesson after each action.</small></span></label>
+                            <label class="journey-setting-toggle"><input id="journeyAmbientMotion" type="checkbox" checked><span><strong>Ambient cloud motion</strong><small>Keep the background clouds gently moving.</small></span></label>
+                            <label class="journey-setting-toggle"><input id="journeyLabels" type="checkbox" checked><span><strong>Show scene labels</strong><small>Display device and data-center labels.</small></span></label>
+                        </details>
+                        <button id="uploadAction" class="primary-button" type="button">Release file &amp; upload</button>
                         <p id="uploadFeedback" class="journey-feedback" role="status"></p>
                     </section>
 
                     <section class="journey-stage" id="journeyStage2" aria-labelledby="journeyStageTitle2" hidden>
-                        <p class="section-code">DATA / PACKETS</p>
-                        <h2 id="journeyStageTitle2">2. Split the file into packets</h2>
-                        <p>Large files travel as smaller packets. The receiving system puts them back in order.</p>
-                        <div class="packet-visual" id="packetVisual" aria-label="One file split into five packets">
-                            <span class="packet-file">PROJECT REPORT</span>
-                            <span class="packet-arrow" aria-hidden="true">↓</span>
-                            <div class="packet-list" aria-hidden="true">
-                                <span>01</span><span>02</span><span>03</span><span>04</span><span>05</span>
-                            </div>
-                        </div>
-                        <button id="packetAction" class="primary-button" type="button">Split into packets</button>
-                        <p id="packetFeedback" class="journey-feedback" role="status"></p>
+                        <p class="section-code">DATA / PACKETS</p><h2 id="journeyStageTitle2">2. Split the file into packets</h2><p>Large files travel as smaller packets. The receiving system puts them back in order.</p>
+                        <div class="packet-visual" id="packetVisual" aria-label="One file split into five packets"><span class="packet-file">PROJECT REPORT</span><span class="packet-arrow" aria-hidden="true">↓</span><div class="packet-list" aria-hidden="true"><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span></div></div>
+                        <button id="packetAction" class="primary-button" type="button">Split into packets</button><p id="packetFeedback" class="journey-feedback" role="status"></p>
                     </section>
-
                     <section class="journey-stage" id="journeyStage3" aria-labelledby="journeyStageTitle3" hidden>
-                        <p class="section-code">NETWORK / ROUTING</p>
-                        <h2 id="journeyStageTitle3">3. Route packets across the internet</h2>
-                        <p>Routers pass packets along a path to the cloud data center.</p>
-                        <div class="network-route" id="networkRoute" aria-label="Device to router to internet to cloud">
-                            <div class="route-node"><span>DEVICE</span><strong>Your device</strong></div>
-                            <span class="route-connector" aria-hidden="true"></span>
-                            <div class="route-node"><span>ROUTER</span><strong>Home router</strong></div>
-                            <span class="route-connector" aria-hidden="true"></span>
-                            <div class="route-node"><span>NETWORK</span><strong>Internet</strong></div>
-                            <span class="route-connector" aria-hidden="true"></span>
-                            <div class="route-node"><span>CLOUD</span><strong>Data center</strong></div>
-                        </div>
-                        <button id="routeAction" class="primary-button" type="button">Send packets</button>
-                        <p id="routeFeedback" class="journey-feedback" role="status"></p>
+                        <p class="section-code">NETWORK / ROUTING</p><h2 id="journeyStageTitle3">3. Route packets across the internet</h2><p>Routers pass packets along a path to the cloud data center.</p>
+                        <div class="network-route" id="networkRoute" aria-label="Device to router to internet to cloud"><div class="route-node"><span>DEVICE</span><strong>Your device</strong></div><span class="route-connector" aria-hidden="true"></span><div class="route-node"><span>ROUTER</span><strong>Home router</strong></div><span class="route-connector" aria-hidden="true"></span><div class="route-node"><span>NETWORK</span><strong>Internet</strong></div><span class="route-connector" aria-hidden="true"></span><div class="route-node"><span>CLOUD</span><strong>Data center</strong></div></div>
+                        <button id="routeAction" class="primary-button" type="button">Send packets</button><p id="routeFeedback" class="journey-feedback" role="status"></p>
                     </section>
-
                     <section class="journey-stage" id="journeyStage4" aria-labelledby="journeyStageTitle4" hidden>
-                        <p class="section-code">DATA / PRIVACY</p>
-                        <h2 id="journeyStageTitle4">4. Encrypt the file</h2>
-                        <p>Encryption turns readable information into protected data while it travels.</p>
-                        <div class="encryption-visual" id="encryptionVisual">
-                            <span class="lock-symbol" aria-hidden="true">LOCKED</span>
-                            <code id="encryptionLabel">project-report.pdf</code>
-                        </div>
-                        <button id="encryptAction" class="primary-button" type="button">Encrypt file</button>
-                        <p id="encryptFeedback" class="journey-feedback" role="status"></p>
+                        <p class="section-code">DATA / PRIVACY</p><h2 id="journeyStageTitle4">4. Encrypt the file</h2><p>Encryption turns readable information into protected data while it travels.</p><div class="encryption-visual" id="encryptionVisual"><span class="lock-symbol" aria-hidden="true">LOCKED</span><code id="encryptionLabel">project-report.pdf</code></div><button id="encryptAction" class="primary-button" type="button">Encrypt file</button><p id="encryptFeedback" class="journey-feedback" role="status"></p>
                     </section>
-
                     <section class="journey-stage" id="journeyStage5" aria-labelledby="journeyStageTitle5" hidden>
-                        <p class="section-code">SECURITY / FIREWALL</p>
-                        <h2 id="journeyStageTitle5">5. Block an unwanted connection</h2>
-                        <p>A firewall checks network traffic and blocks connections that should not reach your cloud service.</p>
-                        <div class="firewall-visual" id="firewallVisual">
-                            <div class="route-node threat-node"><span>UNKNOWN</span><strong>Untrusted traffic</strong></div>
-                            <span class="route-connector" aria-hidden="true"></span>
-                            <div class="firewall-gate"><span aria-hidden="true">FIREWALL</span><strong id="firewallGateStatus">INACTIVE</strong></div>
-                            <span class="route-connector" aria-hidden="true"></span>
-                            <div class="route-node"><span>PROTECTED</span><strong>Cloud service</strong></div>
-                        </div>
-                        <button id="firewallAction" class="primary-button" type="button">Activate firewall</button>
-                        <p id="firewallFeedback" class="journey-feedback" role="status"></p>
+                        <p class="section-code">SECURITY / FIREWALL</p><h2 id="journeyStageTitle5">5. Block an unwanted connection</h2><p>A firewall checks network traffic and blocks connections that should not reach your cloud service.</p><div class="firewall-visual" id="firewallVisual"><div class="route-node threat-node"><span>UNKNOWN</span><strong>Untrusted traffic</strong></div><span class="route-connector" aria-hidden="true"></span><div class="firewall-gate"><span aria-hidden="true">FIREWALL</span><strong id="firewallGateStatus">INACTIVE</strong></div><span class="route-connector" aria-hidden="true"></span><div class="route-node"><span>PROTECTED</span><strong>Cloud service</strong></div></div><button id="firewallAction" class="primary-button" type="button">Activate firewall</button><p id="firewallFeedback" class="journey-feedback" role="status"></p>
                     </section>
-
                     <section class="journey-stage" id="journeyStage6" aria-labelledby="journeyStageTitle6" hidden>
-                        <p class="section-code">RELIABILITY / REPLICAS</p>
-                        <h2 id="journeyStageTitle6">6. Make copies on other servers</h2>
-                        <p>Replication keeps copies of data on separate servers so one failure does not erase the only copy.</p>
-                        <div class="replica-visual" id="replicaVisual">
-                            <div class="replica-node"><span>SERVER A</span><strong>Primary copy</strong><small>Waiting</small></div>
-                            <div class="replica-node"><span>SERVER B</span><strong>Replica</strong><small>Waiting</small></div>
-                            <div class="replica-node"><span>SERVER C</span><strong>Replica</strong><small>Waiting</small></div>
-                        </div>
-                        <button id="replicaAction" class="primary-button" type="button">Replicate file</button>
-                        <p id="replicaFeedback" class="journey-feedback" role="status"></p>
+                        <p class="section-code">RELIABILITY / REPLICAS</p><h2 id="journeyStageTitle6">6. Make copies on other servers</h2><p>Replication keeps copies of data on separate servers so one failure does not erase the only copy.</p><div class="replica-visual" id="replicaVisual"><div class="replica-node"><span>SERVER A</span><strong>Primary copy</strong><small>Waiting</small></div><div class="replica-node"><span>SERVER B</span><strong>Replica</strong><small>Waiting</small></div><div class="replica-node"><span>SERVER C</span><strong>Replica</strong><small>Waiting</small></div></div><button id="replicaAction" class="primary-button" type="button">Replicate file</button><p id="replicaFeedback" class="journey-feedback" role="status"></p>
                     </section>
-
                     <section class="journey-stage" id="journeyStage7" aria-labelledby="journeyStageTitle7" hidden>
-                        <p class="section-code">RESILIENCE / TEST</p>
-                        <h2 id="journeyStageTitle7">7. A server fails. What now?</h2>
-                        <p>The primary server is offline. Choose how the service can recover the file.</p>
-                        <div class="failure-visual">
-                            <div class="replica-node failed-node"><span>SERVER A</span><strong>Offline</strong></div>
-                            <span class="route-connector" aria-hidden="true"></span>
-                            <div class="replica-node"><span>SERVER B</span><strong>Replica available</strong></div>
-                        </div>
-                        <div class="recovery-choices">
-                            <button class="secondary-button" type="button" data-recovery-choice="wrong">Stop: the file is lost</button>
-                            <button class="primary-button" type="button" data-recovery-choice="correct">Recover from the replica</button>
-                        </div>
-                        <p id="recoveryFeedback" class="journey-feedback" role="status"></p>
+                        <p class="section-code">RESILIENCE / TEST</p><h2 id="journeyStageTitle7">7. A server fails. What now?</h2><p>The primary server is offline. Choose how the service can recover the file.</p><div class="failure-visual"><div class="replica-node failed-node"><span>SERVER A</span><strong>Offline</strong></div><span class="route-connector" aria-hidden="true"></span><div class="replica-node"><span>SERVER B</span><strong>Replica available</strong></div></div><div class="recovery-choices"><button class="secondary-button" type="button" data-recovery-choice="wrong">Stop: the file is lost</button><button class="primary-button" type="button" data-recovery-choice="correct">Recover from the replica</button></div><p id="recoveryFeedback" class="journey-feedback" role="status"></p>
                     </section>
-
                     <section class="journey-stage" id="journeyStage8" aria-labelledby="journeyStageTitle8" hidden>
-                        <p class="section-code">DELIVERY / DOWNLOAD</p>
-                        <h2 id="journeyStageTitle8">8. Download the recovered file</h2>
-                        <p>Your request travels to the cloud, retrieves the available copy, and returns it to your device.</p>
-                        <div class="download-visual" id="downloadVisual">
-                            <div class="route-node"><span>CLOUD</span><strong>Recovered copy</strong></div>
-                            <span class="route-connector" aria-hidden="true"></span>
-                            <div class="route-node"><span>NETWORK</span><strong>Secure transfer</strong></div>
-                            <span class="route-connector" aria-hidden="true"></span>
-                            <div class="route-node"><span>DEVICE</span><strong>Your device</strong></div>
-                        </div>
-                        <button id="downloadAction" class="primary-button" type="button">Complete download</button>
-                        <p id="downloadFeedback" class="journey-feedback" role="status"></p>
+                        <p class="section-code">DELIVERY / DOWNLOAD</p><h2 id="journeyStageTitle8">8. Download the recovered file</h2><p>Your request travels to the cloud, retrieves the available copy, and returns it to your device.</p><div class="download-visual" id="downloadVisual"><div class="route-node"><span>CLOUD</span><strong>Recovered copy</strong></div><span class="route-connector" aria-hidden="true"></span><div class="route-node"><span>NETWORK</span><strong>Secure transfer</strong></div><span class="route-connector" aria-hidden="true"></span><div class="route-node"><span>DEVICE</span><strong>Your device</strong></div></div><button id="downloadAction" class="primary-button" type="button">Complete download</button><p id="downloadFeedback" class="journey-feedback" role="status"></p>
                     </section>
-
                     <section class="journey-stage journey-complete" id="journeyStage9" aria-labelledby="journeyStageTitle9" hidden>
-                        <p class="section-code">SIMULATION COMPLETE / CLOUD ENGINEER</p>
-                        <h2 id="journeyStageTitle9">Your file made the journey.</h2>
-                        <p>You explored the key steps that help cloud services move, protect, and recover data.</p>
-                        <ul class="journey-learnings">
-                            <li>Files are broken into network packets.</li>
-                            <li>Routers guide traffic between devices and data centers.</li>
-                            <li>Encryption and firewalls protect data and services.</li>
-                            <li>Replicas help services recover from server failure.</li>
-                        </ul>
-                        <div class="journey-finish-actions">
-                            <a class="journey-simulator-link" href="./simulator.html">Build the infrastructure in the simulator</a>
-                            <button id="journeyRestart" class="secondary-button" type="button">Run the journey again</button>
-                        </div>
+                        <p class="section-code">SIMULATION COMPLETE / CLOUD ENGINEER</p><h2 id="journeyStageTitle9">Your file made the journey.</h2><p>You explored the key steps that help cloud services move, protect, and recover data.</p><ul class="journey-learnings"><li>Files are broken into network packets.</li><li>Routers guide traffic between devices and data centers.</li><li>Encryption and firewalls protect data and services.</li><li>Replicas help services recover from server failure.</li></ul><div class="journey-finish-actions"><a class="journey-simulator-link" href="./simulator.html">Build the infrastructure in the simulator</a><button id="journeyRestart" class="secondary-button" type="button">Run the journey again</button></div>
                     </section>
                 </div>
             </div>
-
-            <div class="journey-controls">
-                <button id="journeyBack" class="secondary-button" type="button" disabled>← Previous</button>
-                <p id="journeyAnnouncement" role="status">Ready when you are. Start by uploading the sample file.</p>
-                <span class="journey-controls-spacer" aria-hidden="true"></span>
-            </div>
+            <div class="journey-controls"><button id="journeyBack" class="secondary-button" type="button" disabled>← Previous</button><p id="journeyAnnouncement" role="status">Ready when you are. Start by uploading the sample file.</p><button id="journeyNext" class="primary-button" type="button" hidden>Continue →</button></div>
         </section>
-
         <p class="journey-note">This is a simplified learning simulation; real cloud networks include many more systems and safeguards.</p>
     </main>
-
     <script src="journey.js"></script>
 </body>
 </html>

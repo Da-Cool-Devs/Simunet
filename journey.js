@@ -5,34 +5,54 @@ const progressBar = document.getElementById("journeyProgressBar");
 const stepLabel = document.getElementById("journeyStepLabel");
 const announcement = document.getElementById("journeyAnnouncement");
 const backButton = document.getElementById("journeyBack");
+const nextButton = document.getElementById("journeyNext");
+const uploadVisual = document.getElementById("uploadVisual");
+const settingStorageKey = "simunet.journey.settings";
+const settings = { speed: "normal", autoAdvance: true, ambientMotion: true, labels: true };
 let currentStep = 0;
 let isAdvancing = false;
+let advanceTimer = null;
+
+try {
+    const saved = JSON.parse(localStorage.getItem(settingStorageKey) || "{}");
+    if (["slow", "normal", "fast"].includes(saved.speed)) settings.speed = saved.speed;
+    for (const key of ["autoAdvance", "ambientMotion", "labels"]) {
+        if (typeof saved[key] === "boolean") settings[key] = saved[key];
+    }
+} catch (_) { /* Use defaults if local storage is unavailable or invalid. */ }
+
+const speedControl = document.getElementById("journeySpeed");
+const autoAdvanceControl = document.getElementById("journeyAutoAdvance");
+const ambientMotionControl = document.getElementById("journeyAmbientMotion");
+const labelsControl = document.getElementById("journeyLabels");
+
+function saveSettings() {
+    try { localStorage.setItem(settingStorageKey, JSON.stringify(settings)); } catch (_) { /* Settings still work for this visit. */ }
+    speedControl.value = settings.speed;
+    autoAdvanceControl.checked = settings.autoAdvance;
+    ambientMotionControl.checked = settings.ambientMotion;
+    labelsControl.checked = settings.labels;
+    uploadVisual.dataset.speed = settings.speed;
+    uploadVisual.classList.toggle("motion-paused", !settings.ambientMotion);
+    uploadVisual.classList.toggle("labels-hidden", !settings.labels);
+}
 
 function showStep(step) {
     currentStep = Math.max(0, Math.min(step, stages.length - 1));
-    stages.forEach((stage, index) => {
-        stage.hidden = index !== currentStep;
-    });
-
+    stages.forEach((stage, index) => { stage.hidden = index !== currentStep; });
     journeySteps.forEach((item, index) => {
         item.classList.toggle("is-current", index === currentStep);
         item.classList.toggle("is-complete", index < currentStep);
-        if (index === currentStep) {
-            item.setAttribute("aria-current", "step");
-        } else {
-            item.removeAttribute("aria-current");
-        }
+        if (index === currentStep) item.setAttribute("aria-current", "step");
+        else item.removeAttribute("aria-current");
     });
-
     const percent = Math.round((Math.min(currentStep, 8) / 8) * 100);
     progressBar.style.width = `${percent}%`;
     progress.setAttribute("aria-valuenow", String(percent));
-    progress.setAttribute(
-        "aria-valuetext",
-        currentStep === 8 ? "Journey complete" : `Step ${currentStep + 1} of 8`
-    );
+    progress.setAttribute("aria-valuetext", currentStep === 8 ? "Journey complete" : `Step ${currentStep + 1} of 8`);
     stepLabel.textContent = currentStep === 8 ? "COMPLETE" : `STEP ${currentStep + 1} / 8`;
     backButton.disabled = currentStep === 0;
+    nextButton.hidden = true;
     announcement.textContent = currentStep === 8
         ? "Journey complete. You can try it again or explore the infrastructure simulator."
         : `Step ${currentStep + 1} of 8: ${stages[currentStep].querySelector("h2").textContent}`;
@@ -42,68 +62,55 @@ function completeStep(feedbackElement, message) {
     if (isAdvancing) return;
     feedbackElement.textContent = message;
     announcement.textContent = message;
+    if (!settings.autoAdvance) {
+        nextButton.hidden = false;
+        announcement.textContent = `${message} Select Continue when you are ready.`;
+        return;
+    }
     isAdvancing = true;
-
-    window.setTimeout(() => {
+    const reducedMotion = document.documentElement.dataset.reducedMotion === "true" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    advanceTimer = window.setTimeout(() => {
         isAdvancing = false;
+        advanceTimer = null;
         showStep(currentStep + 1);
-    }, 650);
+    }, reducedMotion ? 0 : 650);
 }
 
-document.getElementById("uploadAction").addEventListener("click", () => {
-    document.getElementById("uploadVisual").classList.add("is-uploaded");
-    completeStep(
-        document.getElementById("uploadFeedback"),
-        "Upload complete. Your file has reached the cloud edge."
-    );
-});
+speedControl.addEventListener("change", () => { settings.speed = speedControl.value; saveSettings(); });
+autoAdvanceControl.addEventListener("change", () => { settings.autoAdvance = autoAdvanceControl.checked; saveSettings(); });
+ambientMotionControl.addEventListener("change", () => { settings.ambientMotion = ambientMotionControl.checked; saveSettings(); });
+labelsControl.addEventListener("change", () => { settings.labels = labelsControl.checked; saveSettings(); });
 
+document.getElementById("uploadAction").addEventListener("click", () => {
+    uploadVisual.classList.remove("is-uploaded");
+    void uploadVisual.offsetWidth;
+    uploadVisual.classList.add("is-uploaded");
+    completeStep(document.getElementById("uploadFeedback"), "Upload complete. Your file has reached the cloud data center.");
+});
 document.getElementById("packetAction").addEventListener("click", () => {
     document.getElementById("packetVisual").classList.add("is-split");
-    completeStep(
-        document.getElementById("packetFeedback"),
-        "The file is now represented as packets ready to travel across the network."
-    );
+    completeStep(document.getElementById("packetFeedback"), "The file is now represented as packets ready to travel across the network.");
 });
-
 document.getElementById("routeAction").addEventListener("click", () => {
     document.getElementById("networkRoute").classList.add("is-routed");
-    completeStep(
-        document.getElementById("routeFeedback"),
-        "The packets reached the cloud data center by passing through network devices."
-    );
+    completeStep(document.getElementById("routeFeedback"), "The packets reached the cloud data center by passing through network devices.");
 });
-
 document.getElementById("encryptAction").addEventListener("click", () => {
     document.getElementById("encryptionVisual").classList.add("is-encrypted");
     document.getElementById("encryptionLabel").textContent = "ENCRYPTED • 8F3A-21C7";
-    completeStep(
-        document.getElementById("encryptFeedback"),
-        "The sample file is now shown as encrypted data."
-    );
+    completeStep(document.getElementById("encryptFeedback"), "The sample file is now shown as encrypted data.");
 });
-
 document.getElementById("firewallAction").addEventListener("click", () => {
     document.getElementById("firewallVisual").classList.add("is-secure");
     document.getElementById("firewallGateStatus").textContent = "ACTIVE";
-    completeStep(
-        document.getElementById("firewallFeedback"),
-        "Firewall active. Untrusted traffic is blocked before it reaches the cloud service."
-    );
+    completeStep(document.getElementById("firewallFeedback"), "Firewall active. Untrusted traffic is blocked before it reaches the cloud service.");
 });
-
 document.getElementById("replicaAction").addEventListener("click", () => {
     document.getElementById("replicaVisual").classList.add("is-replicated");
-    document.querySelectorAll("#replicaVisual .replica-node small").forEach((status, index) => {
-        status.textContent = index === 0 ? "PRIMARY COPY" : "COPY READY";
-    });
-    completeStep(
-        document.getElementById("replicaFeedback"),
-        "Copies are ready on separate servers. Now test what happens if one server fails."
-    );
+    document.querySelectorAll("#replicaVisual .replica-node small").forEach((status, index) => { status.textContent = index === 0 ? "PRIMARY COPY" : "COPY READY"; });
+    completeStep(document.getElementById("replicaFeedback"), "Copies are ready on separate servers. Now test what happens if one server fails.");
 });
-
-document.querySelectorAll("[data-recovery-choice]").forEach((choice) => {
+document.querySelectorAll("[data-recovery-choice]").forEach(choice => {
     choice.addEventListener("click", () => {
         const feedback = document.getElementById("recoveryFeedback");
         if (choice.dataset.recoveryChoice === "correct") {
@@ -115,33 +122,30 @@ document.querySelectorAll("[data-recovery-choice]").forEach((choice) => {
         }
     });
 });
-
 document.getElementById("downloadAction").addEventListener("click", () => {
     document.getElementById("downloadVisual").classList.add("is-delivered");
-    completeStep(
-        document.getElementById("downloadFeedback"),
-        "Download complete. Your file made it back to your device."
-    );
+    completeStep(document.getElementById("downloadFeedback"), "Download complete. Your file made it back to your device.");
 });
-
 backButton.addEventListener("click", () => {
-    if (!isAdvancing) showStep(currentStep - 1);
+    if (advanceTimer) window.clearTimeout(advanceTimer);
+    advanceTimer = null;
+    isAdvancing = false;
+    showStep(currentStep - 1);
 });
-
+nextButton.addEventListener("click", () => { if (!isAdvancing) showStep(currentStep + 1); });
 document.getElementById("journeyRestart").addEventListener("click", () => {
-    if (isAdvancing) return;
-    document.querySelectorAll(".journey-visual, .packet-visual, .network-route, .encryption-visual, .firewall-visual, .replica-visual, .failure-visual, .download-visual").forEach((visual) => {
+    if (advanceTimer) window.clearTimeout(advanceTimer);
+    advanceTimer = null;
+    isAdvancing = false;
+    document.querySelectorAll(".journey-visual, .packet-visual, .network-route, .encryption-visual, .firewall-visual, .replica-visual, .failure-visual, .download-visual").forEach(visual => {
         visual.classList.remove("is-uploaded", "is-split", "is-routed", "is-encrypted", "is-secure", "is-replicated", "is-recovered", "is-delivered");
     });
     document.getElementById("encryptionLabel").textContent = "project-report.pdf";
     document.getElementById("firewallGateStatus").textContent = "INACTIVE";
-    document.querySelectorAll("#replicaVisual .replica-node small").forEach((status) => {
-        status.textContent = "Waiting";
-    });
-    document.querySelectorAll(".journey-feedback").forEach((feedback) => {
-        feedback.textContent = "";
-    });
+    document.querySelectorAll("#replicaVisual .replica-node small").forEach(status => { status.textContent = "Waiting"; });
+    document.querySelectorAll(".journey-feedback").forEach(feedback => { feedback.textContent = ""; });
     showStep(0);
 });
 
+saveSettings();
 showStep(0);
