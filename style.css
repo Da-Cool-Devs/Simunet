@@ -709,6 +709,7 @@ select {
 
 .error-panel a {
     display: inline-block;
+    margin: 4px 8px 4px 0;
     padding: 11px 16px;
     border: 1px solid var(--cyan);
     border-radius: 3px;
@@ -2093,13 +2094,16 @@ html[data-theme="high-contrast"] .accessibility-status {
 /* 3D simulator */
 .rack-panel { min-height: 0; padding: 20px; }
 .room-heading { align-items: flex-start; }
-.room-caption { margin: -8px 0 0; color: var(--muted); font-size: .68rem; }
-.room-tools { display: flex; align-items: center; gap: 8px; }
+.room-heading > div:first-child { min-width: 0; }
+.room-heading h2 { margin: 0; line-height: 1.25; }
+.room-caption { margin: 8px 0 0; color: var(--muted); font-size: .68rem; line-height: 1.45; }
+.room-tools { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; }
 .room-tools .text-button { width: auto; margin: 0; white-space: nowrap; }
 .server-room { width: 100%; height: clamp(390px,48vw,620px); min-height: 340px; position: relative; overflow: hidden; border: 1px solid #315062; border-radius: 2px; background: radial-gradient(ellipse at 50% 80%,rgba(15,58,76,.3),transparent 62%),#060b11; box-shadow: inset 0 0 50px rgba(0,0,0,.82),0 0 22px rgba(17,138,170,.08); touch-action: none; }
 .server-room canvas { width: 100%; height: 100%; display: block; cursor: grab; }
 .server-room canvas:active { cursor: grabbing; }
-.room-hud { position: absolute; z-index: 1; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: 10px; color: #b7d2df; font-size: .62rem; letter-spacing: 1px; pointer-events: none; text-shadow: 0 1px 5px #000; }
+.room-hud { position: absolute; z-index: 1; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: 10px; color: #b7d2df; font-size: .62rem; line-height: 1.35; letter-spacing: 1px; pointer-events: none; text-shadow: 0 1px 5px #000; }
+.room-hud span { max-width: 48%; }
 .room-loading { position: absolute; z-index: 2; inset: 0; display: grid; place-items: center; color: var(--cyan); background: linear-gradient(rgba(102,217,239,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(102,217,239,.035) 1px,transparent 1px),#081019; background-size: 20px 20px; font-size: .75rem; letter-spacing: 1px; }
 .room-description { margin: 10px 0 0; color: var(--muted); font-size: .72rem; line-height: 1.6; }
 .room-unavailable { height: auto; min-height: 110px; display: grid; align-items: center; padding: 18px; }
