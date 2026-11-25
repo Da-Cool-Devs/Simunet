@@ -12,6 +12,34 @@ const settings = { speed: "normal", autoAdvance: true, ambientMotion: true, labe
 let currentStep = 0;
 let isAdvancing = false;
 let advanceTimer = null;
+let motionAnimations = [];
+
+function playMotion(element, keyframes, options = {}) {
+    if (!element || !settings.ambientMotion || !element.animate || document.documentElement.dataset.reducedMotion === "true" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const speed = settings.speed === "fast" ? 0.75 : settings.speed === "slow" ? 1.25 : 1;
+    const animation = element.animate(keyframes, {
+        duration: (options.duration || 400) * speed,
+        delay: (options.delay || 0) * speed,
+        easing: options.easing || "cubic-bezier(0.2, 0.7, 0.2, 1)",
+        fill: "both"
+    });
+    motionAnimations.push(animation);
+    animation.onfinish = () => {
+        animation.cancel();
+        motionAnimations = motionAnimations.filter(item => item !== animation);
+    };
+}
+
+function animateStage(stage) {
+    motionAnimations.forEach(animation => animation.cancel());
+    motionAnimations = [];
+    [...stage.children].forEach((element, index) => {
+        playMotion(element, [
+            { opacity: 0, transform: "translateY(12px)" },
+            { opacity: 1, transform: "translateY(0)" }
+        ], { delay: index * 55, duration: 380 });
+    });
+}
 
 // Scene 3 demonstrates server-side defense: the server checks incoming requests,
 // rejects suspicious traffic, and continues serving legitimate requests.
@@ -62,6 +90,7 @@ function saveSettings() {
 function showStep(step) {
     currentStep = Math.max(0, Math.min(step, stages.length - 1));
     stages.forEach((stage, index) => { stage.hidden = index !== currentStep; });
+    if (stages[currentStep]) animateStage(stages[currentStep]);
     journeySteps.forEach((item, index) => {
         item.classList.toggle("is-current", index === currentStep);
         item.classList.toggle("is-complete", index < currentStep);
@@ -104,38 +133,51 @@ if (ambientMotionControl) ambientMotionControl.addEventListener("change", () => 
 if (labelsControl) labelsControl.addEventListener("change", () => { settings.labels = labelsControl.checked; saveSettings(); });
 
 document.getElementById("uploadAction").addEventListener("click", () => {
+    playMotion(uploadVisual, [{ transform: "scale(0.97)" }, { transform: "scale(1)" }]);
     uploadVisual.classList.remove("is-uploaded");
     void uploadVisual.offsetWidth;
     uploadVisual.classList.add("is-uploaded");
     completeStep(document.getElementById("uploadFeedback"), "Upload complete. Your file has reached the cloud data center.");
 });
 document.getElementById("packetAction").addEventListener("click", () => {
-    document.getElementById("packetVisual").classList.add("is-split");
+    const visual = document.getElementById("packetVisual");
+    playMotion(visual, [{ transform: "scale(0.97)" }, { transform: "scale(1)" }]);
+    visual.classList.add("is-split");
     completeStep(document.getElementById("packetFeedback"), "The file is now represented as packets ready to travel across the network.");
 });
 document.getElementById("routeAction").addEventListener("click", () => {
     const defenseScene = document.getElementById("serverCheckStatus");
     if (defenseScene) {
-        document.getElementById("networkRoute").classList.add("is-routed");
+        const route = document.getElementById("networkRoute");
+        playMotion(route, [{ transform: "translateX(-5px)" }, { transform: "translateX(0)" }]);
+        route.classList.add("is-routed");
         defenseScene.textContent = "Suspicious request blocked · trusted request served";
         completeStep(document.getElementById("routeFeedback"), "The server rejected the suspicious request and continued serving the trusted visitor.");
         return;
     }
-    document.getElementById("networkRoute").classList.add("is-routed");
+    const route = document.getElementById("networkRoute");
+    playMotion(route, [{ transform: "translateX(-5px)" }, { transform: "translateX(0)" }]);
+    route.classList.add("is-routed");
     completeStep(document.getElementById("routeFeedback"), "The packets reached the cloud data center by passing through network devices.");
 });
 document.getElementById("encryptAction").addEventListener("click", () => {
-    document.getElementById("encryptionVisual").classList.add("is-encrypted");
+    const visual = document.getElementById("encryptionVisual");
+    playMotion(visual, [{ transform: "rotateY(0deg)" }, { transform: "rotateY(360deg)" }], { duration: 700 });
+    visual.classList.add("is-encrypted");
     document.getElementById("encryptionLabel").textContent = "PROTECTED • 8F3A-21C7";
     completeStep(document.getElementById("encryptFeedback"), "The sample file is now shown as protected data.");
 });
 document.getElementById("firewallAction").addEventListener("click", () => {
-    document.getElementById("firewallVisual").classList.add("is-secure");
+    const visual = document.getElementById("firewallVisual");
+    playMotion(visual, [{ transform: "scale(0.96)" }, { transform: "scale(1)" }]);
+    visual.classList.add("is-secure");
     document.getElementById("firewallGateStatus").textContent = "ON";
     completeStep(document.getElementById("firewallFeedback"), "Firewall on. Suspicious traffic is blocked before it reaches the cloud service.");
 });
 document.getElementById("replicaAction").addEventListener("click", () => {
-    document.getElementById("replicaVisual").classList.add("is-replicated");
+    const visual = document.getElementById("replicaVisual");
+    playMotion(visual, [{ opacity: 0.6, transform: "translateY(6px)" }, { opacity: 1, transform: "translateY(0)" }]);
+    visual.classList.add("is-replicated");
     document.querySelectorAll("#replicaVisual .replica-node small").forEach((status, index) => { status.textContent = index === 0 ? "MAIN COPY" : "COPY READY"; });
     completeStep(document.getElementById("replicaFeedback"), "Copies are ready on separate servers. Now test what happens if one server fails.");
 });
@@ -143,7 +185,9 @@ document.querySelectorAll("[data-recovery-choice]").forEach(choice => {
     choice.addEventListener("click", () => {
         const feedback = document.getElementById("recoveryFeedback");
         if (choice.dataset.recoveryChoice === "correct") {
-            document.querySelector(".failure-visual").classList.add("is-recovered");
+            const visual = document.querySelector(".failure-visual");
+            playMotion(visual, [{ transform: "scale(0.96)" }, { transform: "scale(1)" }]);
+            visual.classList.add("is-recovered");
             completeStep(feedback, "Correct. The service can recover the file from another server's replica.");
         } else {
             feedback.textContent = "Not quite. A copy on a different server can be used to recover the file.";
@@ -152,7 +196,9 @@ document.querySelectorAll("[data-recovery-choice]").forEach(choice => {
     });
 });
 document.getElementById("downloadAction").addEventListener("click", () => {
-    document.getElementById("downloadVisual").classList.add("is-delivered");
+    const visual = document.getElementById("downloadVisual");
+    playMotion(visual, [{ transform: "translateY(8px)", opacity: 0.65 }, { transform: "translateY(0)", opacity: 1 }]);
+    visual.classList.add("is-delivered");
     completeStep(document.getElementById("downloadFeedback"), "Download complete. Your file made it back to your device.");
 });
 backButton.addEventListener("click", () => {
