@@ -841,6 +841,12 @@ select {
     gap: 10px;
 }
 
+.home-start-cta .about-cta-actions,
+.home-reminder-cta .about-cta-actions {
+    align-items: flex-start;
+    flex-direction: column;
+}
+
 .about-cta a {
     flex: 0 0 auto;
     padding: 11px 16px;
@@ -1566,6 +1572,18 @@ select {
 }
 
 @media (max-width: 680px) {
+    .home-topbar {
+        flex-direction: column;
+    }
+
+    .home-topbar .topbar-actions {
+        align-items: flex-start;
+    }
+
+    .home-topbar .site-nav {
+        flex-wrap: wrap;
+    }
+
     .topbar {
         align-items: flex-start;
         gap: 16px;
