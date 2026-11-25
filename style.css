@@ -187,6 +187,7 @@ button:focus-visible {
 .site-nav {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 4px;
 }
 
@@ -207,9 +208,9 @@ button:focus-visible {
 }
 
 .site-nav a.active {
-    border-color: var(--panel-edge);
-    color: var(--cyan);
-    background: #0b1015;
+    border-color: var(--lime);
+    color: var(--lime);
+    background: rgba(136, 255, 204, 0.1);
 }
 
 .site-nav a:focus-visible {
@@ -674,6 +675,29 @@ select {
     background: rgba(17, 22, 29, 0.96);
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
     text-align: left;
+}
+
+.error-panel .site-nav {
+    margin-bottom: 32px;
+}
+
+.error-panel .site-nav a {
+    margin: 0;
+    padding: 8px 10px;
+    border-color: transparent;
+    color: var(--muted);
+    font-size: 0.72rem;
+}
+
+.error-panel .site-nav a:hover,
+.error-panel .site-nav a:focus-visible {
+    color: var(--cyan);
+}
+
+.error-panel .site-nav a.active {
+    border-color: var(--lime);
+    color: var(--lime);
+    background: rgba(136, 255, 204, 0.1);
 }
 
 .error-code {
@@ -1856,7 +1880,6 @@ html[data-theme="light"] .journey-stage h2 {
     text-shadow: none;
 }
 
-html[data-theme="light"] .site-nav a.active,
 html[data-theme="light"] .system-status,
 html[data-theme="light"] .count-badge,
 html[data-theme="light"] .service-status,
@@ -1866,6 +1889,11 @@ html[data-theme="light"] .secondary-button,
 html[data-theme="light"] .about-cta .about-cta-secondary {
     color: var(--text);
     background: #edf3f5;
+}
+
+html[data-theme="light"] .site-nav a.active {
+    color: var(--lime);
+    background: rgba(0, 107, 79, 0.1);
 }
 
 html[data-theme="light"] button {
