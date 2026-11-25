@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Journey To The Cloud</title>
+<script src="js/accessibility.js"></script>
+<link rel="stylesheet" href="style.css">
 
 <style>
 body{
@@ -12,6 +14,16 @@ body{
     background:#0f172a;
     color:white;
     text-align:center;
+}
+
+html[data-theme="light"] body{
+    color:#192a33;
+    background:#f3f6f8;
+}
+
+html[data-theme="high-contrast"] body{
+    color:#fff;
+    background:#000;
 }
 
 h1{
@@ -39,6 +51,19 @@ h1{
     margin:20px;
 }
 
+html[data-theme="light"] .card,
+html[data-theme="light"] .node{
+    color:#192a33;
+    background:#fff;
+}
+
+html[data-theme="high-contrast"] .card,
+html[data-theme="high-contrast"] .node{
+    color:#fff;
+    background:#000;
+    outline:1px solid #fff;
+}
+
 button{
     padding:12px 25px;
     border:none;
@@ -46,11 +71,17 @@ button{
     cursor:pointer;
     background:#3b82f6;
     color:white;
-    font-size:16px;
+    font-size:1rem;
 }
 
 button:hover{
     background:#2563eb;
+}
+
+html[data-theme="high-contrast"] button{
+    color:#fff;
+    background:#000;
+    border:2px solid #fff;
 }
 
 .node{
@@ -62,7 +93,7 @@ button:hover{
 }
 
 #file{
-    font-size:50px;
+    font-size:3.125rem;
     transition:1s;
 }
 
@@ -88,6 +119,7 @@ button:hover{
 <h1>☁ Journey To The Cloud ☁</h1>
 
 <div id="container">
+<p><a href="./accessibility.html">Accessibility settings</a></p>
 
 <div id="progress">
 <div id="bar"></div>
@@ -108,7 +140,7 @@ button:hover{
 <div class="step" id="step2">
 <div class="card">
 <h2>2. Split Into Packets</h2>
-<div style="font-size:35px;">📦 📦 📦 📦 📦</div>
+<div style="font-size:2.1875rem;">📦 📦 📦 📦 📦</div>
 <p>Large files are split into packets.</p>
 <button onclick="nextStep(3)">Continue</button>
 </div>
@@ -159,7 +191,7 @@ button:hover{
 <div class="card">
 <h2>6. Replicate Data</h2>
 
-<div style="font-size:30px;">
+<div style="font-size:1.875rem;">
 🖥️ Server A<br><br>
 🖥️ Server B<br><br>
 🖥️ Server C

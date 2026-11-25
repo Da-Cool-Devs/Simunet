@@ -1923,6 +1923,97 @@ html[data-theme="high-contrast"] .journey-stage h2 {
     text-shadow: none;
 }
 
+html[data-theme="light"] .server-room {
+    border-color: var(--panel-edge);
+    background: #e5edf0;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .room-hud {
+    color: #192a33;
+    text-shadow: 0 1px 3px #fff;
+}
+
+html[data-theme="light"] .room-loading {
+    color: var(--cyan);
+    background:
+        linear-gradient(rgba(0, 100, 122, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 100, 122, 0.045) 1px, transparent 1px),
+        #edf3f5;
+    background-size: 20px 20px;
+}
+
+html[data-theme="light"] .rack-builder,
+html[data-theme="light"] .rack-area > .rack {
+    border-color: var(--panel-edge);
+    background: #edf3f5;
+    box-shadow: none;
+}
+
+html[data-theme="light"] .part-card,
+html[data-theme="light"] .rack-area > .rack > .rack-slot {
+    color: var(--text);
+    border-color: var(--panel-edge);
+    background: #fff;
+}
+
+html[data-theme="light"] .part-card:hover,
+html[data-theme="light"] .part-card[aria-pressed="true"],
+html[data-theme="light"] .rack-area > .rack > .rack-slot:hover,
+html[data-theme="light"] .rack-area > .rack > .rack-slot:focus-visible,
+html[data-theme="light"] .rack-area > .rack > .rack-slot.drag-over {
+    border-color: var(--cyan);
+    background: #d9e8ed;
+}
+
+html[data-theme="light"] .builder-heading h3,
+html[data-theme="light"] .part-card strong,
+html[data-theme="light"] .rack-label,
+html[data-theme="light"] .slot-prompt,
+html[data-theme="light"] .slot-number {
+    color: var(--text);
+}
+
+html[data-theme="light"] .empty-rack-state,
+html[data-theme="light"] .rack-label span,
+html[data-theme="light"] .part-card small {
+    color: var(--muted);
+}
+
+html[data-theme="high-contrast"] .server-room,
+html[data-theme="high-contrast"] .rack-builder,
+html[data-theme="high-contrast"] .rack-area > .rack,
+html[data-theme="high-contrast"] .part-card,
+html[data-theme="high-contrast"] .rack-area > .rack > .rack-slot {
+    color: #fff;
+    border-color: #fff;
+    background: #000;
+    box-shadow: none;
+}
+
+html[data-theme="high-contrast"] .part-card:hover,
+html[data-theme="high-contrast"] .part-card[aria-pressed="true"],
+html[data-theme="high-contrast"] .rack-area > .rack > .rack-slot:hover,
+html[data-theme="high-contrast"] .rack-area > .rack > .rack-slot:focus-visible,
+html[data-theme="high-contrast"] .rack-area > .rack > .rack-slot.drag-over {
+    border-color: #fff;
+    background: #000;
+}
+
+html[data-theme="high-contrast"] .room-hud,
+html[data-theme="high-contrast"] .room-loading,
+html[data-theme="high-contrast"] .builder-heading h3,
+html[data-theme="high-contrast"] .part-card strong,
+html[data-theme="high-contrast"] .part-card small,
+html[data-theme="high-contrast"] .rack-label,
+html[data-theme="high-contrast"] .rack-label span,
+html[data-theme="high-contrast"] .slot-prompt,
+html[data-theme="high-contrast"] .slot-number,
+html[data-theme="high-contrast"] .empty-rack-state {
+    color: #fff;
+    text-shadow: none;
+}
+
 .accessibility-panel {
     display: grid;
 }

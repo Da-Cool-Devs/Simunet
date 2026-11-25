@@ -25,7 +25,7 @@ container.prepend(renderer.domElement);
 renderer.domElement.setAttribute("aria-hidden", "true");
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 1.15, 0);
-controls.enableDamping = true;
+controls.enableDamping = !reducedMotion;
 controls.dampingFactor = 0.055;
 controls.minDistance = 5;
 controls.maxDistance = 30;
@@ -42,22 +42,45 @@ const equipmentGroup = new THREE.Group(); scene.add(equipmentGroup);
 const packetGroup = new THREE.Group(); scene.add(packetGroup);
 const roomDetails = new THREE.Group(); scene.add(roomDetails);
 const material = (color, emissive = 0x000000) => new THREE.MeshStandardMaterial({ color, emissive, emissiveIntensity: emissive ? 0.7 : 0, metalness: 0.55, roughness: 0.32 });
+const roomWallMaterial = material(0x101923);
 const materials = {
     frame: material(0x354858), dark: material(0x0a1118), trim: material(0x88a9bb),
     web: material(0x56d9ef, 0x087d98), database: material(0xffb86c, 0x80450b), storage: material(0xa78bfa, 0x5733a4),
     backup: material(0x88ffcc, 0x127047), auth: material(0xf0a6ca, 0x8a315b), gpu: material(0xa276ff, 0x4a24aa),
     switch: material(0x42c8e8, 0x0c4854), router: material(0xff735f, 0x742317), loadbalancer: material(0xf4d35e, 0x755b0a)
 };
+const roomThemes = {
+    dark: { background: "#05090e", floor: 0x111a22, wall: 0x101923, frame: 0x354858, dark: 0x0a1118, trim: 0x88a9bb, grid: 0xffffff, gridVertexColors: true },
+    light: { background: "#eaf1f4", floor: 0xd9e3e7, wall: 0xf5f8f9, frame: 0x52636c, dark: 0x34434a, trim: 0x25363d, grid: 0x607a83, gridVertexColors: false },
+    "high-contrast": { background: "#000000", floor: 0x050505, wall: 0x000000, frame: 0xffffff, dark: 0x101010, trim: 0xffffff, grid: 0xffffff, gridVertexColors: false }
+};
+function applySceneTheme() {
+    const theme = roomThemes[document.documentElement.dataset.theme] || roomThemes.dark;
+    scene.background.set(theme.background);
+    scene.fog.color.set(theme.background);
+    floor.material.color.setHex(theme.floor);
+    roomWallMaterial.color.setHex(theme.wall);
+    materials.frame.color.setHex(theme.frame);
+    materials.dark.color.setHex(theme.dark);
+    materials.trim.color.setHex(theme.trim);
+    const gridMaterials = Array.isArray(grid.material) ? grid.material : [grid.material];
+    gridMaterials.forEach(gridMaterial => {
+        gridMaterial.vertexColors = theme.gridVertexColors;
+        gridMaterial.color.setHex(theme.grid);
+        gridMaterial.needsUpdate = true;
+    });
+    renderer.render(scene, camera);
+}
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
 function addBox(parent, mat, x, y, z, width, height, depth, shadow = true) {
     const mesh = new THREE.Mesh(boxGeometry, mat); mesh.position.set(x, y, z); mesh.scale.set(width, height, depth); mesh.castShadow = shadow; mesh.receiveShadow = true; parent.add(mesh); return mesh;
 }
 function clearGroup(group) { while (group.children.length) { const child = group.children.pop(); if (child) group.remove(child); } }
 function buildRoomDetails() {
-    const wall = material(0x101923), glow = new THREE.MeshBasicMaterial({ color: 0x2ad9ff });
-    addBox(roomDetails, wall, 0, 2.5, -7, 18, 5, 0.35, false);
-    addBox(roomDetails, wall, -9, 2.5, -0.5, 0.35, 5, 13, false);
-    addBox(roomDetails, wall, 9, 2.5, -0.5, 0.35, 5, 13, false);
+    const glow = new THREE.MeshBasicMaterial({ color: 0x2ad9ff });
+    addBox(roomDetails, roomWallMaterial, 0, 2.5, -7, 18, 5, 0.35, false);
+    addBox(roomDetails, roomWallMaterial, -9, 2.5, -0.5, 0.35, 5, 13, false);
+    addBox(roomDetails, roomWallMaterial, 9, 2.5, -0.5, 0.35, 5, 13, false);
     for (let x = -8; x <= 8; x += 2) addBox(roomDetails, glow, x + 0.25, 4.3, -6.74, 0.28, 0.035, 0.025, false);
     for (let x = -6; x <= 6; x += 4) addBox(roomDetails, glow, x, 4.38, -0.2, 0.045, 0.025, 8.5, false);
 }
@@ -115,24 +138,29 @@ function syncRoom() {
     const summary = parts.length ? `${parts.length} piece${parts.length === 1 ? "" : "s"} of equipment installed across ${racks.length} open rack${racks.length === 1 ? "" : "s"}. ${countBy("gpu")} graphics processor${countBy("gpu") === 1 ? "" : "s"}; ${countBy("switch") + countBy("router") + countBy("loadbalancer")} network part${countBy("switch") + countBy("router") + countBy("loadbalancer") === 1 ? "" : "s"}.` : "Open racks are ready. Drag parts into the spaces below to set up your data center.";
     roomDescription.textContent = summary;
     container.setAttribute("aria-label", `Interactive 3D data center with ${racks.length} racks and ${parts.length} installed hardware parts. Drag to orbit and scroll to zoom.`);
+    renderer.render(scene, camera);
 }
 function buildPackets() {
     for (let index = 0; index < 8; index++) { const packet = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 8), new THREE.MeshBasicMaterial({ color: 0x5de4ff })); packet.userData.phase = index / 8; packetGroup.add(packet); }
 }
 buildPackets(); buildRoomDetails(); syncRoom();
+applySceneTheme();
 document.getElementById("roomLoading")?.remove();
+new MutationObserver(applySceneTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 new MutationObserver(syncRoom).observe(rackArea, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "data-part", "data-rack-type"] });
 window.addEventListener("simunet:hardware-change", syncRoom);
 ["coolingToggle", "upsToggle"].forEach(id => document.getElementById(id).addEventListener("change", syncRoom));
 document.getElementById("roomResetView").addEventListener("click", () => { camera.position.set(9, 8, 12); controls.target.set(0, 1.15, 0); controls.update(); });
-new ResizeObserver(() => { const width = container.clientWidth, height = container.clientHeight; if (!width || !height) return; renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix(); }).observe(container);
+new ResizeObserver(() => { const width = container.clientWidth, height = container.clientHeight; if (!width || !height) return; renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.render(scene, camera); }).observe(container);
+controls.addEventListener("change", () => {
+    if (reducedMotion) renderer.render(scene, camera);
+});
 function animate() {
     requestAnimationFrame(animate);
     const time = performance.now() * 0.001;
-    if (!reducedMotion) {
-        packetGroup.children.forEach(packet => { const progress = (time * 0.12 + packet.userData.phase) % 1; packet.position.set(-5 + progress * 10, 0.35 + Math.sin(progress * Math.PI * 2) * 0.08, 1.25); packet.visible = document.getElementById("serviceStatus").classList.contains("online"); });
-        equipmentGroup.children.forEach(unit => { const fan = unit.children.find(child => child.geometry?.type === "CylinderGeometry"); if (fan) fan.rotation.z += 0.025; });
-    }
+    packetGroup.children.forEach(packet => { const progress = (time * 0.12 + packet.userData.phase) % 1; packet.position.set(-5 + progress * 10, 0.35 + Math.sin(progress * Math.PI * 2) * 0.08, 1.25); packet.visible = document.getElementById("serviceStatus").classList.contains("online"); });
+    equipmentGroup.children.forEach(unit => { const fan = unit.children.find(child => child.geometry?.type === "CylinderGeometry"); if (fan) fan.rotation.z += 0.025; });
     controls.update(); renderer.render(scene, camera);
 }
-animate();
+if (reducedMotion) renderer.render(scene, camera);
+else animate();

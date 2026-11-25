@@ -33,3 +33,25 @@
 @media (max-width: 900px) { .camera-workbench { grid-template-columns: 1fr 1fr; }.transfer-scene { grid-template-columns: repeat(4,minmax(0,1fr)); row-gap: 8px; }.transfer-link:nth-of-type(6) { display: none; }.transfer-node { min-height: 145px; }.camera-learning { grid-template-columns: repeat(2,1fr); } }
 @media (max-width: 620px) { .camera-shell { width: min(100% - 20px,1180px); }.camera-workbench { grid-template-columns: 1fr; }.transfer-scene { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 4px; }.transfer-link { display: none; }.transfer-node { min-height: 135px; }.camera-learning { grid-template-columns: 1fr 1fr; }.camera-panel .panel-heading,.gallery-panel .panel-heading,.transfer-panel > .panel-heading { align-items: flex-start; }.traveling-photo { width: 46px; height: 36px; }.camera-controls { grid-template-columns: minmax(94px,1fr) minmax(130px,1.3fr) minmax(94px,1fr); }.camera-controls .scene-control { font-size: .62rem; } }
 @media (prefers-reduced-motion: reduce) { .cloud-photo { animation: none; }.transfer-node,.capacity-track span { transition: none; }.rack-node.is-active .mini-server { animation: none; } }
+
+html[data-theme="light"] .camera-controls .scene-control { border-color: var(--panel-edge); color: var(--text); background: #edf3f5; }
+html[data-theme="light"] .camera-hint strong,
+html[data-theme="light"] .transfer-node > strong,
+html[data-theme="light"] .camera-learning h3 { color: var(--text); }
+html[data-theme="light"] .transfer-scene,
+html[data-theme="light"] .camera-learning article { border-color: var(--panel-edge); background: #fff; }
+html[data-theme="light"] .transfer-node > small { color: var(--muted); }
+html[data-theme="light"] .mini-photo-frame { background: #edf3f5; }
+html[data-theme="light"] .photo-card { color: var(--text); background: #fff; }
+
+html[data-theme="high-contrast"] .camera-controls .scene-control,
+html[data-theme="high-contrast"] .transfer-scene,
+html[data-theme="high-contrast"] .camera-learning article,
+html[data-theme="high-contrast"] .photo-card { border-color: #fff; color: #fff; background: #000; }
+html[data-theme="high-contrast"] .camera-hint strong,
+html[data-theme="high-contrast"] .transfer-node > strong,
+html[data-theme="high-contrast"] .transfer-node > small,
+html[data-theme="high-contrast"] .camera-learning h3,
+html[data-theme="high-contrast"] .camera-learning p { color: #fff; }
+html[data-theme="high-contrast"] .mini-photo-frame,
+html[data-theme="high-contrast"] .mini-rack { border-color: #fff; }
