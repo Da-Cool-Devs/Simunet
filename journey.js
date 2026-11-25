@@ -31,10 +31,6 @@ if (defenseStage) {
         <button id="routeAction" class="primary-button" type="button">Check incoming requests</button>
         <p id="routeFeedback" class="journey-feedback" role="status"></p>`;
     if (journeySteps[2]) journeySteps[2].innerHTML = "<span>03</span> Server defense";
-    const defenseStyles = document.createElement("link");
-    defenseStyles.rel = "stylesheet";
-    defenseStyles.href = "css/journey-defense.css";
-    document.head.append(defenseStyles);
 }
 
 try {
