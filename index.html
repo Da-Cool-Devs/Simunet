@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="css/room3d.css">
 </head>
-
 <body>
     <header class="topbar">
         <div>
@@ -21,81 +20,56 @@
                 <a href="./manual.html">Manual</a>
                 <a href="./about.html">About</a>
             </nav>
-            <div id="systemStatus" class="system-status">
-                <span class="status-dot"></span>
-                SYSTEM OFFLINE
-            </div>
+            <div id="systemStatus" class="system-status"><span class="status-dot"></span>SYSTEM OFFLINE</div>
         </div>
     </header>
 
     <main class="dashboard">
-        <aside class="sidebar" aria-label="Cloud infrastructure controls">
-            <section class="panel quick-start-panel" aria-labelledby="quickStartTitle">
-                <p class="section-code">FIRST TIME HERE?</p>
-                <h2 id="quickStartTitle">Quick start</h2>
+        <aside class="sidebar" aria-label="Build controls">
+            <section class="panel quick-start-panel">
+                <p class="section-code">HOW TO BUILD</p>
+                <h2>Assemble your data center</h2>
                 <ol class="quick-start-list">
-                    <li><span>Build a rack</span> Click <strong>Build a Server Rack</strong>.</li>
-                    <li><span>Install servers</span> Add a Web server and one more server.</li>
-                    <li><span>Protect the room</span> Turn on cooling and the firewall.</li>
-                    <li><span>Go live</span> Click <strong>Deploy Website</strong>.</li>
+                    <li><span>Choose a rack</span> Pick a frame, then build it.</li>
+                    <li><span>Choose hardware</span> Drag a part into an open rack bay.</li>
+                    <li><span>Touchscreen / keyboard?</span> Select a part, then select an empty bay.</li>
+                    <li><span>Go live</span> Install a web server and another server, then deploy.</li>
                 </ol>
-                <a class="manual-link" href="./manual.html">Read the full manual <span aria-hidden="true">→</span></a>
             </section>
 
             <section class="panel">
-                <p class="section-code">STEP 1 / ROOM</p>
-                <h2>Build your data center</h2>
-                <p class="panel-copy">Add a rack first. Servers are installed inside racks.</p>
-
-                <button id="addRackBtn" class="primary-button">+ Build a Server Rack</button>
-            </section>
-
-            <section class="panel">
-                <p class="section-code">STEP 2 / HARDWARE</p>
-                <h2>Install servers</h2>
-                <label class="field-label" for="serverType">Choose what this server will do</label>
-                <select id="serverType">
-                    <option value="web">Web Server</option>
-                    <option value="database">Database Server</option>
-                    <option value="storage">Storage Server</option>
-                    <option value="backup">Backup Server</option>
-                    <option value="auth">Authentication Server</option>
+                <p class="section-code">STEP 1 / FRAME</p>
+                <h2>Choose your rack</h2>
+                <label class="field-label" for="rackType">Rack frame</label>
+                <select id="rackType">
+                    <option value="standard">Standard rack · 9 bays</option>
+                    <option value="gpu">GPU-ready rack · 9 bays</option>
+                    <option value="dense">High-density rack · 12 bays</option>
                 </select>
-                <p id="serverTypeHelp" class="field-help" aria-live="polite"></p>
-                <button id="installServerBtn" class="primary-button">Install Server</button>
+                <p id="rackTypeHelp" class="field-help">A balanced rack for general-purpose servers.</p>
+                <button id="addRackBtn" class="primary-button">+ Build Open Rack</button>
             </section>
 
             <section class="panel">
-                <p class="section-code">STEP 3 / PROTECTION</p>
-                <h2>Power, cooling &amp; security</h2>
-                <p class="panel-copy">Prepare the room and protect your deployed website.</p>
+                <p class="section-code">STEP 2 / PARTS</p>
+                <h2>Hardware inventory</h2>
+                <p class="panel-copy">Drag a part onto an empty bay. Or select a part and tap a bay. Each installed part uses one bay.</p>
+                <div id="partInventory" class="part-inventory" aria-label="Draggable hardware parts">
+                    <button class="part-card" type="button" draggable="true" data-part="web" aria-pressed="false"><span class="part-icon">WEB</span><span><strong>Web server</strong><small>Hosts websites · 12 CPU / 8 GB</small></span><span class="part-count" data-count="web">× 6</span></button>
+                    <button class="part-card" type="button" draggable="true" data-part="database" aria-pressed="false"><span class="part-icon orange">DB</span><span><strong>Database server</strong><small>Stores app data · 18 CPU / 16 GB</small></span><span class="part-count" data-count="database">× 4</span></button>
+                    <button class="part-card" type="button" draggable="true" data-part="storage" aria-pressed="false"><span class="part-icon purple">SSD</span><span><strong>Storage server</strong><small>Cloud files · 20 TB storage</small></span><span class="part-count" data-count="storage">× 4</span></button>
+                    <button class="part-card" type="button" draggable="true" data-part="backup" aria-pressed="false"><span class="part-icon green">BKP</span><span><strong>Backup server</strong><small>Recovery copies · 25 TB</small></span><span class="part-count" data-count="backup">× 3</span></button>
+                    <button class="part-card" type="button" draggable="true" data-part="auth" aria-pressed="false"><span class="part-icon pink">IAM</span><span><strong>Auth server</strong><small>Identity and access · 10 CPU</small></span><span class="part-count" data-count="auth">× 3</span></button>
+                    <button class="part-card" type="button" draggable="true" data-part="gpu" aria-pressed="false"><span class="part-icon violet">GPU</span><span><strong>GPU accelerator</strong><small>AI / parallel compute · 16 GB</small></span><span class="part-count" data-count="gpu">× 4</span></button>
+                    <button class="part-card" type="button" draggable="true" data-part="switch" aria-pressed="false"><span class="part-icon blue">SW</span><span><strong>Network switch</strong><small>Connects equipment in a rack</small></span><span class="part-count" data-count="switch">× 3</span></button>
+                    <button class="part-card" type="button" draggable="true" data-part="router" aria-pressed="false"><span class="part-icon blue">RTR</span><span><strong>Router</strong><small>Routes traffic between networks</small></span><span class="part-count" data-count="router">× 2</span></button>
+                    <button class="part-card" type="button" draggable="true" data-part="loadbalancer" aria-pressed="false"><span class="part-icon cyan">LB</span><span><strong>Load balancer</strong><small>Shares requests across servers</small></span><span class="part-count" data-count="loadbalancer">× 2</span></button>
+                </div>
+                <p id="buildMessage" class="build-message" role="status" aria-live="polite">Build a rack, then drag a part into one of its open bays.</p>
                 <div class="toggle-list">
-                    <label class="toggle-row">
-                        <span>
-                            <strong>Cooling</strong>
-                            <small>Manage server heat</small>
-                        </span>
-                        <input id="coolingToggle" type="checkbox">
-                        <span class="toggle" aria-hidden="true"></span>
-                    </label>
-
-                    <label class="toggle-row">
-                        <span>
-                            <strong>UPS</strong>
-                            <small>Backup power</small>
-                        </span>
-                        <input id="upsToggle" type="checkbox">
-                        <span class="toggle" aria-hidden="true"></span>
-                    </label>
-
-                    <label class="toggle-row">
-                        <span>
-                            <strong>Firewall</strong>
-                            <small>Block simulated attacks</small>
-                        </span>
-                        <input id="firewallToggle" type="checkbox">
-                        <span class="toggle" aria-hidden="true"></span>
-                    </label>
+                    <label class="toggle-row"><span><strong>Cooling</strong><small>Manage server heat</small></span><input id="coolingToggle" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
+                    <label class="toggle-row"><span><strong>UPS</strong><small>Backup power</small></span><input id="upsToggle" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
+                    <label class="toggle-row"><span><strong>Firewall</strong><small>Block simulated attacks</small></span><input id="firewallToggle" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
                 </div>
             </section>
         </aside>
@@ -103,110 +77,45 @@
         <div class="workspace">
             <section class="panel rack-panel">
                 <div class="panel-heading room-heading">
-                    <div>
-                        <p class="section-code">FACILITY / A-01</p>
-                        <h2>3D Server Room</h2>
-                        <p class="room-caption">Drag to orbit · Scroll to zoom · Right-drag to pan</p>
-                    </div>
-                    <div class="room-tools">
-                        <span id="rackCount" class="count-badge">0 RACKS</span>
-                        <button id="roomResetView" class="text-button" type="button" title="Reset camera view">RESET VIEW</button>
-                    </div>
+                    <div><p class="section-code">FACILITY / A-01</p><h2>3D Server Room</h2><p class="room-caption">Drag to orbit · Scroll to zoom · Right-drag to pan</p></div>
+                    <div class="room-tools"><span id="rackCount" class="count-badge">0 RACKS</span><button id="roomResetView" class="text-button" type="button" title="Reset camera view">RESET VIEW</button></div>
                 </div>
-                <div id="serverRoom" class="server-room" role="img" aria-label="Interactive three-dimensional data center. Add a rack to begin building.">
+                <div id="serverRoom" class="server-room" role="img" aria-label="Interactive three-dimensional data center. Build an open rack to begin.">
                     <div class="room-loading" id="roomLoading">INITIALIZING 3D DATA CENTER…</div>
                     <div class="room-hud" aria-hidden="true"><span>FACILITY A-01</span><span id="roomHardware">NO HARDWARE</span></div>
                 </div>
-                <p id="roomDescription" class="room-description" aria-live="polite">Your data center is empty. Add a rack to start building.</p>
-                <div id="rackArea" class="legacy-rack-area" aria-hidden="true">
-                    <div class="empty-rack-state">NO HARDWARE DETECTED</div>
-                </div>
+                <p id="roomDescription" class="room-description" aria-live="polite">Build an open rack, then drag hardware into one of its bays.</p>
+                <section class="rack-builder" aria-labelledby="rackBuilderTitle">
+                    <div class="builder-heading"><div><p class="section-code">HARDWARE ASSEMBLY</p><h3 id="rackBuilderTitle">Open rack bays</h3></div><p class="builder-hint">Drop parts into any free bay</p></div>
+                    <div id="rackArea" class="rack-area" aria-label="Open rack bays. Drop hardware parts into empty slots."><div class="empty-rack-state">NO RACK BUILT — BUILD AN OPEN RACK TO START</div></div>
+                </section>
             </section>
 
             <section class="metrics-grid" aria-label="Cloud dashboard">
-                <article class="metric-panel">
-                    <div class="metric-label"><span>CPU</span><strong id="cpuValue">0%</strong></div>
-                    <div class="meter"><span id="cpuMeter"></span></div>
-                </article>
-                <article class="metric-panel">
-                    <div class="metric-label"><span>MEMORY</span><strong id="memoryValue">0 GB</strong></div>
-                    <div class="meter"><span id="memoryMeter"></span></div>
-                </article>
-                <article class="metric-panel">
-                    <div class="metric-label"><span>STORAGE</span><strong id="storageValue">0 TB</strong></div>
-                    <div class="meter"><span id="storageMeter"></span></div>
-                </article>
-                <article class="metric-panel">
-                    <div class="metric-label"><span>CUSTOMERS</span><strong id="customersValue">0</strong></div>
-                    <div class="meter"><span id="customersMeter"></span></div>
-                </article>
+                <article class="metric-panel"><div class="metric-label"><span>CPU</span><strong id="cpuValue">0%</strong></div><div class="meter"><span id="cpuMeter"></span></div></article>
+                <article class="metric-panel"><div class="metric-label"><span>MEMORY</span><strong id="memoryValue">0 GB</strong></div><div class="meter"><span id="memoryMeter"></span></div></article>
+                <article class="metric-panel"><div class="metric-label"><span>STORAGE</span><strong id="storageValue">0 TB</strong></div><div class="meter"><span id="storageMeter"></span></div></article>
+                <article class="metric-panel"><div class="metric-label"><span>CUSTOMERS</span><strong id="customersValue">0</strong></div><div class="meter"><span id="customersMeter"></span></div></article>
             </section>
 
             <section class="lower-grid">
-                <article class="panel services-panel">
-                    <div class="panel-heading">
-                        <div>
-                            <p class="section-code">STEP 4 / GO LIVE</p>
-                            <h2>Deployment Console</h2>
-                        </div>
-                        <span id="serviceStatus" class="service-status">OFFLINE</span>
-                    </div>
-                    <p id="deployMessage" class="deploy-message">To go live, install a Web server and at least one other server.</p>
-                    <div class="action-row">
-                        <button id="deployBtn" class="primary-button">Deploy Website</button>
-                        <button id="backupBtn" class="secondary-button">Run Backup</button>
-                    </div>
-                </article>
-
-                <article class="panel security-panel">
-                    <div class="panel-heading">
-                        <div>
-                            <p class="section-code">NETWORK / SECURITY</p>
-                            <h2>Threat Monitor</h2>
-                        </div>
-                        <span id="threatLevel" class="threat-level">CLEAR</span>
-                    </div>
-                    <p id="attackStatus" class="deploy-message">No active threats detected.</p>
-                    <button id="attackBtn" class="danger-button">Simulate Attack</button>
-                </article>
+                <article class="panel services-panel"><div class="panel-heading"><div><p class="section-code">STEP 3 / GO LIVE</p><h2>Deployment Console</h2></div><span id="serviceStatus" class="service-status">OFFLINE</span></div><p id="deployMessage" class="deploy-message">To go live, install a Web server and at least one other server.</p><div class="action-row"><button id="deployBtn" class="primary-button">Deploy Website</button><button id="backupBtn" class="secondary-button">Run Backup</button></div></article>
+                <article class="panel security-panel"><div class="panel-heading"><div><p class="section-code">NETWORK / SECURITY</p><h2>Threat Monitor</h2></div><span id="threatLevel" class="threat-level">CLEAR</span></div><p id="attackStatus" class="deploy-message">No active threats detected.</p><button id="attackBtn" class="danger-button">Simulate Attack</button></article>
             </section>
-
-            <section class="panel event-panel">
-                <div class="panel-heading">
-                    <div>
-                        <p class="section-code">SYSTEM / EVENTS</p>
-                        <h2>Operations Log</h2>
-                    </div>
-                    <button id="clearLogBtn" class="text-button">CLEAR</button>
-                </div>
-                <div id="eventLog" class="event-log" aria-live="polite">
-                    <p><span>00:00:00</span> Simulator initialized.</p>
-                </div>
-            </section>
+            <section class="panel event-panel"><div class="panel-heading"><div><p class="section-code">SYSTEM / EVENTS</p><h2>Operations Log</h2></div><button id="clearLogBtn" class="text-button">CLEAR</button></div><div id="eventLog" class="event-log" aria-live="polite"><p><span>00:00:00</span> Simulator initialized.</p></div></section>
         </div>
     </main>
 
     <script>
-        // If WebGL or the Three.js CDN is unavailable, restore the original 2D rack view.
         window.showRoomFallback = function (message) {
             var room = document.getElementById("serverRoom");
             var loading = document.getElementById("roomLoading");
-            var rackArea = document.getElementById("rackArea");
-            if (loading) loading.textContent = message || "3D VIEW UNAVAILABLE — SHOWING 2D RACKS";
+            if (loading) loading.textContent = message || "3D VIEW UNAVAILABLE — RACK ASSEMBLY IS STILL AVAILABLE";
             if (room) room.classList.add("room-unavailable");
-            if (rackArea) rackArea.classList.remove("legacy-rack-area");
-            var description = document.getElementById("roomDescription");
-            if (description) description.textContent = "The 3D view could not start in this browser. Your racks are still available in the 2D view below.";
         };
     </script>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
-            }
-        }
-    </script>
-    <script type="module" src="js/room3d.js" onerror="window.showRoomFallback('3D LIBRARY FAILED TO LOAD — SHOWING 2D RACKS')"></script>
+    <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}</script>
+    <script type="module" src="js/room3d.js" onerror="window.showRoomFallback('3D LIBRARY FAILED TO LOAD — RACK ASSEMBLY IS STILL AVAILABLE')"></script>
     <script src="script.js"></script>
 </body>
 </html>
