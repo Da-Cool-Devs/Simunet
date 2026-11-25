@@ -10,7 +10,7 @@ Cloud Computing Simulator is an educational project designed to help users under
 
 Instead of reading theory, players actively build and manage their own cloud infrastructure.
 
-New to the simulator? Open the [Manual](manual.html) for a step-by-step guide.
+New to the simulator? Try the interactive [Cloud Journey](journey.html), or open the [Manual](manual.html) for a step-by-step guide.
 
 The simulator allows users to:
 
