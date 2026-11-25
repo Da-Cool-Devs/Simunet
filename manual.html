@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#090c10">
-    <meta name="description" content="A simple guide to building a server rack, installing servers, and deploying a website in SimuNet.">
+    <meta name="description" content="A simple guide to assembling a server rack, deploying a website, and following a photo into cloud storage in SimuNet.">
     <title>Manual - Cloud Computing Simulator</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <header class="topbar">
         <div>
@@ -19,6 +18,7 @@
             <nav class="site-nav" aria-label="Primary navigation">
                 <a href="./simulator.html">Simulator</a>
                 <a href="./journey.html">Journey</a>
+                <a href="./camera.html">Camera</a>
                 <a class="active" href="./manual.html" aria-current="page">Manual</a>
                 <a href="./about.html">About</a>
             </nav>
@@ -29,108 +29,67 @@
         <section class="about-hero" aria-labelledby="manual-title">
             <p class="section-code">OPERATOR GUIDE / START HERE</p>
             <h2 id="manual-title">Build your first cloud, one step at a time.</h2>
-            <p>
-                A server rack is the cabinet that holds the servers. Build the rack first, install the right servers,
-                then deploy your website from the control panel.
-            </p>
+            <p>Choose an open rack, assemble hardware, deploy a service, and try the camera-to-cloud scene to watch a photo copy travel into data-center storage.</p>
         </section>
 
         <section class="manual-section" aria-labelledby="build-title">
-            <div class="manual-section-heading">
-                <p class="section-code">QUICK BUILD</p>
-                <h2 id="build-title">Follow these four steps</h2>
-            </div>
+            <div class="manual-section-heading"><p class="section-code">QUICK BUILD</p><h2>Assemble your infrastructure</h2></div>
             <ol class="manual-steps">
-                <li class="manual-step">
-                    <span class="manual-step-number">01</span>
-                    <div>
-                        <h3>Build a rack</h3>
-                        <p>On the Simulator page, click <strong>Build a Server Rack</strong>. You need a rack before you can install any servers. This is important</p>
-                    </div>
-                </li>
-                <li class="manual-step">
-                    <span class="manual-step-number">02</span>
-                    <div>
-                        <h3>Install two servers</h3>
-                        <p>Choose <strong>Web Server</strong> and click <strong>Install Server</strong>. Then choose another type, such as Database, and install it too.</p>
-                    </div>
-                </li>
-                <li class="manual-step">
-                    <span class="manual-step-number">03</span>
-                    <div>
-                        <h3>Prepare the room</h3>
-                        <p>Turn on <strong>Cooling</strong> to manage heat and the <strong>Firewall</strong> to block the attack simulation. UPS represents backup power.</p>
-                    </div>
-                </li>
-                <li class="manual-step">
-                    <span class="manual-step-number">04</span>
-                    <div>
-                        <h3>Deploy your website</h3>
-                        <p>Click <strong>Deploy Website</strong>. You need at least two servers in total, and one of them must be a Web server.</p>
-                    </div>
-                </li>
+                <li class="manual-step"><span class="manual-step-number">01</span><div><h3>Choose and build a rack</h3><p>Open the Simulator, choose a Standard, GPU-ready, or High-density frame, then select <strong>Build Open Rack</strong>. Each empty bay can hold one part.</p></div></li>
+                <li class="manual-step"><span class="manual-step-number">02</span><div><h3>Drag parts into bays</h3><p>Drag a server or component from Hardware Inventory into any open bay. On touch devices, select a part first and then tap a bay. Use the × control to remove a part and return it to inventory.</p></div></li>
+                <li class="manual-step"><span class="manual-step-number">03</span><div><h3>Prepare the data center</h3><p>Turn on <strong>Cooling</strong> to manage heat, <strong>UPS</strong> to provide simulated backup power, and <strong>Firewall</strong> to block the attack scenario. GPU accelerators require a GPU-ready rack.</p></div></li>
+                <li class="manual-step"><span class="manual-step-number">04</span><div><h3>Deploy a website</h3><p>Install a Web server and at least one other server, then select <strong>Deploy Website</strong>. A Backup server is required to run the backup action.</p></div></li>
             </ol>
         </section>
 
         <section class="manual-section" aria-labelledby="servers-title">
-            <div class="manual-section-heading">
-                <p class="section-code">HARDWARE GUIDE</p>
-                <h2 id="servers-title">Which server should I choose?</h2>
-            </div>
+            <div class="manual-section-heading"><p class="section-code">HARDWARE GUIDE</p><h2>What can I install?</h2></div>
             <div class="manual-server-grid">
-                <article class="manual-server-card">
-                    <h3>Web server <span>Required to deploy</span></h3>
-                    <p>Hosts the website that people visit. Start with this one.</p>
-                </article>
-                <article class="manual-server-card">
-                    <h3>Database server</h3>
-                    <p>Stores information used by a website or application.</p>
-                </article>
-                <article class="manual-server-card">
-                    <h3>Storage server</h3>
-                    <p>Provides space for files and other cloud data.</p>
-                </article>
-                <article class="manual-server-card">
-                    <h3>Backup server <span>Needed for Run Backup</span></h3>
-                    <p>Stores recovery copies. Install one before using the backup button.</p>
-                </article>
-                <article class="manual-server-card">
-                    <h3>Authentication server</h3>
-                    <p>Handles user sign-in and access permissions.</p>
-                </article>
+                <article class="manual-server-card"><h3>Web server <span>Required to deploy</span></h3><p>Hosts the website that people visit. Start with this one.</p></article>
+                <article class="manual-server-card"><h3>Database server</h3><p>Stores information used by a website or application.</p></article>
+                <article class="manual-server-card"><h3>Storage server</h3><p>Provides capacity for files and other cloud data.</p></article>
+                <article class="manual-server-card"><h3>Backup server <span>Needed for Run Backup</span></h3><p>Keeps recovery copies so data can be restored after a failure.</p></article>
+                <article class="manual-server-card"><h3>Authentication server</h3><p>Handles user sign-in and access permissions.</p></article>
+                <article class="manual-server-card"><h3>GPU accelerator</h3><p>Adds parallel compute for AI and graphics workloads. It fits GPU-ready racks.</p></article>
+                <article class="manual-server-card"><h3>Switch, router &amp; load balancer</h3><p>Connects equipment, routes traffic, and shares requests across servers.</p></article>
             </div>
+        </section>
+
+        <section class="manual-section" aria-labelledby="camera-title">
+            <div class="manual-section-heading"><p class="section-code">INTERACTIVE SCENE / CAMERA → CLOUD</p><h2 id="camera-title">Store a camera photo in the cloud</h2></div>
+            <ol class="manual-steps">
+                <li class="manual-step"><span class="manual-step-number">01</span><div><h3>Take a picture</h3><p>Open the Camera page and use the arrows to choose a view. Select <strong>Take picture</strong> to add that image to your photo gallery.</p></div></li>
+                <li class="manual-step"><span class="manual-step-number">02</span><div><h3>Select the original</h3><p>Click a captured photo in Your Photo Gallery. The selected original stays there throughout the simulation.</p></div></li>
+                <li class="manual-step"><span class="manual-step-number">03</span><div><h3>Store a cloud copy</h3><p>Press <strong>Store selected photo to cloud</strong>. The JavaScript animation follows a copy from your camera through the network and into a server in the rack.</p></div></li>
+                <li class="manual-step"><span class="manual-step-number">04</span><div><h3>Watch it reach the drive</h3><p>The copy arrives on the hard drive, the simulated drive meter updates, and the saved copy appears below the animation. Your original photo remains in the gallery.</p></div></li>
+            </ol>
+            <p class="manual-tip">This is a local educational simulation: photos are generated in your browser and are not uploaded to a real cloud service.</p>
         </section>
 
         <section class="manual-columns">
             <article class="manual-info-card">
-                <p class="section-code">ROOM CONTROLS</p>
-                <h2>What do these switches do?</h2>
+                <p class="section-code">ROOM CONTROLS</p><h2>What do these switches do?</h2>
                 <dl class="manual-definitions">
-                    <div><dt>Cooling</dt><dd>Adds cooling units to the room and helps manage heat as you add servers.</dd></div>
+                    <div><dt>Cooling</dt><dd>Shows cooling units in the room and helps manage heat as you add servers.</dd></div>
                     <div><dt>UPS</dt><dd>Shows backup power equipment in your data center.</dd></div>
                     <div><dt>Firewall</dt><dd>Blocks the simulated attack. Without it, an attack can take your deployed site offline.</dd></div>
                 </dl>
-                <p class="manual-tip">A rack holds up to 9 servers. Add another rack when the current ones are full.</p>
+                <p class="manual-tip">Standard racks hold up to 9 parts; High-density racks hold 12. GPU parts need a GPU-ready rack.</p>
             </article>
-
             <article class="manual-info-card">
-                <p class="section-code">LIVE DASHBOARD</p>
-                <h2>Read your system metrics</h2>
+                <p class="section-code">LIVE DASHBOARD</p><h2>Read your system metrics</h2>
                 <dl class="manual-definitions">
-                    <div><dt>CPU</dt><dd>How much processing capacity your servers are using.</dd></div>
-                    <div><dt>Memory</dt><dd>The memory capacity used by installed servers.</dd></div>
-                    <div><dt>Storage</dt><dd>The total storage provided by your servers.</dd></div>
+                    <div><dt>CPU</dt><dd>Processing capacity contributed by installed equipment.</dd></div>
+                    <div><dt>Memory</dt><dd>Memory capacity provided by your installed parts.</dd></div>
+                    <div><dt>Storage</dt><dd>Total storage provided by storage-capable servers.</dd></div>
                     <div><dt>Customers</dt><dd>Estimated users served after your website is deployed.</dd></div>
                 </dl>
             </article>
         </section>
 
         <section class="about-cta" aria-label="Continue learning">
-            <p>Ready to build? Start with one rack, one Web server, and one more server.</p>
-            <div class="about-cta-actions">
-                <a href="./simulator.html">Open simulator</a>
-                <a class="about-cta-secondary" href="./journey.html">Explore cloud journey</a>
-            </div>
+            <p>Ready to try the camera upload or assemble your cloud?</p>
+            <div class="about-cta-actions"><a href="./camera.html">Open camera scene</a><a class="about-cta-secondary" href="./simulator.html">Open simulator</a><a class="about-cta-secondary" href="./journey.html">Explore cloud journey</a></div>
         </section>
     </main>
 </body>
