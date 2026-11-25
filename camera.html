@@ -30,85 +30,92 @@
         <section class="about-hero camera-hero" aria-labelledby="cameraTitle">
             <p class="section-code">INTERACTIVE SCENE / CAMERA → CLOUD STORAGE</p>
             <h2 id="cameraTitle">Take a picture. Follow its journey.</h2>
-            <p>Capture a scene, keep the original in your photo gallery, then store a copy in the cloud. Watch the copy pass through the network, enter a server in the rack, and land on a hard drive.</p>
+            <p>Choose a camera view, capture a photo, and store a copy in the cloud. The original stays in your gallery while the animation shows the copy travelling through the network, into a server rack, and onto a hard drive.</p>
         </section>
 
         <section class="camera-workbench" aria-label="Camera and cloud storage simulation">
             <article class="panel camera-panel">
                 <div class="panel-heading">
-                    <div><p class="section-code">01 / CAPTURE</p><h2>Camera viewfinder</h2></div>
-                    <span class="count-badge" id="sceneLabel">SCENE 01</span>
+                    <div><p class="section-code">01 / CAMERA</p><h2>Choose a view and take a photo</h2></div>
+                    <span class="count-badge" id="sceneLabel">VIEW 1 OF 3</span>
                 </div>
                 <div class="viewfinder" id="viewfinder">
-                    <img id="viewfinderImage" alt="Simulated camera preview of a mountain lake at sunrise">
+                    <img id="viewfinderImage" alt="Camera preview: mountain lake at sunrise">
                     <span class="viewfinder-mark mark-top-left" aria-hidden="true"></span>
                     <span class="viewfinder-mark mark-top-right" aria-hidden="true"></span>
                     <span class="viewfinder-mark mark-bottom-left" aria-hidden="true"></span>
                     <span class="viewfinder-mark mark-bottom-right" aria-hidden="true"></span>
-                    <span class="viewfinder-label">SIMUNET CAM <span id="cameraMode">LIVE PREVIEW</span></span>
+                    <span class="viewfinder-label"><span>SIMUNET CAM</span><span id="cameraMode">LIVE PREVIEW</span></span>
                 </div>
+                <p class="camera-hint">Use <strong>Previous view</strong> and <strong>Next view</strong> to aim the camera at a different scene. Then press <strong>Take picture</strong>.</p>
                 <div class="camera-controls">
-                    <button id="previousScene" class="secondary-button" type="button" aria-label="Previous camera scene">←</button>
-                    <button id="capturePhoto" class="primary-button capture-button" type="button"><span aria-hidden="true">●</span> Take picture</button>
-                    <button id="nextScene" class="secondary-button" type="button" aria-label="Next camera scene">→</button>
+                    <button id="previousScene" class="secondary-button scene-control" type="button" aria-label="Show previous camera view">← <span>Previous view</span></button>
+                    <button id="capturePhoto" class="primary-button capture-button" type="button"><span class="shutter-icon" aria-hidden="true">●</span><span>Take picture</span></button>
+                    <button id="nextScene" class="secondary-button scene-control" type="button" aria-label="Show next camera view"><span>Next view</span> →</button>
                 </div>
-                <p id="cameraFeedback" class="camera-feedback" role="status" aria-live="polite">Choose a view and take your first picture.</p>
+                <p id="cameraFeedback" class="camera-feedback" role="status" aria-live="polite">Camera is ready. View 1 of 3: mountain lake at sunrise.</p>
             </article>
 
             <article class="panel gallery-panel">
                 <div class="panel-heading">
-                    <div><p class="section-code">02 / SELECT</p><h2>Your photo gallery</h2></div>
+                    <div><p class="section-code">02 / SELECT A PHOTO</p><h2>Your photo gallery</h2></div>
                     <span id="photoCount" class="count-badge">0 PHOTOS</span>
                 </div>
-                <p class="panel-copy">Your original photo stays here. Select one to send a separate copy to cloud storage.</p>
+                <p class="panel-copy">Your captured originals live here. Select one to send a separate copy to simulated cloud storage.</p>
                 <div id="photoGallery" class="photo-gallery" aria-label="Captured photos">
-                    <p class="gallery-empty">No photos yet. Take a picture with the camera first.</p>
+                    <p class="gallery-empty">No photos yet. Choose a camera view and take a picture.</p>
                 </div>
                 <button id="storePhoto" class="primary-button store-button" type="button" disabled>☁ Store selected photo to cloud</button>
-                <p id="storeFeedback" class="camera-feedback" role="status" aria-live="polite">The original will remain in your gallery after storing.</p>
+                <p id="storeFeedback" class="camera-feedback" role="status" aria-live="polite">The original stays in your gallery after a cloud copy is stored.</p>
             </article>
         </section>
 
         <section class="panel transfer-panel" aria-labelledby="transferTitle">
             <div class="panel-heading">
-                <div><p class="section-code">03 / FOLLOW THE DATA</p><h2 id="transferTitle">From your camera to a hard drive</h2></div>
+                <div><p class="section-code">03 / FOLLOW THE DATA</p><h2 id="transferTitle">Camera → network → server rack → hard drive</h2></div>
                 <span id="transferStatus" class="count-badge">READY</span>
             </div>
-            <p class="panel-copy">When you store a photo, this local animation illustrates a simplified upload path. It does not send your photo to an actual cloud service.</p>
+            <p class="panel-copy">Press the cloud-store button to animate a copy along this path. This is a local learning simulation; no photo is uploaded to a real service.</p>
             <div class="transfer-scene" id="transferScene">
                 <div class="transfer-node device-node" id="deviceNode">
-                    <div class="mini-photo-frame"><img id="sourcePhoto" alt="Selected original photo"></div>
-                    <strong>Your camera</strong><small>Original stays in gallery</small>
+                    <div class="mini-photo-frame"><img id="sourcePhoto" alt="Selected original photo preview"></div>
+                    <strong>Your camera</strong><small>Original photo stays here</small>
                 </div>
                 <div class="transfer-link" aria-hidden="true"><span></span></div>
                 <div class="transfer-node network-node" id="networkNode">
                     <div class="network-icon" aria-hidden="true">⇄</div>
-                    <strong>Network</strong><small>Photo copy travels</small>
+                    <strong>Network</strong><small>Copy travels as data</small>
                 </div>
                 <div class="transfer-link" aria-hidden="true"><span></span></div>
                 <div class="transfer-node rack-node" id="rackNode">
-                    <div class="mini-rack" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-                    <strong>Cloud server rack</strong><small>Server receives data</small>
+                    <div class="mini-rack" aria-label="Illustration of a server rack">
+                        <span class="mini-rack-title">CLOUD RACK A-01</span>
+                        <span class="mini-server"><i></i><b>WEB SERVER</b><em></em></span>
+                        <span class="mini-server"><i></i><b>STORAGE SERVER</b><em></em></span>
+                        <span class="mini-server"><i></i><b>BACKUP SERVER</b><em></em></span>
+                        <span class="mini-rack-base">DATA CENTER</span>
+                    </div>
+                    <strong>Cloud server rack</strong><small>Server receives the copy</small>
                 </div>
                 <div class="transfer-link" aria-hidden="true"><span></span></div>
                 <div class="transfer-node drive-node" id="driveNode">
-                    <div class="hard-drive" aria-hidden="true"><span class="drive-platter"></span><span class="drive-led"></span></div>
-                    <strong>Hard drive</strong><small id="driveStatus">No photo stored</small>
+                    <div class="hard-drive" aria-hidden="true"><span class="drive-platter"></span><span class="drive-arm"></span><span class="drive-led"></span></div>
+                    <strong>Hard drive</strong><small id="driveStatus">No photo stored yet</small>
                 </div>
                 <img id="travelingPhoto" class="traveling-photo" alt="" aria-hidden="true" hidden>
             </div>
             <div class="drive-capacity" aria-label="Simulated cloud drive capacity">
-                <div class="capacity-label"><span>SIMULATED DRIVE</span><strong id="driveCapacityLabel">0 photos stored</strong></div>
+                <div class="capacity-label"><span>SIMULATED CLOUD DRIVE</span><strong id="driveCapacityLabel">0 photos stored</strong></div>
                 <div class="capacity-track"><span id="driveCapacityBar"></span></div>
             </div>
             <div id="cloudGallery" class="cloud-gallery" aria-label="Photos stored in simulated cloud"></div>
         </section>
 
         <section class="camera-learning" aria-label="What this simulation teaches">
-            <article><span>01</span><h3>Upload</h3><p>Your device sends a copy of the selected photo.</p></article>
-            <article><span>02</span><h3>Network</h3><p>Data travels across a network to a data center.</p></article>
-            <article><span>03</span><h3>Server</h3><p>A cloud server processes and routes the storage request.</p></article>
-            <article><span>04</span><h3>Storage</h3><p>The data is saved on storage hardware for later access.</p></article>
+            <article><span>01</span><h3>Capture</h3><p>The camera creates a digital photo on your device.</p></article>
+            <article><span>02</span><h3>Network</h3><p>Your device sends a copy through a network.</p></article>
+            <article><span>03</span><h3>Server</h3><p>A data-center server receives the storage request.</p></article>
+            <article><span>04</span><h3>Storage</h3><p>A drive stores the copy so it can be accessed later.</p></article>
         </section>
 
         <section class="about-cta" aria-label="Continue exploring">
