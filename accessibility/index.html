@@ -12,32 +12,30 @@
     <meta property="og:description" content="Adjust SimuNet's color theme, text size, motion, and link appearance to make the site more comfortable to use.">
     <title>Accessibility Settings - Cloud Computing Simulator</title>
     <script src="/Simunet/js/accessibility.js"></script>
+    <script src="/Simunet/js/site.js" defer></script>
     <link rel="stylesheet" href="/Simunet/style.css">
 </head>
 
 <body>
-    <header class="topbar">
-        <div>
-            <p class="eyebrow">SIMUNET // REGION 01</p>
-            <h1>Cloud Computing Simulator</h1>
-        </div>
-        <div class="topbar-actions">
-            <nav class="site-nav" aria-label="Primary navigation">
-                <a href="/Simunet/">Home</a>
-                <a href="/Simunet/simulator/">Simulator</a>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="brand" href="/Simunet/"><img src="/Simunet/favicon.svg" alt="" width="30" height="30"><span class="brand-text"><strong>SimuNet</strong><small>Cloud Computing Simulator</small></span></a>
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="siteNav"><span class="nav-toggle-bars" aria-hidden="true"></span>Menu</button>
+            <nav id="siteNav" class="primary-nav" aria-label="Primary navigation">
                 <a href="/Simunet/journey/">Journey</a>
-                <a href="/Simunet/camera/">Camera</a>
+                <a href="/Simunet/camera/">Camera Lab</a>
                 <a href="/Simunet/manual/">Manual</a>
-                <a class="active" href="/Simunet/accessibility/" aria-current="page">Accessibility</a>
-                <a href="/Simunet/about/">About</a>
+                <a class="nav-icon" href="/Simunet/accessibility/" aria-current="page" title="Accessibility settings"><span aria-hidden="true">Aa</span><span class="nav-icon-label">Accessibility</span></a>
+                <a class="nav-cta" href="/Simunet/simulator/">Open Simulator</a>
             </nav>
         </div>
     </header>
 
-    <main class="manual-shell accessibility-shell">
+    <main id="main" class="manual-shell accessibility-shell">
         <section class="about-hero" aria-labelledby="accessibility-title">
             <p class="section-code">PERSONALIZE / DISPLAY &amp; COMFORT</p>
-            <h2 id="accessibility-title">Personalise SimuNet according to your needs.</h2>
+            <h1 id="accessibility-title">Personalise SimuNet according to your needs.</h1>
             <p>Choose the settings that suit you, then save to apply them across SimuNet. Saved preferences are kept in this browser.</p>
         </section>
 
@@ -102,5 +100,20 @@
             </div>
         </section>
     </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <div class="footer-brand">
+                <a class="brand" href="/Simunet/"><img src="/Simunet/favicon.svg" alt="" width="26" height="26"><span class="brand-text"><strong>SimuNet</strong></span></a>
+                <p>Learn how the cloud works by building a data center, keeping it running, and following your data across the network.</p>
+            </div>
+            <nav class="footer-links" aria-label="Footer">
+                <div><h2>Learn</h2><a href="/Simunet/journey/">Cloud Journey</a><a href="/Simunet/camera/">Camera Lab</a><a href="/Simunet/manual/">Manual</a></div>
+                <div><h2>Build</h2><a href="/Simunet/simulator/">Simulator</a><a href="/Simunet/manual/#operations">Incidents guide</a></div>
+                <div><h2>SimuNet</h2><a href="/Simunet/about/">About</a><a href="/Simunet/accessibility/">Accessibility</a><a href="https://github.com/Da-Cool-Devs/Simunet">GitHub</a></div>
+            </nav>
+            <p class="footer-note">An educational simulation: nothing here connects to a real cloud service. Made by Da Cool Devs and released into the public domain.</p>
+        </div>
+    </footer>
 </body>
 </html>

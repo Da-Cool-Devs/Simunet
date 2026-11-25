@@ -12,46 +12,55 @@
     <meta property="og:description" content="A simple guide to assembling a server rack, deploying a website, and following a photo into cloud storage in SimuNet.">
     <title>Manual - Cloud Computing Simulator</title>
     <script src="/Simunet/js/accessibility.js"></script>
+    <script src="/Simunet/js/site.js" defer></script>
     <link rel="stylesheet" href="/Simunet/style.css">
 </head>
 <body>
-    <header class="topbar">
-        <div>
-            <p class="eyebrow">SIMUNET // REGION 01</p>
-            <h1>Cloud Computing Simulator</h1>
-        </div>
-        <div class="topbar-actions">
-            <nav class="site-nav" aria-label="Primary navigation">
-                <a href="/Simunet/">Home</a>
-                <a href="/Simunet/simulator/">Simulator</a>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a class="brand" href="/Simunet/"><img src="/Simunet/favicon.svg" alt="" width="30" height="30"><span class="brand-text"><strong>SimuNet</strong><small>Cloud Computing Simulator</small></span></a>
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="siteNav"><span class="nav-toggle-bars" aria-hidden="true"></span>Menu</button>
+            <nav id="siteNav" class="primary-nav" aria-label="Primary navigation">
                 <a href="/Simunet/journey/">Journey</a>
-                <a href="/Simunet/camera/">Camera</a>
-                <a class="active" href="/Simunet/manual/" aria-current="page">Manual</a>
-                <a href="/Simunet/accessibility/">Accessibility</a>
-                <a href="/Simunet/about/">About</a>
+                <a href="/Simunet/camera/">Camera Lab</a>
+                <a href="/Simunet/manual/" aria-current="page">Manual</a>
+                <a class="nav-icon" href="/Simunet/accessibility/" title="Accessibility settings"><span aria-hidden="true">Aa</span><span class="nav-icon-label">Accessibility</span></a>
+                <a class="nav-cta" href="/Simunet/simulator/">Open Simulator</a>
             </nav>
         </div>
     </header>
 
-    <main class="manual-shell">
+    <main id="main" class="manual-shell">
         <section class="about-hero" aria-labelledby="manual-title">
             <p class="section-code">BEGINNER GUIDE / START HERE</p>
-            <h2 id="manual-title">Build your first cloud, one step at a time.</h2>
-            <p>Choose an open rack, add equipment, launch a website, and try the camera scene to watch a photo copy travel into storage.</p>
+            <h1 id="manual-title">Build your first cloud, one step at a time.</h1>
+            <p>Choose an open rack, add equipment, launch a website, keep it running through incidents, and try the camera scene to watch a photo copy travel into storage.</p>
         </section>
 
-        <section class="manual-section" aria-labelledby="build-title">
-            <div class="manual-section-heading"><p class="section-code">QUICK BUILD</p><h2>Set up your system</h2></div>
+        <nav class="manual-section" aria-label="On this page">
+            <ul class="manual-toc">
+                <li><a href="#build">Quick build</a></li>
+                <li><a href="#hardware">Hardware guide</a></li>
+                <li><a href="#dashboard">Controls &amp; metrics</a></li>
+                <li><a href="#operations">Incidents</a></li>
+                <li><a href="#camera">Camera lab</a></li>
+            </ul>
+        </nav>
+
+        <section class="manual-section" id="build" aria-labelledby="build-title">
+            <div class="manual-section-heading"><p class="section-code">QUICK BUILD</p><h2 id="build-title">Set up your system</h2></div>
             <ol class="manual-steps">
                 <li class="manual-step"><span class="manual-step-number">01</span><div><h3>Choose and build a rack</h3><p>Open the Simulator, choose a Standard, GPU-ready, or High-density frame, then select <strong>Build Open Rack</strong>. Each empty bay can hold one part.</p></div></li>
                 <li class="manual-step"><span class="manual-step-number">02</span><div><h3>Add parts to open spaces</h3><p>Drag equipment from the list into an open bay. On a phone or tablet, select the equipment first, then tap a bay. Use × to remove a part.</p></div></li>
-                <li class="manual-step"><span class="manual-step-number">03</span><div><h3>Prepare the data center</h3><p>Turn on <strong>Cooling</strong> to manage heat, <strong>UPS</strong> to provide backup power, and <strong>Firewall</strong> to stop the practice attack. Graphics processors need a GPU-ready rack.</p></div></li>
+                <li class="manual-step"><span class="manual-step-number">03</span><div><h3>Prepare the data center</h3><p>Turn on <strong>Cooling</strong> to manage heat, <strong>UPS</strong> to provide backup power, and <strong>Firewall</strong> to block attacks. Graphics processors need a GPU-ready rack.</p></div></li>
                 <li class="manual-step"><span class="manual-step-number">04</span><div><h3>Put a website online</h3><p>Install a Web server and at least one other server, then select <strong>Deploy Website</strong>. A Backup server is required to run the backup action.</p></div></li>
+                <li class="manual-step"><span class="manual-step-number">05</span><div><h3>Keep it running</h3><p>Once live, customers arrive and random incidents begin. Watch <strong>Live Operations</strong> and the log, fix weak spots, and work through the <strong>Operator Missions</strong>.</p></div></li>
             </ol>
         </section>
 
-        <section class="manual-section" aria-labelledby="servers-title">
-            <div class="manual-section-heading"><p class="section-code">HARDWARE GUIDE</p><h2>What can I install?</h2></div>
+        <section class="manual-section" id="hardware" aria-labelledby="servers-title">
+            <div class="manual-section-heading"><p class="section-code">HARDWARE GUIDE</p><h2 id="servers-title">What can I install?</h2></div>
             <div class="manual-server-grid">
                 <article class="manual-server-card"><h3>Web server <span>Required to deploy</span></h3><p>Hosts the website that people visit. Start with this one.</p></article>
                 <article class="manual-server-card"><h3>Database server</h3><p>Stores information used by a website or application.</p></article>
@@ -63,7 +72,48 @@
             </div>
         </section>
 
-        <section class="manual-section" aria-labelledby="camera-title">
+        <section class="manual-columns" id="dashboard" aria-label="Controls and dashboard">
+            <article class="manual-info-card">
+                <p class="section-code">ROOM CONTROLS</p><h2>What do these switches do?</h2>
+                <dl class="manual-definitions">
+                    <div><dt>Cooling</dt><dd>Removes server heat. Without it, temperature climbs as you add hardware, and above 42°C servers start failing. Uses about 30% extra power.</dd></div>
+                    <div><dt>UPS</dt><dd>Battery backup power. Keeps every server running through a power outage.</dd></div>
+                    <div><dt>Firewall</dt><dd>Filters malicious traffic. Stops traffic floods (DDoS) and blocks password attackers.</dd></div>
+                </dl>
+                <p class="manual-tip">Standard racks hold up to 9 parts; High-density racks hold 12. GPU parts need a GPU-ready rack.</p>
+            </article>
+            <article class="manual-info-card">
+                <p class="section-code">LIVE DASHBOARD</p><h2>Read your system metrics</h2>
+                <dl class="manual-definitions">
+                    <div><dt>CPU</dt><dd>How hard your servers are working. Once live, it rises as customers approach your capacity.</dd></div>
+                    <div><dt>Memory</dt><dd>Memory capacity provided by your installed parts.</dd></div>
+                    <div><dt>Storage</dt><dd>Total storage provided by storage-capable servers.</dd></div>
+                    <div><dt>Customers</dt><dd>People using your site. Grows over time; capacity comes from Web servers, boosted by Databases and Load balancers.</dd></div>
+                    <div><dt>Temperature</dt><dd>Safe below 35°C. Turn on Cooling to bring it down.</dd></div>
+                    <div><dt>Power draw</dt><dd>Total kW used, including cooling. Each rack after three adds 10% overhead.</dd></div>
+                    <div><dt>Health</dt><dd>Drops with incidents, overheating, and overload. At 0% the service crashes.</dd></div>
+                </dl>
+            </article>
+        </section>
+
+        <section class="manual-section" id="operations" aria-labelledby="ops-title">
+            <div class="manual-section-heading"><p class="section-code">LIVE OPERATIONS / INCIDENTS</p><h2 id="ops-title">What can go wrong, and how to prevent it</h2></div>
+            <div class="table-scroll">
+                <table class="incident-table">
+                    <thead><tr><th scope="col">Incident</th><th scope="col">What happens</th><th scope="col">Your defense</th></tr></thead>
+                    <tbody>
+                        <tr><td>Power outage</td><td>The grid goes down and every server loses power.</td><td>Enable <strong>UPS</strong>.</td></tr>
+                        <tr><td>Traffic flood (DDoS)</td><td>Attackers send huge amounts of junk traffic to overwhelm the site.</td><td>Enable the <strong>Firewall</strong>; add a <strong>Load balancer</strong> for full protection.</td></tr>
+                        <tr><td>Password attack</td><td>Attackers try to guess customer passwords.</td><td>Install an <strong>Auth server</strong>; the Firewall also blocks the attacker.</td></tr>
+                        <tr><td>Disk failure</td><td>A drive breaks and its data is gone.</td><td>Install a <strong>Backup server</strong> and run backups regularly. Backups go out of date after about a minute.</td></tr>
+                        <tr><td>Viral traffic spike</td><td>Thousands of new visitors arrive at once.</td><td>Add <strong>Web servers</strong>, a <strong>Database</strong>, or a <strong>Load balancer</strong> to raise capacity.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="manual-tip">Use <strong>Run drill</strong> in the Live Operations panel to trigger any incident on purpose and test your setup.</p>
+        </section>
+
+        <section class="manual-section" id="camera" aria-labelledby="camera-title">
             <div class="manual-section-heading"><p class="section-code">INTERACTIVE SCENE / CAMERA TO CLOUD</p><h2 id="camera-title">Store a camera photo in the cloud</h2></div>
             <ol class="manual-steps">
                 <li class="manual-step"><span class="manual-step-number">01</span><div><h3>Take a picture</h3><p>Open the Camera page and use the arrows to choose a view. Select <strong>Take picture</strong> to add that image to your photo gallery.</p></div></li>
@@ -74,31 +124,25 @@
             <p class="manual-tip">This is a local educational simulation: photos are generated in your browser and are not uploaded to a real cloud service.</p>
         </section>
 
-        <section class="manual-columns">
-            <article class="manual-info-card">
-                <p class="section-code">ROOM CONTROLS</p><h2>What do these switches do?</h2>
-                <dl class="manual-definitions">
-                    <div><dt>Cooling</dt><dd>Shows cooling units in the room and helps manage heat as you add servers.</dd></div>
-                    <div><dt>UPS</dt><dd>Shows backup power equipment in your data center.</dd></div>
-                    <div><dt>Firewall</dt><dd>Blocks the simulated attack. Without it, an attack can take your deployed site offline.</dd></div>
-                </dl>
-                <p class="manual-tip">Standard racks hold up to 9 parts; High-density racks hold 12. GPU parts need a GPU-ready rack.</p>
-            </article>
-            <article class="manual-info-card">
-                <p class="section-code">LIVE DASHBOARD</p><h2>Read your system metrics</h2>
-                <dl class="manual-definitions">
-                    <div><dt>CPU</dt><dd>Processing capacity contributed by installed equipment.</dd></div>
-                    <div><dt>Memory</dt><dd>Memory capacity provided by your installed parts.</dd></div>
-                    <div><dt>Storage</dt><dd>Total storage provided by storage-capable servers.</dd></div>
-                    <div><dt>Customers</dt><dd>Estimated users served after your website is deployed.</dd></div>
-                </dl>
-            </article>
-        </section>
-
         <section class="about-cta" aria-label="Continue learning">
             <p>Ready to try the camera upload or assemble your cloud?</p>
             <div class="about-cta-actions"><a href="/Simunet/camera/">Open camera scene</a><a class="about-cta-secondary" href="/Simunet/simulator/">Open simulator</a><a class="about-cta-secondary" href="/Simunet/journey/">Explore cloud journey</a></div>
         </section>
     </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-inner">
+            <div class="footer-brand">
+                <a class="brand" href="/Simunet/"><img src="/Simunet/favicon.svg" alt="" width="26" height="26"><span class="brand-text"><strong>SimuNet</strong></span></a>
+                <p>Learn how the cloud works by building a data center, keeping it running, and following your data across the network.</p>
+            </div>
+            <nav class="footer-links" aria-label="Footer">
+                <div><h2>Learn</h2><a href="/Simunet/journey/">Cloud Journey</a><a href="/Simunet/camera/">Camera Lab</a><a href="/Simunet/manual/">Manual</a></div>
+                <div><h2>Build</h2><a href="/Simunet/simulator/">Simulator</a><a href="/Simunet/manual/#operations">Incidents guide</a></div>
+                <div><h2>SimuNet</h2><a href="/Simunet/about/">About</a><a href="/Simunet/accessibility/">Accessibility</a><a href="https://github.com/Da-Cool-Devs/Simunet">GitHub</a></div>
+            </nav>
+            <p class="footer-note">An educational simulation: nothing here connects to a real cloud service. Made by Da Cool Devs and released into the public domain.</p>
+        </div>
+    </footer>
 </body>
 </html>
