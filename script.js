@@ -1,152 +1,114 @@
-const state = {
-    racks: 0,
-    servers: [],
-    cooling: false,
-    ups: false,
-    firewall: false,
-    deployed: false,
-    backupComplete: false
+const state = { racks: 0, cooling: false, ups: false, deployed: false };
+const profiles = {
+    web: { label: "Web server", cpu: 12, memory: 8, storage: 2, kind: "server" },
+    database: { label: "Database server", cpu: 18, memory: 16, storage: 8, kind: "server" },
+    storage: { label: "Storage server", cpu: 8, memory: 8, storage: 20, kind: "server" },
+    backup: { label: "Backup server", cpu: 6, memory: 4, storage: 25, kind: "server" },
+    auth: { label: "Authentication server", cpu: 10, memory: 8, storage: 3, kind: "server" },
+    gpu: { label: "GPU accelerator", cpu: 0, memory: 16, storage: 0, kind: "accelerator" },
+    switch: { label: "Network switch", cpu: 0, memory: 0, storage: 0, kind: "network" },
+    router: { label: "Router", cpu: 0, memory: 0, storage: 0, kind: "network" },
+    loadbalancer: { label: "Load balancer", cpu: 2, memory: 2, storage: 0, kind: "network" }
 };
-
-const serverProfiles = {
-    web: { label: "Web", description: "Hosts your website. Required to deploy.", cpu: 12, memory: 8, storage: 2, kind: "server" },
-    database: { label: "Database", description: "Stores information used by your website.", cpu: 18, memory: 16, storage: 8, kind: "server" },
-    storage: { label: "Storage", description: "Holds files and other cloud data.", cpu: 8, memory: 8, storage: 20, kind: "server" },
-    backup: { label: "Backup", description: "Keeps recovery copies. Required to run a backup.", cpu: 6, memory: 4, storage: 25, kind: "server" },
-    auth: { label: "Sign-in server", description: "Checks usernames and permissions.", cpu: 10, memory: 8, storage: 3, kind: "server" },
-    gpu: { label: "Graphics processor", description: "Handles many calculations for AI and graphics.", cpu: 0, memory: 16, storage: 0, kind: "accelerator" },
-    switch: { label: "Network switch", description: "Connects devices inside the data-center network.", cpu: 0, memory: 0, storage: 0, kind: "network" },
-    router: { label: "Router", description: "Routes traffic between networks.", cpu: 0, memory: 0, storage: 0, kind: "network" },
-    loadbalancer: { label: "Traffic balancer", description: "Shares incoming requests across servers.", cpu: 2, memory: 2, storage: 0, kind: "network" }
-};
-const partStock = { web: 6, database: 4, storage: 4, backup: 3, auth: 3, gpu: 4, switch: 3, router: 2, loadbalancer: 2 };
-const partCosts = { web: 800, database: 1200, storage: 1000, backup: 900, auth: 850, gpu: 1500, switch: 500, router: 700, loadbalancer: 950 };
-const rackProfiles = {
-    standard: { label: "Standard", slots: 9, cost: 1200 },
-    gpu: { label: "GPU-ready", slots: 9, cost: 1900 },
-    dense: { label: "High-density", slots: 12, cost: 1700 }
-};
-const placedParts = { web: 0, database: 0, storage: 0, backup: 0, auth: 0, gpu: 0, switch: 0, router: 0, loadbalancer: 0 };
+const stock = { web: 6, database: 4, storage: 4, backup: 3, auth: 3, gpu: 4, switch: 3, router: 2, loadbalancer: 2 };
+const racks = { standard: { label: "Standard", slots: 9 }, gpu: { label: "GPU-ready", slots: 9 }, dense: { label: "High-density", slots: 12 } };
+const $ = id => document.getElementById(id);
+const rackArea = $("rackArea");
+const inventory = $("partInventory");
+const buildMessage = $("buildMessage");
 let selectedPart = null;
 
-const elements = {
-    rackArea: document.getElementById("rackArea"), rackCount: document.getElementById("rackCount"),
-    rackType: document.getElementById("rackType"), rackTypeHelp: document.getElementById("rackTypeHelp"),
-    partInventory: document.getElementById("partInventory"), buildMessage: document.getElementById("buildMessage"),
-    cooling: document.getElementById("coolingToggle"), ups: document.getElementById("upsToggle"), firewall: document.getElementById("firewallToggle"),
-    cpuValue: document.getElementById("cpuValue"), memoryValue: document.getElementById("memoryValue"), storageValue: document.getElementById("storageValue"), customersValue: document.getElementById("customersValue"),
-    cpuMeter: document.getElementById("cpuMeter"), memoryMeter: document.getElementById("memoryMeter"), storageMeter: document.getElementById("storageMeter"), customersMeter: document.getElementById("customersMeter"),
-    systemStatus: document.getElementById("systemStatus"), serviceStatus: document.getElementById("serviceStatus"), deployMessage: document.getElementById("deployMessage"),
-    attackStatus: document.getElementById("attackStatus"), threatLevel: document.getElementById("threatLevel"), eventLog: document.getElementById("eventLog")
-};
-
-function timeStamp() { return new Date().toLocaleTimeString("en-US", { hour12: false }); }
-function addLog(message) {
-    const entry = document.createElement("p");
+function log(message) {
+    const logArea = $("eventLog");
+    if (!logArea) return;
+    const line = document.createElement("p");
     const time = document.createElement("span");
-    time.textContent = timeStamp();
-    entry.append(time, document.createTextNode(` ${message}`));
-    elements.eventLog.appendChild(entry);
-    elements.eventLog.scrollTop = elements.eventLog.scrollHeight;
+    time.textContent = new Date().toLocaleTimeString("en-US", { hour12: false });
+    line.append(time, document.createTextNode(` ${message}`));
+    logArea.append(line);
+    logArea.scrollTop = logArea.scrollHeight;
 }
-function notifyRoom() { window.dispatchEvent(new CustomEvent("simunet:hardware-change")); }
-function serverParts() { return [...elements.rackArea.querySelectorAll(".server")].filter(part => serverProfiles[part.dataset.part]?.kind === "server"); }
-function updateInventory() {
-    Object.keys(partStock).forEach(type => {
-        const count = document.querySelector(`[data-count="${type}"]`);
-        if (count) count.textContent = `× ${partStock[type]}`;
-        const card = document.querySelector(`[data-part="${type}"]`);
-        if (card) card.disabled = partStock[type] <= 0;
+function refreshInventory() {
+    Object.entries(stock).forEach(([type, count]) => {
+        const countLabel = document.querySelector(`[data-count="${type}"]`);
+        const card = document.querySelector(`.part-card[data-part="${type}"]`);
+        if (countLabel) countLabel.textContent = `× ${count}`;
+        if (card) card.disabled = count < 1;
     });
 }
 function selectPart(type) {
-    if (!serverProfiles[type] || partStock[type] < 1) return;
+    if (!profiles[type] || stock[type] < 1) return;
     selectedPart = type;
     document.querySelectorAll(".part-card").forEach(card => card.setAttribute("aria-pressed", String(card.dataset.part === type)));
-    elements.buildMessage.textContent = `${serverProfiles[type].label} selected. Choose an open rack bay to install it.`;
+    buildMessage.textContent = `${profiles[type].label} selected. Click or tap an empty bay to install it, or drag it into a bay.`;
 }
-function renderRack(profileKey) {
-    const profile = rackProfiles[profileKey] || rackProfiles.standard;
-    const rackIndex = elements.rackArea.querySelectorAll(":scope > .rack").length + 1;
+function notifyRoom() { window.dispatchEvent(new CustomEvent("simunet:hardware-change")); }
+function drawRack() {
+    const selected = $("rackType").value;
+    const profile = racks[selected] || racks.standard;
+    if (rackArea.querySelector(".empty-rack-state")) rackArea.replaceChildren();
+    const index = rackArea.querySelectorAll(":scope > .rack").length + 1;
     const rack = document.createElement("div");
-    rack.className = `rack rack-${profileKey}`;
-    rack.dataset.rackType = profileKey;
-    rack.dataset.rackIndex = String(rackIndex);
-    const header = document.createElement("div");
-    header.className = "rack-label";
-    const title = document.createElement("strong");
-    title.textContent = `RACK ${String(rackIndex).padStart(2, "0")}`;
-    const subtitle = document.createElement("span");
-    subtitle.textContent = `${profile.label} · ${profile.slots} bays`;
-    header.append(title, subtitle);
-    rack.append(header);
+    rack.className = `rack rack-${selected}`;
+    rack.dataset.rackType = selected;
+    rack.dataset.rackIndex = String(index);
+    const heading = document.createElement("div");
+    heading.className = "rack-label";
+    heading.innerHTML = `<strong>RACK ${String(index).padStart(2, "0")}</strong><span>${profile.label} · ${profile.slots} bays</span>`;
+    rack.append(heading);
     for (let slot = 0; slot < profile.slots; slot++) {
         const bay = document.createElement("div");
         bay.className = "rack-slot";
         bay.dataset.slot = String(slot);
         bay.setAttribute("role", "button");
-        bay.setAttribute("tabindex", "0");
-        bay.setAttribute("aria-label", `Rack ${rackIndex}, bay ${slot + 1}, empty. Select a part or drag one here.`);
-        const number = document.createElement("span");
-        number.className = "slot-number";
-        number.textContent = String(slot + 1).padStart(2, "0");
-        const prompt = document.createElement("span");
-        prompt.className = "slot-prompt";
-        prompt.textContent = "ADD PART";
-        bay.append(number, prompt);
+        bay.tabIndex = 0;
+        bay.setAttribute("aria-label", `Rack ${index}, bay ${slot + 1}, empty. Select a part and activate this bay, or drag a part here.`);
+        bay.innerHTML = `<span class="slot-number">${String(slot + 1).padStart(2, "0")}</span><span class="slot-prompt">ADD PART</span>`;
         rack.append(bay);
     }
-    elements.rackArea.append(rack);
-    state.racks = elements.rackArea.querySelectorAll(":scope > .rack").length;
-    elements.rackCount.textContent = `${state.racks} RACK${state.racks === 1 ? "" : "S"}`;
-    addLog(`${profile.label} rack ${rackIndex} built with ${profile.slots} open bays.`);
-    elements.buildMessage.textContent = `Rack ${rackIndex} is open. Drag parts from the inventory into a bay.`;
+    rackArea.append(rack);
+    state.racks = rackArea.querySelectorAll(":scope > .rack").length;
+    $("rackCount").textContent = `${state.racks} RACK${state.racks === 1 ? "" : "S"}`;
+    buildMessage.textContent = `Rack ${index} built. Select hardware and choose an empty bay.`;
+    log(`${profile.label} rack ${index} built.`);
     notifyRoom();
     updateDashboard();
 }
-function addRack() {
-    if (elements.rackArea.querySelector(".empty-rack-state")) elements.rackArea.replaceChildren();
-    const type = elements.rackType.value;
-    renderRack(type);
-}
 function installPart(type, bay) {
-    if (!serverProfiles[type] || partStock[type] < 1) {
-        elements.buildMessage.textContent = "That part is out of stock. Choose another inventory item.";
+    if (!profiles[type] || stock[type] < 1) {
+        buildMessage.textContent = "That part is out of stock. Choose another inventory item.";
         return false;
     }
-    if (!bay || bay.querySelector(".server")) {
-        elements.buildMessage.textContent = "That bay is occupied. Choose an empty bay.";
+    if (!bay || bay.querySelector(":scope > .server")) {
+        buildMessage.textContent = "That bay is occupied. Choose an empty bay.";
         return false;
     }
     const rack = bay.closest(".rack");
     if (type === "gpu" && rack.dataset.rackType !== "gpu") {
-        elements.buildMessage.textContent = "A graphics processor needs a GPU-ready rack. Build one and add the processor there.";
+        buildMessage.textContent = "GPU accelerators only fit in a GPU-ready rack. Build one and choose one of its bays.";
         return false;
     }
     const part = document.createElement("div");
     part.className = `server part-${type}`;
     part.dataset.part = type;
-    part.title = serverProfiles[type].label;
-    part.setAttribute("aria-label", serverProfiles[type].label);
     const label = document.createElement("span");
     label.className = "part-label";
-    label.textContent = serverProfiles[type].label;
+    label.textContent = profiles[type].label;
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "remove-part";
     remove.textContent = "×";
-    remove.title = `Remove ${serverProfiles[type].label}`;
-    remove.setAttribute("aria-label", `Remove ${serverProfiles[type].label} from rack`);
+    remove.setAttribute("aria-label", `Remove ${profiles[type].label} from rack`);
     part.append(label, remove);
     bay.replaceChildren(part);
     bay.classList.add("occupied");
-    bay.setAttribute("aria-label", `Rack ${rack.dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}, ${serverProfiles[type].label}.`);
-    partStock[type]--;
-    placedParts[type]++;
-    state.servers.push(type);
-    elements.buildMessage.textContent = `${serverProfiles[type].label} installed in Rack ${rack.dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}.`;
-    addLog(`${serverProfiles[type].label} installed in Rack ${rack.dataset.rackIndex}.`);
-    updateInventory();
+    bay.setAttribute("aria-label", `Rack ${rack.dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}, ${profiles[type].label}.`);
+    stock[type]--;
+    selectedPart = null;
+    document.querySelectorAll(".part-card").forEach(card => card.setAttribute("aria-pressed", "false"));
+    buildMessage.textContent = `${profiles[type].label} installed in Rack ${rack.dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}.`;
+    log(`${profiles[type].label} installed in Rack ${rack.dataset.rackIndex}.`);
+    refreshInventory();
     notifyRoom();
     updateDashboard();
     return true;
@@ -155,137 +117,119 @@ function removePart(part) {
     const type = part.dataset.part;
     const bay = part.closest(".rack-slot");
     if (!type || !bay) return;
-    partStock[type]++;
-    placedParts[type] = Math.max(0, placedParts[type] - 1);
-    const index = state.servers.indexOf(type);
-    if (index >= 0) state.servers.splice(index, 1);
-    const number = document.createElement("span");
-    number.className = "slot-number";
-    number.textContent = String(Number(bay.dataset.slot) + 1).padStart(2, "0");
-    const prompt = document.createElement("span");
-    prompt.className = "slot-prompt";
-    prompt.textContent = "ADD PART";
-    bay.replaceChildren(number, prompt);
+    stock[type]++;
+    bay.innerHTML = `<span class="slot-number">${String(Number(bay.dataset.slot) + 1).padStart(2, "0")}</span><span class="slot-prompt">ADD PART</span>`;
     bay.classList.remove("occupied");
-    const rack = bay.closest(".rack");
-    bay.setAttribute("aria-label", `Rack ${rack.dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}, empty. Select a part or drag one here.`);
-    addLog(`${serverProfiles[type].label} removed from Rack ${rack.dataset.rackIndex}.`);
-    updateInventory();
+    bay.setAttribute("aria-label", `Rack ${bay.closest(".rack").dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}, empty. Select a part and activate this bay, or drag a part here.`);
+    buildMessage.textContent = `${profiles[type].label} removed. Select it from inventory to install it again.`;
+    log(`${profiles[type].label} removed.`);
+    refreshInventory();
     notifyRoom();
     updateDashboard();
 }
-function updateRackTypeHelp() {
-    const descriptions = { standard: "A balanced rack for everyday servers.", gpu: "Extra power and cooling for graphics processors.", dense: "More bays in a taller rack; supports up to 12 parts." };
-    document.getElementById("rackTypeHelp").textContent = descriptions[elements.rackType.value];
-}
 function updateDashboard() {
-    const totals = state.servers.reduce((sum, type) => {
-        const profile = serverProfiles[type];
-        if (!profile) return sum;
-        sum.cpu += profile.cpu; sum.memory += profile.memory; sum.storage += profile.storage;
+    if (!rackArea) return;
+    const installed = [...rackArea.querySelectorAll(".rack-slot > .server")];
+    const total = installed.reduce((sum, part) => {
+        const profile = profiles[part.dataset.part];
+        if (profile) { sum.cpu += profile.cpu; sum.memory += profile.memory; sum.storage += profile.storage; }
         return sum;
     }, { cpu: 0, memory: 0, storage: 0 });
-    const servers = serverParts();
-    const cpu = Math.min(totals.cpu, 100), memory = Math.min(totals.memory, 128), storage = totals.storage;
+    const servers = installed.filter(part => profiles[part.dataset.part]?.kind === "server");
+    const cpu = Math.min(total.cpu, 100);
+    const memory = Math.min(total.memory, 128);
     const customers = state.deployed ? 1000 + servers.length * 250 : 0;
-    elements.cpuValue.textContent = `${cpu}%`;
-    elements.memoryValue.textContent = `${memory} GB`;
-    elements.storageValue.textContent = `${storage} TB`;
-    elements.customersValue.textContent = customers.toLocaleString();
-    elements.cpuMeter.style.width = `${cpu}%`;
-    elements.memoryMeter.style.width = `${(memory / 128) * 100}%`;
-    elements.storageMeter.style.width = `${Math.min(storage * 2, 100)}%`;
-    elements.customersMeter.style.width = `${Math.min(customers / 50, 100)}%`;
+    $("cpuValue").textContent = `${cpu}%`;
+    $("memoryValue").textContent = `${memory} GB`;
+    $("storageValue").textContent = `${total.storage} TB`;
+    $("customersValue").textContent = customers.toLocaleString();
+    $("cpuMeter").style.width = `${cpu}%`;
+    $("memoryMeter").style.width = `${memory / 128 * 100}%`;
+    $("storageMeter").style.width = `${Math.min(total.storage * 2, 100)}%`;
+    $("customersMeter").style.width = `${Math.min(customers / 50, 100)}%`;
     const online = state.racks > 0 && servers.length > 0;
-    elements.systemStatus.classList.toggle("online", online);
-    elements.systemStatus.innerHTML = `<span class="status-dot"></span>${online ? "SYSTEM RUNNING" : "SYSTEM NOT RUNNING"}`;
-    if (state.cooling) elements.deployMessage.textContent = "Cooling is on. The temperature is normal.";
-    else if (servers.length > 4) elements.deployMessage.textContent = "Warning: cooling recommended for this server load.";
-}
-function deployWebsite() {
-    const servers = serverParts().map(part => part.dataset.part);
-    if (servers.length < 2) {
-        elements.deployMessage.textContent = "Install at least 2 servers, including a Web server, before going live.";
-        addLog("Launch denied: at least two servers are required."); return;
-    }
-    if (!servers.includes("web")) {
-        elements.deployMessage.textContent = "Install a Web server to host your site.";
-        addLog("Launch denied: Web server missing."); return;
-    }
-    state.deployed = true;
-    elements.serviceStatus.textContent = "ONLINE";
-    elements.serviceStatus.classList.add("online");
-    elements.deployMessage.textContent = "Website launched across the connected servers.";
-    addLog("Website launched successfully."); updateDashboard();
-}
-function runBackup() {
-    if (!serverParts().some(part => part.dataset.part === "backup")) {
-        elements.deployMessage.textContent = "Backup denied: install a Backup server first.";
-        addLog("Backup denied: no Backup server detected."); return;
-    }
-    state.backupComplete = true;
-    elements.deployMessage.textContent = "Backup completed successfully.";
-    addLog("Recovery copy completed.");
-}
-function simulateAttack() {
-    if (!state.firewall) {
-        state.deployed = false;
-        elements.serviceStatus.textContent = "COMPROMISED";
-        elements.serviceStatus.classList.remove("online");
-        elements.attackStatus.innerHTML = "<span class='danger'>Practice attack succeeded.</span>";
-        elements.threatLevel.textContent = "CRITICAL";
-        elements.threatLevel.className = "threat-level danger";
-        addLog("ALERT: the practice attack overwhelmed the defenses."); updateDashboard();
-    } else {
-        elements.attackStatus.innerHTML = "<span class='success'>Attack blocked by firewall.</span>";
-        elements.threatLevel.textContent = "BLOCKED";
-        elements.threatLevel.className = "threat-level";
-        addLog("Firewall blocked the practice attack.");
-    }
+    $("systemStatus").classList.toggle("online", online);
+    $("systemStatus").innerHTML = `<span class="status-dot"></span>${online ? "SYSTEM ONLINE" : "SYSTEM OFFLINE"}`;
+    if (state.cooling) $("deployMessage").textContent = "Cooling active. Temperature nominal.";
+    else if (servers.length > 4) $("deployMessage").textContent = "Cooling is recommended for this server load.";
 }
 
-document.getElementById("addRackBtn").addEventListener("click", addRack);
-elements.rackType.addEventListener("change", updateRackTypeHelp);
-document.getElementById("deployBtn").addEventListener("click", deployWebsite);
-document.getElementById("backupBtn").addEventListener("click", runBackup);
-document.getElementById("attackBtn").addEventListener("click", simulateAttack);
-
-elements.partInventory.addEventListener("click", event => {
-    const card = event.target.closest(".part-card");
-    if (card) selectPart(card.dataset.part);
+$("addRackBtn").addEventListener("click", drawRack);
+$("rackType").addEventListener("change", () => {
+    const descriptions = { standard: "A balanced rack for general-purpose servers.", gpu: "Reinforced power and cooling for GPU accelerators.", dense: "A taller rack with extra bays for more equipment." };
+    $("rackTypeHelp").textContent = descriptions[$("rackType").value];
 });
-elements.partInventory.addEventListener("dragstart", event => {
+inventory.addEventListener("click", event => {
     const card = event.target.closest(".part-card");
-    if (!card || partStock[card.dataset.part] < 1) { event.preventDefault(); return; }
-    event.dataTransfer.setData("application/x-simunet-part", card.dataset.part);
+    if (card && !card.disabled) selectPart(card.dataset.part);
+});
+inventory.addEventListener("dragstart", event => {
+    const card = event.target.closest(".part-card");
+    if (!card || card.disabled || !event.dataTransfer) { event.preventDefault(); return; }
+    const type = card.dataset.part;
     event.dataTransfer.effectAllowed = "copy";
-    selectPart(card.dataset.part);
+    event.dataTransfer.setData("text/plain", type);
+    event.dataTransfer.setData("application/x-simunet-part", type);
+    selectPart(type);
 });
-elements.rackArea.addEventListener("dragover", event => {
-    if (event.target.closest(".rack-slot")) { event.preventDefault(); event.dataTransfer.dropEffect = "copy"; }
+rackArea.addEventListener("dragover", event => {
+    const bay = event.target.closest(".rack-slot");
+    if (!bay || bay.querySelector(":scope > .server")) return;
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+    bay.classList.add("drag-over");
 });
-elements.rackArea.addEventListener("drop", event => {
+rackArea.addEventListener("dragleave", event => {
+    const bay = event.target.closest(".rack-slot");
+    if (bay && !bay.contains(event.relatedTarget)) bay.classList.remove("drag-over");
+});
+rackArea.addEventListener("drop", event => {
     const bay = event.target.closest(".rack-slot");
     if (!bay) return;
     event.preventDefault();
-    const type = event.dataTransfer.getData("application/x-simunet-part") || selectedPart;
+    bay.classList.remove("drag-over");
+    const type = event.dataTransfer?.getData("application/x-simunet-part") || event.dataTransfer?.getData("text/plain") || selectedPart;
     if (type) installPart(type, bay);
 });
-elements.rackArea.addEventListener("click", event => {
+rackArea.addEventListener("click", event => {
     const remove = event.target.closest(".remove-part");
-    if (remove) { removePart(remove.closest(".server")); return; }
+    if (remove) return removePart(remove.closest(".server"));
     const bay = event.target.closest(".rack-slot");
-    if (!bay) return;
-    if (selectedPart) installPart(selectedPart, bay);
-    else if (bay.querySelector(".server")) elements.buildMessage.textContent = "Select a hardware part, or use × to remove the installed part.";
+    if (bay && selectedPart) installPart(selectedPart, bay);
 });
-elements.rackArea.addEventListener("keydown", event => {
+rackArea.addEventListener("keydown", event => {
     const bay = event.target.closest(".rack-slot");
-    if (bay && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); if (selectedPart) installPart(selectedPart, bay); }
+    if (bay && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        if (selectedPart) installPart(selectedPart, bay);
+    }
 });
-elements.cooling.addEventListener("change", () => { state.cooling = elements.cooling.checked; addLog(state.cooling ? "Cooling systems activated." : "Cooling systems disabled."); updateDashboard(); notifyRoom(); });
-elements.ups.addEventListener("change", () => { state.ups = elements.ups.checked; addLog(state.ups ? "UPS backup power enabled." : "UPS backup power disabled."); notifyRoom(); });
-elements.firewall.addEventListener("change", () => { state.firewall = elements.firewall.checked; addLog(state.firewall ? "Firewall rules activated." : "Firewall rules disabled."); });
-document.getElementById("clearLogBtn").addEventListener("click", () => { elements.eventLog.replaceChildren(); addLog("Operations log cleared."); });
-window.addEventListener("simunet:hardware-change", () => { /* event hook for the 3D room module */ });
-updateRackTypeHelp(); updateInventory(); updateDashboard();
+$("deployBtn").addEventListener("click", () => {
+    const servers = [...rackArea.querySelectorAll(".server")].map(part => part.dataset.part).filter(type => profiles[type]?.kind === "server");
+    if (servers.length < 2 || !servers.includes("web")) {
+        $("deployMessage").textContent = servers.includes("web") ? "Install at least one more server before deployment." : "Install a Web server and another server before deployment.";
+        log("Deployment requirements are not met.");
+        return;
+    }
+    state.deployed = true;
+    $("serviceStatus").textContent = "ONLINE";
+    $("serviceStatus").classList.add("online");
+    $("deployMessage").textContent = "Website deployed across your server cluster.";
+    log("Website deployed successfully.");
+    updateDashboard();
+});
+const backupButton = $("backupBtn");
+if (backupButton) backupButton.addEventListener("click", () => {
+    if (!rackArea.querySelector('.server[data-part="backup"]')) {
+        $("deployMessage").textContent = "Install a Backup server first.";
+        return;
+    }
+    $("deployMessage").textContent = "Backup snapshot completed successfully.";
+    log("Disaster recovery snapshot completed.");
+});
+$("clearLogBtn").addEventListener("click", () => { $("eventLog").replaceChildren(); log("Operations log cleared."); });
+$("coolingToggle").addEventListener("change", event => { state.cooling = event.target.checked; log(state.cooling ? "Cooling systems activated." : "Cooling systems disabled."); updateDashboard(); notifyRoom(); });
+$("upsToggle").addEventListener("change", event => { state.ups = event.target.checked; log(state.ups ? "UPS backup power enabled." : "UPS backup power disabled."); notifyRoom(); });
+window.addEventListener("simunet:hardware-change", () => {});
+refreshInventory();
+updateDashboard();
