@@ -17,6 +17,7 @@ const rackArea = $("rackArea");
 const inventory = $("partInventory");
 const buildMessage = $("buildMessage");
 let selectedPart = null;
+let draggedPart = null;
 
 function log(message) {
     const logArea = $("eventLog");
@@ -84,10 +85,7 @@ function installPart(type, bay) {
         return false;
     }
     const rack = bay.closest(".rack");
-    if (type === "gpu" && rack.dataset.rackType !== "gpu") {
-        buildMessage.textContent = "GPU accelerators only fit in a GPU-ready rack. Build one and choose one of its bays.";
-        return false;
-    }
+    if (!rack) return false;
     const part = document.createElement("div");
     part.className = `server part-${type}`;
     part.dataset.part = type;
@@ -102,9 +100,11 @@ function installPart(type, bay) {
     part.append(label, remove);
     bay.replaceChildren(part);
     bay.classList.add("occupied");
+    bay.classList.remove("drag-over");
     bay.setAttribute("aria-label", `Rack ${rack.dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}, ${profiles[type].label}.`);
     stock[type]--;
     selectedPart = null;
+    draggedPart = null;
     document.querySelectorAll(".part-card").forEach(card => card.setAttribute("aria-pressed", "false"));
     buildMessage.textContent = `${profiles[type].label} installed in Rack ${rack.dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}.`;
     log(`${profiles[type].label} installed in Rack ${rack.dataset.rackIndex}.`);
@@ -166,11 +166,15 @@ inventory.addEventListener("click", event => {
 inventory.addEventListener("dragstart", event => {
     const card = event.target.closest(".part-card");
     if (!card || card.disabled || !event.dataTransfer) { event.preventDefault(); return; }
-    const type = card.dataset.part;
+    draggedPart = card.dataset.part;
+    selectPart(draggedPart);
     event.dataTransfer.effectAllowed = "copy";
-    event.dataTransfer.setData("text/plain", type);
-    event.dataTransfer.setData("application/x-simunet-part", type);
-    selectPart(type);
+    event.dataTransfer.setData("text/plain", draggedPart);
+    try { event.dataTransfer.setData("application/x-simunet-part", draggedPart); } catch {}
+});
+inventory.addEventListener("dragend", () => {
+    draggedPart = null;
+    rackArea.querySelectorAll(".drag-over").forEach(bay => bay.classList.remove("drag-over"));
 });
 rackArea.addEventListener("dragover", event => {
     const bay = event.target.closest(".rack-slot");
@@ -187,8 +191,12 @@ rackArea.addEventListener("drop", event => {
     const bay = event.target.closest(".rack-slot");
     if (!bay) return;
     event.preventDefault();
+    event.stopPropagation();
     bay.classList.remove("drag-over");
-    const type = event.dataTransfer?.getData("application/x-simunet-part") || event.dataTransfer?.getData("text/plain") || selectedPart;
+    let type = draggedPart || selectedPart;
+    if (event.dataTransfer) {
+        try { type = event.dataTransfer.getData("application/x-simunet-part") || event.dataTransfer.getData("text/plain") || type; } catch {}
+    }
     if (type) installPart(type, bay);
 });
 rackArea.addEventListener("click", event => {
