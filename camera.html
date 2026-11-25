@@ -29,7 +29,7 @@
 
     <main class="camera-shell">
         <section class="about-hero camera-hero" aria-labelledby="cameraTitle">
-            <p class="section-code">INTERACTIVE SCENE / CAMERA → CLOUD STORAGE</p>
+            <p class="section-code">INTERACTIVE SCENE / CAMERA TO CLOUD STORAGE</p>
             <h2 id="cameraTitle">Take a picture. Follow its journey.</h2>
             <p>Choose a camera view, capture a photo, and store a copy in the cloud. The original stays in your gallery while the animation shows the copy travelling through the network, into a server rack, and onto a hard drive.</p>
         </section>
@@ -50,9 +50,9 @@
                 </div>
                 <p class="camera-hint">Use <strong>Previous view</strong> and <strong>Next view</strong> to aim the camera at a different scene. Then press <strong>Take picture</strong>.</p>
                 <div class="camera-controls">
-                    <button id="previousScene" class="secondary-button scene-control" type="button" aria-label="Show previous camera view">← <span>Previous view</span></button>
-                    <button id="capturePhoto" class="primary-button capture-button" type="button"><span class="shutter-icon" aria-hidden="true">●</span><span>Take picture</span></button>
-                    <button id="nextScene" class="secondary-button scene-control" type="button" aria-label="Show next camera view"><span>Next view</span> →</button>
+                    <button id="previousScene" class="secondary-button scene-control" type="button" aria-label="Show previous camera view"><span>Previous view</span></button>
+                    <button id="capturePhoto" class="primary-button capture-button" type="button"><span class="shutter-icon" aria-hidden="true"></span><span>Take picture</span></button>
+                    <button id="nextScene" class="secondary-button scene-control" type="button" aria-label="Show next camera view"><span>Next view</span></button>
                 </div>
                 <p id="cameraFeedback" class="camera-feedback" role="status" aria-live="polite">Camera is ready. View 1 of 3: mountain lake at sunrise.</p>
             </article>
@@ -66,14 +66,14 @@
                 <div id="photoGallery" class="photo-gallery" aria-label="Captured photos">
                     <p class="gallery-empty">No photos yet. Choose a camera view and take a picture.</p>
                 </div>
-                <button id="storePhoto" class="primary-button store-button" type="button" disabled>☁ Store selected photo to cloud</button>
+                <button id="storePhoto" class="primary-button store-button" type="button" disabled>Store selected photo to cloud</button>
                 <p id="storeFeedback" class="camera-feedback" role="status" aria-live="polite">The original stays in your gallery after a cloud copy is stored.</p>
             </article>
         </section>
 
         <section class="panel transfer-panel" aria-labelledby="transferTitle">
             <div class="panel-heading">
-                <div><p class="section-code">03 / FOLLOW THE DATA</p><h2 id="transferTitle">Camera → network → server rack → hard drive</h2></div>
+                <div><p class="section-code">03 / FOLLOW THE DATA</p><h2 id="transferTitle">Camera to network to server rack to hard drive</h2></div>
                 <span id="transferStatus" class="count-badge">READY</span>
             </div>
             <p class="panel-copy">Press the cloud-store button to animate a copy along this path. This is a local learning simulation; no photo is uploaded to a real service.</p>
@@ -84,7 +84,7 @@
                 </div>
                 <div class="transfer-link" aria-hidden="true"><span></span></div>
                 <div class="transfer-node network-node" id="networkNode">
-                    <div class="network-icon" aria-hidden="true">⇄</div>
+                    <div class="network-icon" aria-hidden="true">NETWORK</div>
                     <strong>Network</strong><small>Copy travels as data</small>
                 </div>
                 <div class="transfer-link" aria-hidden="true"><span></span></div>

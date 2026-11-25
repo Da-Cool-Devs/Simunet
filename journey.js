@@ -23,10 +23,10 @@ if (defenseStage) {
         <p>A server checks incoming requests. Suspicious traffic is rejected, while legitimate visitors can still reach the service. Scene 5 shows how a firewall adds another layer of protection.</p>
         <div class="server-defense" id="networkRoute" aria-label="A server blocks suspicious traffic and lets a trusted request through">
             <div class="defense-traffic defense-suspicious"><span class="traffic-symbol" aria-hidden="true">!</span><strong>Suspicious request</strong><small>Unknown source</small></div>
-            <div class="defense-traffic defense-trusted"><span class="traffic-symbol" aria-hidden="true">✓</span><strong>Trusted request</strong><small>Allowed visitor</small></div>
-            <div class="defense-server"><span class="server-shield" aria-hidden="true">⬡</span><strong>WEB SERVER</strong><small class="server-check-status" id="serverCheckStatus">Waiting for requests</small><div class="server-indicators" aria-hidden="true"><i></i><i></i><i></i></div></div>
+            <div class="defense-traffic defense-trusted"><span class="traffic-symbol" aria-hidden="true">OK</span><strong>Trusted request</strong><small>Allowed visitor</small></div>
+            <div class="defense-server"><span class="server-shield" aria-hidden="true">SERVER</span><strong>WEB SERVER</strong><small class="server-check-status" id="serverCheckStatus">Waiting for requests</small><div class="server-indicators" aria-hidden="true"><i></i><i></i><i></i></div></div>
             <div class="defense-result defense-blocked" id="blockedResult"><span aria-hidden="true">×</span><strong>BLOCKED</strong></div>
-            <div class="defense-result defense-served" id="servedResult"><span aria-hidden="true">✓</span><strong>SERVICE REACHED</strong></div>
+            <div class="defense-result defense-served" id="servedResult"><span aria-hidden="true">OK</span><strong>SERVICE REACHED</strong></div>
         </div>
         <button id="routeAction" class="primary-button" type="button">Check incoming requests</button>
         <p id="routeFeedback" class="journey-feedback" role="status"></p>`;
