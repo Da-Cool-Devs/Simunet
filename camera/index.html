@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#090c10">
-    <meta name="description" content="Take a simulated camera photo and follow it as it travels through the cloud into data-center storage.">
+    <meta name="description" content="Capture a photo with your device camera and follow a copy through SimuNet's simulated cloud storage.">
     <title>Camera to Cloud - SimuNet</title>
     <script src="/Simunet/js/accessibility.js"></script>
     <link rel="stylesheet" href="/Simunet/style.css">
@@ -32,30 +32,31 @@
         <section class="about-hero camera-hero" aria-labelledby="cameraTitle">
             <p class="section-code">INTERACTIVE SCENE / CAMERA TO CLOUD STORAGE</p>
             <h2 id="cameraTitle">Take a picture. Follow its journey.</h2>
-            <p>Choose a camera view, capture a photo, and store a copy in the cloud. The original stays in your gallery while the animation shows the copy travelling through the network, into a server rack, and onto a hard drive.</p>
+            <p>Enable your device camera, capture a photo, and store a copy in the simulated cloud. The original stays in your gallery while the animation follows its copy through the network and into storage.</p>
         </section>
 
         <section class="camera-workbench" aria-label="Camera and cloud storage simulation">
             <article class="panel camera-panel">
                 <div class="panel-heading">
-                    <div><p class="section-code">01 / CAMERA</p><h2>Choose a view and take a photo</h2></div>
-                    <span class="count-badge" id="sceneLabel">VIEW 1 OF 3</span>
+                    <div><p class="section-code">01 / CAMERA</p><h2>Enable your camera and take a photo</h2></div>
+                    <span class="count-badge" id="cameraStatusLabel">CAMERA OFF</span>
                 </div>
                 <div class="viewfinder" id="viewfinder">
-                    <img id="viewfinderImage" alt="Camera preview: mountain lake at sunrise">
+                    <video id="cameraVideo" autoplay playsinline muted hidden aria-label="Live device camera preview"></video>
+                    <span id="cameraPlaceholder" class="viewfinder-placeholder">Enable camera to start preview</span>
                     <span class="viewfinder-mark mark-top-left" aria-hidden="true"></span>
                     <span class="viewfinder-mark mark-top-right" aria-hidden="true"></span>
                     <span class="viewfinder-mark mark-bottom-left" aria-hidden="true"></span>
                     <span class="viewfinder-mark mark-bottom-right" aria-hidden="true"></span>
-                    <span class="viewfinder-label"><span>SIMUNET CAMERA</span><span id="cameraMode">LIVE VIEW</span></span>
+                    <span class="viewfinder-label"><span>SIMUNET CAMERA</span><span id="cameraMode">CAMERA OFF</span></span>
                 </div>
-                <p class="camera-hint">Use <strong>Previous view</strong> and <strong>Next view</strong> to aim the camera at a different scene. Then press <strong>Take picture</strong>.</p>
+                <p class="camera-hint">Select <strong>Enable camera</strong> and allow access when your browser asks. Photos stay in this browser; cloud storage below is simulated.</p>
                 <div class="camera-controls">
-                    <button id="previousScene" class="secondary-button scene-control" type="button" aria-label="Show previous camera view"><span>Previous view</span></button>
-                    <button id="capturePhoto" class="primary-button capture-button" type="button"><span class="shutter-icon" aria-hidden="true"></span><span>Take picture</span></button>
-                    <button id="nextScene" class="secondary-button scene-control" type="button" aria-label="Show next camera view"><span>Next view</span></button>
+                    <button id="startCamera" class="secondary-button scene-control" type="button">Enable camera</button>
+                    <button id="capturePhoto" class="primary-button capture-button" type="button" disabled><span class="shutter-icon" aria-hidden="true"></span><span>Take picture</span></button>
+                    <button id="stopCamera" class="secondary-button scene-control" type="button" disabled>Stop camera</button>
                 </div>
-                <p id="cameraFeedback" class="camera-feedback" role="status" aria-live="polite">Camera is ready. View 1 of 3: mountain lake at sunrise.</p>
+                <p id="cameraFeedback" class="camera-feedback" role="status" aria-live="polite">Camera is off. Enable it and allow browser access to take a photo.</p>
             </article>
 
             <article class="panel gallery-panel">
@@ -65,7 +66,7 @@
                 </div>
                 <p class="panel-copy">Your captured originals live here. Select one to send a separate copy to simulated cloud storage.</p>
                 <div id="photoGallery" class="photo-gallery" aria-label="Captured photos">
-                    <p class="gallery-empty">No photos yet. Choose a camera view and take a picture.</p>
+                    <p class="gallery-empty">No photos yet. Enable the camera and take a picture to begin.</p>
                 </div>
                 <button id="storePhoto" class="primary-button store-button" type="button" disabled>Store selected photo to cloud</button>
                 <p id="storeFeedback" class="camera-feedback" role="status" aria-live="polite">The original stays in your gallery after a cloud copy is stored.</p>

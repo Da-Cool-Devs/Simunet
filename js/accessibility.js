@@ -33,17 +33,6 @@ function applyPreferences() {
 applyPreferences();
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Keep the camera lab discoverable from the simulator and other pages that
-    // share this navigation, without duplicating a link already in the markup.
-    const primaryNav = document.querySelector(".site-nav");
-    if (primaryNav && !primaryNav.querySelector('a[href="/Simunet/camera/"]')) {
-        const cameraLink = document.createElement("a");
-        cameraLink.href = "/Simunet/camera/";
-        cameraLink.textContent = "Camera";
-        const manualLink = primaryNav.querySelector('a[href="/Simunet/manual/"]');
-        primaryNav.insertBefore(cameraLink, manualLink || null);
-    }
-
     const themeSelect = document.getElementById("themePreference");
     const fontSizeSelect = document.getElementById("fontSizePreference");
     const fontFamilySelect = document.getElementById("fontFamilyPreference");

@@ -1,48 +1,83 @@
 (() => {
-    const scenes = [
-        {
-            name: "Mountain lake at sunrise",
-            filename: "mountain-lake.jpg",
-            colors: ["#17334b", "#e69569", "#f6c982"],
-            art: '<circle cx="440" cy="112" r="48" fill="#ffd990" opacity=".95"/><path d="M0 245 126 116l90 95 112-142 146 176Z" fill="#395e68"/><path d="m175 207 153-138 146 176H229Z" fill="#688b85"/><path d="m278 113 51-44 51 62-37-15-23 23-19-20Z" fill="#d6e0d1"/><path d="M0 245q135-23 248 0t246 0v115H0Z" fill="#397d89"/><path d="M0 284q120-20 247 2t247-1" fill="none" stroke="#9fd4cf" stroke-width="4" opacity=".7"/>'
-        },
-        {
-            name: "City skyline at blue hour",
-            filename: "city-skyline.jpg",
-            colors: ["#152448", "#563c70", "#f39b76"],
-            art: '<circle cx="386" cy="95" r="37" fill="#ffcb9c" opacity=".9"/><path d="M0 266h494v94H0Z" fill="#121c35"/><path d="M22 182h56v84H22zm70-67h78v151H92zm91 43h53v108h-53zm68-91h87v199h-87zm99 68h51v131h-51zm67-39h55v170h-55z" fill="#273858"/><path d="M37 200h9v12h-9zm20 0h9v12h-9zm48-57h12v14h-12zm25 0h12v14h-12zm-25 28h12v14h-12zm93 16h10v13h-10zm85-69h12v15h-12zm26 0h12v15h-12zm-26 31h12v15h-12zm77 28h10v13h-10zm70-48h11v14h-11zm0 28h11v14h-11z" fill="#ffc77f"/><path d="M0 266h494" stroke="#56d9ef" stroke-width="3" opacity=".7"/>'
-        },
-        {
-            name: "Ocean cliffs on a clear day",
-            filename: "ocean-cliffs.jpg",
-            colors: ["#267b9b", "#89c8c0", "#f6d69a"],
-            art: '<circle cx="395" cy="92" r="43" fill="#fff0bb"/><path d="M0 196q111-27 228 3t266-6v167H0Z" fill="#247e9d"/><path d="M0 243q112-22 236 4t258-4" fill="none" stroke="#a5e1d8" stroke-width="6" opacity=".75"/><path d="M0 0h494v212L390 189l-74 35-96-60-79 35-61-32L0 182Z" fill="#537b6f"/><path d="m180 199 58-112 57 53 24 74-70-31-39 24Z" fill="#829b79"/><path d="m236 87 28-17 31 34-28-10-13 13Z" fill="#edf0d0"/>'
-        }
-    ];
-
     const $ = id => document.getElementById(id);
-    const viewfinderImage = $("viewfinderImage");
+    const cameraVideo = $("cameraVideo");
+    const cameraPlaceholder = $("cameraPlaceholder");
+    const cameraStatusLabel = $("cameraStatusLabel");
+    const cameraMode = $("cameraMode");
+    const cameraFeedback = $("cameraFeedback");
+    const startButton = $("startCamera");
+    const captureButton = $("capturePhoto");
+    const stopButton = $("stopCamera");
     const gallery = $("photoGallery");
     const storeButton = $("storePhoto");
     const travelingPhoto = $("travelingPhoto");
-    let sceneIndex = 0;
+    let cameraStream = null;
     let capturedPhotos = [];
     let selectedPhotoId = null;
     const storedPhotoIds = new Set();
     let transferInProgress = false;
 
-    function makePhoto(scene, index) {
-        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 494 360"><defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="${scene.colors[0]}"/><stop offset=".68" stop-color="${scene.colors[1]}"/><stop offset="1" stop-color="${scene.colors[2]}"/></linearGradient></defs><rect width="494" height="360" fill="url(#sky)"/>${scene.art}<rect x="12" y="12" width="470" height="336" rx="8" fill="none" stroke="#e9fbff" stroke-opacity=".55" stroke-width="2"/><text x="24" y="329" fill="#fff" font-family="Arial,sans-serif" font-size="14" letter-spacing="2">SIMUNET CAM · ${String(index + 1).padStart(2, "0")}</text></svg>`;
-        return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+    function releaseCamera() {
+        cameraStream?.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+        cameraVideo.srcObject = null;
+        cameraVideo.hidden = true;
+        cameraPlaceholder.hidden = false;
+        captureButton.disabled = true;
+        stopButton.disabled = true;
+        startButton.disabled = false;
     }
 
-    function showScene() {
-        const scene = scenes[sceneIndex];
-        viewfinderImage.src = makePhoto(scene, sceneIndex);
-        viewfinderImage.alt = `Camera preview: ${scene.name}`;
-        $("sceneLabel").textContent = `VIEW ${sceneIndex + 1} OF ${scenes.length}`;
-        $("cameraMode").textContent = "LIVE VIEW";
-        $("cameraFeedback").textContent = `Camera is ready. View ${sceneIndex + 1} of ${scenes.length}: ${scene.name}.`;
+    function cameraErrorMessage(error) {
+        if (error?.name === "NotAllowedError" || error?.name === "SecurityError") {
+            return "Camera permission was denied. Allow camera access in your browser settings, then try again.";
+        }
+        if (error?.name === "NotFoundError" || error?.name === "OverconstrainedError") {
+            return "No compatible camera was found on this device.";
+        }
+        if (error?.name === "NotReadableError" || error?.name === "AbortError") {
+            return "The camera is unavailable or being used by another app.";
+        }
+        return `Could not start the camera${error?.message ? `: ${error.message}` : ". Check browser permissions and try again."}`;
+    }
+
+    async function startCamera() {
+        if (!navigator.mediaDevices?.getUserMedia) {
+            cameraFeedback.textContent = "Camera access requires HTTPS and a browser that supports device cameras.";
+            return;
+        }
+
+        startButton.disabled = true;
+        cameraStatusLabel.textContent = "REQUESTING";
+        cameraMode.textContent = "REQUESTING CAMERA";
+        cameraFeedback.textContent = "Waiting for camera permission…";
+        try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: "environment" } },
+                audio: false
+            });
+            cameraVideo.srcObject = cameraStream;
+            await cameraVideo.play();
+            cameraVideo.hidden = false;
+            cameraPlaceholder.hidden = true;
+            captureButton.disabled = false;
+            stopButton.disabled = false;
+            cameraStatusLabel.textContent = "CAMERA READY";
+            cameraMode.textContent = "LIVE CAMERA";
+            cameraFeedback.textContent = "Camera is ready. Take a picture to add it to your gallery.";
+        } catch (error) {
+            releaseCamera();
+            cameraStatusLabel.textContent = "CAMERA OFF";
+            cameraMode.textContent = "CAMERA UNAVAILABLE";
+            cameraFeedback.textContent = cameraErrorMessage(error);
+        }
+    }
+
+    function stopCamera() {
+        releaseCamera();
+        cameraStatusLabel.textContent = "CAMERA OFF";
+        cameraMode.textContent = "CAMERA OFF";
+        cameraFeedback.textContent = "Camera stopped. Enable it again when you are ready to take a photo.";
     }
 
     function renderGallery() {
@@ -50,7 +85,7 @@
         if (!capturedPhotos.length) {
             const empty = document.createElement("p");
             empty.className = "gallery-empty";
-            empty.textContent = "No photos yet. Choose a camera view and take a picture.";
+            empty.textContent = "No photos yet. Enable the camera and take a picture to begin.";
             gallery.append(empty);
         }
         capturedPhotos.forEach(photo => {
@@ -84,19 +119,31 @@
     }
 
     function capturePhoto() {
-        const scene = scenes[sceneIndex];
+        if (!cameraStream || !cameraVideo.videoWidth || !cameraVideo.videoHeight) {
+            cameraFeedback.textContent = "The camera preview is not ready yet. Wait for the live image, then try again.";
+            return;
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = cameraVideo.videoWidth;
+        canvas.height = cameraVideo.videoHeight;
+        const context = canvas.getContext("2d");
+        if (!context) {
+            cameraFeedback.textContent = "Could not capture the photo in this browser.";
+            return;
+        }
+        context.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
         const photo = {
             id: `photo-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-            name: scene.filename,
-            sceneName: scene.name,
-            src: makePhoto(scene, capturedPhotos.length)
+            name: `simunet-photo-${capturedPhotos.length + 1}.jpg`,
+            src: canvas.toDataURL("image/jpeg", 0.92)
         };
         capturedPhotos.unshift(photo);
         selectedPhotoId = photo.id;
         $("sourcePhoto").src = photo.src;
         $("sourcePhoto").alt = `Original photo ${photo.name}`;
         $("cameraMode").textContent = "PHOTO CAPTURED";
-        $("cameraFeedback").textContent = `${scene.name} captured. The original is saved in your gallery.`;
+        cameraFeedback.textContent = `${photo.name} captured from your camera and added to your gallery.`;
         storeButton.disabled = false;
         renderGallery();
     }
@@ -107,7 +154,7 @@
 
     async function animateTransfer(photo) {
         const cardImage = gallery.querySelector(`[data-photo-id="${CSS.escape(photo.id)}"] img`);
-        const originRect = (cardImage || viewfinderImage).getBoundingClientRect();
+        const originRect = (cardImage || cameraVideo).getBoundingClientRect();
         const start = { x: originRect.left + originRect.width / 2, y: originRect.top + originRect.height / 2 };
         const destinations = [$("networkNode"), $("rackNode"), $("driveNode")].map(node => {
             const rect = node.getBoundingClientRect();
@@ -183,15 +230,10 @@
         $("driveCapacityBar").style.width = `${Math.min(count * 20, 100)}%`;
     }
 
-    $("previousScene").addEventListener("click", () => {
-        sceneIndex = (sceneIndex - 1 + scenes.length) % scenes.length;
-        showScene();
-    });
-    $("nextScene").addEventListener("click", () => {
-        sceneIndex = (sceneIndex + 1) % scenes.length;
-        showScene();
-    });
-    $("capturePhoto").addEventListener("click", capturePhoto);
+    startButton.addEventListener("click", startCamera);
+    stopButton.addEventListener("click", stopCamera);
+    captureButton.addEventListener("click", capturePhoto);
+    window.addEventListener("pagehide", releaseCamera);
     storeButton.addEventListener("click", async () => {
         if (transferInProgress || !selectedPhotoId) return;
         const photo = capturedPhotos.find(item => item.id === selectedPhotoId);
@@ -201,5 +243,4 @@
         await animateTransfer(photo);
     });
 
-    showScene();
 })();

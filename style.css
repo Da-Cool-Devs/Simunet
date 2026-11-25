@@ -160,8 +160,9 @@ button:focus-visible {
     position: relative;
     z-index: 1;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
     padding: 20px clamp(16px, 4vw, 48px);
     text-align: left;
     border-bottom: 1px solid #2b3c49;
@@ -180,15 +181,22 @@ button:focus-visible {
 
 .topbar-actions {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
     gap: 12px;
+    width: 100%;
+}
+
+.topbar-actions .system-status {
+    align-self: flex-start;
 }
 
 .site-nav {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 4px;
+    width: 100%;
 }
 
 .site-nav a {
@@ -661,13 +669,14 @@ select {
 
 .error-page {
     min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
 }
 
 .error-panel {
     width: min(680px, 100%);
+    margin: auto;
     padding: clamp(24px, 7vw, 52px);
     border: 1px solid var(--panel-edge);
     border-top: 3px solid var(--red);
@@ -675,29 +684,6 @@ select {
     background: rgba(17, 22, 29, 0.96);
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
     text-align: left;
-}
-
-.error-panel .site-nav {
-    margin-bottom: 32px;
-}
-
-.error-panel .site-nav a {
-    margin: 0;
-    padding: 8px 10px;
-    border-color: transparent;
-    color: var(--muted);
-    font-size: 0.72rem;
-}
-
-.error-panel .site-nav a:hover,
-.error-panel .site-nav a:focus-visible {
-    color: var(--cyan);
-}
-
-.error-panel .site-nav a.active {
-    border-color: var(--lime);
-    color: var(--lime);
-    background: rgba(136, 255, 204, 0.1);
 }
 
 .error-code {
@@ -1597,20 +1583,7 @@ select {
 }
 
 @media (max-width: 680px) {
-    .home-topbar {
-        flex-direction: column;
-    }
-
-    .home-topbar .topbar-actions {
-        align-items: flex-start;
-    }
-
-    .home-topbar .site-nav {
-        flex-wrap: wrap;
-    }
-
     .topbar {
-        align-items: flex-start;
         gap: 16px;
     }
 
@@ -1618,10 +1591,8 @@ select {
         font-size: 1.25rem;
     }
 
-    .topbar-actions {
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 8px;
+    .site-nav {
+        flex-wrap: wrap;
     }
 
     .system-status {
@@ -1725,17 +1696,8 @@ select {
 }
 
 @media (max-width: 480px) {
-    .topbar {
-        display: block;
-    }
-
     .system-status {
         width: fit-content;
-        margin-top: 12px;
-    }
-
-    .topbar-actions {
-        align-items: flex-start;
         margin-top: 12px;
     }
 
@@ -2238,7 +2200,9 @@ html[data-reduced-motion="true"] .sky-cloud,html[data-reduced-motion="true"] .up
 .camera-workbench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, .82fr); gap: 16px; }
 .camera-panel, .gallery-panel, .transfer-panel { min-width: 0; }
 .viewfinder { position: relative; overflow: hidden; aspect-ratio: 1.37; min-height: 240px; border: 2px solid #5b8296; background: #8bc6dc; box-shadow: inset 0 0 22px #07111c33, 0 0 18px #42c8e822; }
-.viewfinder > img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center center; filter: brightness(1.12) saturate(1.12); transition: filter .2s ease; }
+.viewfinder > video { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center center; filter: brightness(1.12) saturate(1.12); transition: filter .2s ease; }
+.viewfinder > video[hidden], .viewfinder-placeholder[hidden] { display: none; }
+.viewfinder-placeholder { position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; color: #e8f7ff; font-size: .75rem; text-align: center; text-shadow: 0 1px 5px #000; }
 .viewfinder::after { content: ""; position: absolute; inset: 12% 15%; border: 1px solid #ffffff99; pointer-events: none; }
 .viewfinder-mark { width: 20px; height: 20px; position: absolute; z-index: 1; border-color: #e8fbff; border-style: solid; filter: drop-shadow(0 1px 3px #00131c); }
 .mark-top-left { top: 9%; left: 12%; border-width: 2px 0 0 2px; }.mark-top-right { top: 9%; right: 12%; border-width: 2px 2px 0 0; }.mark-bottom-left { bottom: 9%; left: 12%; border-width: 0 0 2px 2px; }.mark-bottom-right { bottom: 9%; right: 12%; border-width: 0 2px 2px 0; }
