@@ -41,7 +41,7 @@
         viewfinderImage.src = makePhoto(scene, sceneIndex);
         viewfinderImage.alt = `Camera preview: ${scene.name}`;
         $("sceneLabel").textContent = `VIEW ${sceneIndex + 1} OF ${scenes.length}`;
-        $("cameraMode").textContent = "LIVE PREVIEW";
+        $("cameraMode").textContent = "LIVE VIEW";
         $("cameraFeedback").textContent = `Camera is ready. View ${sceneIndex + 1} of ${scenes.length}: ${scene.name}.`;
     }
 
@@ -119,8 +119,8 @@
         travelingPhoto.style.left = `${start.x}px`;
         travelingPhoto.style.top = `${start.y}px`;
         travelingPhoto.style.transform = "translate(-50%, -50%) scale(1)";
-        $("transferStatus").textContent = "UPLOADING";
-        $("storeFeedback").textContent = "Uploading a copy… your original photo stays in the gallery.";
+        $("transferStatus").textContent = "SENDING";
+        $("storeFeedback").textContent = "Sending a copy… your original photo stays in the gallery.";
         nodes.forEach(node => node.classList.remove("is-active", "is-stored"));
         nodes[0].classList.add("is-active");
         let current = start;

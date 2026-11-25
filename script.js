@@ -13,11 +13,11 @@ const serverProfiles = {
     database: { label: "Database", description: "Stores information used by your website.", cpu: 18, memory: 16, storage: 8, kind: "server" },
     storage: { label: "Storage", description: "Holds files and other cloud data.", cpu: 8, memory: 8, storage: 20, kind: "server" },
     backup: { label: "Backup", description: "Keeps recovery copies. Required to run a backup.", cpu: 6, memory: 4, storage: 25, kind: "server" },
-    auth: { label: "Authentication", description: "Handles user sign-in and permissions.", cpu: 10, memory: 8, storage: 3, kind: "server" },
-    gpu: { label: "GPU accelerator", description: "Adds parallel processing for AI and graphics workloads.", cpu: 0, memory: 16, storage: 0, kind: "accelerator" },
+    auth: { label: "Sign-in server", description: "Checks usernames and permissions.", cpu: 10, memory: 8, storage: 3, kind: "server" },
+    gpu: { label: "Graphics processor", description: "Handles many calculations for AI and graphics.", cpu: 0, memory: 16, storage: 0, kind: "accelerator" },
     switch: { label: "Network switch", description: "Connects devices inside the data-center network.", cpu: 0, memory: 0, storage: 0, kind: "network" },
     router: { label: "Router", description: "Routes traffic between networks.", cpu: 0, memory: 0, storage: 0, kind: "network" },
-    loadbalancer: { label: "Load balancer", description: "Distributes incoming requests across servers.", cpu: 2, memory: 2, storage: 0, kind: "network" }
+    loadbalancer: { label: "Traffic balancer", description: "Shares incoming requests across servers.", cpu: 2, memory: 2, storage: 0, kind: "network" }
 };
 const partStock = { web: 6, database: 4, storage: 4, backup: 3, auth: 3, gpu: 4, switch: 3, router: 2, loadbalancer: 2 };
 const partCosts = { web: 800, database: 1200, storage: 1000, backup: 900, auth: 850, gpu: 1500, switch: 500, router: 700, loadbalancer: 950 };
@@ -92,7 +92,7 @@ function renderRack(profileKey) {
         number.textContent = String(slot + 1).padStart(2, "0");
         const prompt = document.createElement("span");
         prompt.className = "slot-prompt";
-        prompt.textContent = "DROP PART";
+        prompt.textContent = "ADD PART";
         bay.append(number, prompt);
         rack.append(bay);
     }
@@ -120,7 +120,7 @@ function installPart(type, bay) {
     }
     const rack = bay.closest(".rack");
     if (type === "gpu" && rack.dataset.rackType !== "gpu") {
-        elements.buildMessage.textContent = "GPU accelerator needs a GPU-ready rack. Build one and drop the GPU there.";
+        elements.buildMessage.textContent = "A graphics processor needs a GPU-ready rack. Build one and add the processor there.";
         return false;
     }
     const part = document.createElement("div");
@@ -164,7 +164,7 @@ function removePart(part) {
     number.textContent = String(Number(bay.dataset.slot) + 1).padStart(2, "0");
     const prompt = document.createElement("span");
     prompt.className = "slot-prompt";
-    prompt.textContent = "DROP PART";
+    prompt.textContent = "ADD PART";
     bay.replaceChildren(number, prompt);
     bay.classList.remove("occupied");
     const rack = bay.closest(".rack");
@@ -175,7 +175,7 @@ function removePart(part) {
     updateDashboard();
 }
 function updateRackTypeHelp() {
-    const descriptions = { standard: "A balanced rack for general-purpose servers.", gpu: "Reinforced power and cooling for GPU accelerators.", dense: "More bays in a taller frame; supports up to 12 parts." };
+    const descriptions = { standard: "A balanced rack for everyday servers.", gpu: "Extra power and cooling for graphics processors.", dense: "More bays in a taller rack; supports up to 12 parts." };
     document.getElementById("rackTypeHelp").textContent = descriptions[elements.rackType.value];
 }
 function updateDashboard() {
@@ -198,25 +198,25 @@ function updateDashboard() {
     elements.customersMeter.style.width = `${Math.min(customers / 50, 100)}%`;
     const online = state.racks > 0 && servers.length > 0;
     elements.systemStatus.classList.toggle("online", online);
-    elements.systemStatus.innerHTML = `<span class="status-dot"></span>${online ? "SYSTEM ONLINE" : "SYSTEM OFFLINE"}`;
-    if (state.cooling) elements.deployMessage.textContent = "Cooling active. Temperature nominal.";
+    elements.systemStatus.innerHTML = `<span class="status-dot"></span>${online ? "SYSTEM RUNNING" : "SYSTEM NOT RUNNING"}`;
+    if (state.cooling) elements.deployMessage.textContent = "Cooling is on. The temperature is normal.";
     else if (servers.length > 4) elements.deployMessage.textContent = "Warning: cooling recommended for this server load.";
 }
 function deployWebsite() {
     const servers = serverParts().map(part => part.dataset.part);
     if (servers.length < 2) {
-        elements.deployMessage.textContent = "Install at least 2 servers, including a Web server, before deployment.";
-        addLog("Deployment denied: at least two servers are required."); return;
+        elements.deployMessage.textContent = "Install at least 2 servers, including a Web server, before going live.";
+        addLog("Launch denied: at least two servers are required."); return;
     }
     if (!servers.includes("web")) {
         elements.deployMessage.textContent = "Install a Web server to host your site.";
-        addLog("Deployment denied: Web server missing."); return;
+        addLog("Launch denied: Web server missing."); return;
     }
     state.deployed = true;
     elements.serviceStatus.textContent = "ONLINE";
     elements.serviceStatus.classList.add("online");
-    elements.deployMessage.textContent = "Website deployed across your server cluster.";
-    addLog("Website deployed successfully."); updateDashboard();
+    elements.deployMessage.textContent = "Website launched across the connected servers.";
+    addLog("Website launched successfully."); updateDashboard();
 }
 function runBackup() {
     if (!serverParts().some(part => part.dataset.part === "backup")) {
@@ -224,23 +224,23 @@ function runBackup() {
         addLog("Backup denied: no Backup server detected."); return;
     }
     state.backupComplete = true;
-    elements.deployMessage.textContent = "Backup snapshot completed successfully.";
-    addLog("Disaster recovery snapshot completed.");
+    elements.deployMessage.textContent = "Backup completed successfully.";
+    addLog("Recovery copy completed.");
 }
 function simulateAttack() {
     if (!state.firewall) {
         state.deployed = false;
         elements.serviceStatus.textContent = "COMPROMISED";
         elements.serviceStatus.classList.remove("online");
-        elements.attackStatus.innerHTML = "<span class='danger'>DDoS attack succeeded.</span>";
+        elements.attackStatus.innerHTML = "<span class='danger'>Practice attack succeeded.</span>";
         elements.threatLevel.textContent = "CRITICAL";
         elements.threatLevel.className = "threat-level danger";
-        addLog("ALERT: simulated DDoS traffic overwhelmed defenses."); updateDashboard();
+        addLog("ALERT: the practice attack overwhelmed the defenses."); updateDashboard();
     } else {
         elements.attackStatus.innerHTML = "<span class='success'>Attack blocked by firewall.</span>";
         elements.threatLevel.textContent = "BLOCKED";
         elements.threatLevel.className = "threat-level";
-        addLog("Firewall blocked simulated DDoS traffic.");
+        addLog("Firewall blocked the practice attack.");
     }
 }
 

@@ -54,7 +54,7 @@ function showStep(step) {
     backButton.disabled = currentStep === 0;
     nextButton.hidden = true;
     announcement.textContent = currentStep === 8
-        ? "Journey complete. You can try it again or explore the infrastructure simulator."
+        ? "Journey complete. You can try it again or explore the system simulator."
         : `Step ${currentStep + 1} of 8: ${stages[currentStep].querySelector("h2").textContent}`;
 }
 
@@ -97,17 +97,17 @@ document.getElementById("routeAction").addEventListener("click", () => {
 });
 document.getElementById("encryptAction").addEventListener("click", () => {
     document.getElementById("encryptionVisual").classList.add("is-encrypted");
-    document.getElementById("encryptionLabel").textContent = "ENCRYPTED • 8F3A-21C7";
-    completeStep(document.getElementById("encryptFeedback"), "The sample file is now shown as encrypted data.");
+    document.getElementById("encryptionLabel").textContent = "PROTECTED • 8F3A-21C7";
+    completeStep(document.getElementById("encryptFeedback"), "The sample file is now shown as protected data.");
 });
 document.getElementById("firewallAction").addEventListener("click", () => {
     document.getElementById("firewallVisual").classList.add("is-secure");
-    document.getElementById("firewallGateStatus").textContent = "ACTIVE";
-    completeStep(document.getElementById("firewallFeedback"), "Firewall active. Untrusted traffic is blocked before it reaches the cloud service.");
+    document.getElementById("firewallGateStatus").textContent = "ON";
+    completeStep(document.getElementById("firewallFeedback"), "Firewall on. Suspicious traffic is blocked before it reaches the cloud service.");
 });
 document.getElementById("replicaAction").addEventListener("click", () => {
     document.getElementById("replicaVisual").classList.add("is-replicated");
-    document.querySelectorAll("#replicaVisual .replica-node small").forEach((status, index) => { status.textContent = index === 0 ? "PRIMARY COPY" : "COPY READY"; });
+    document.querySelectorAll("#replicaVisual .replica-node small").forEach((status, index) => { status.textContent = index === 0 ? "MAIN COPY" : "COPY READY"; });
     completeStep(document.getElementById("replicaFeedback"), "Copies are ready on separate servers. Now test what happens if one server fails.");
 });
 document.querySelectorAll("[data-recovery-choice]").forEach(choice => {

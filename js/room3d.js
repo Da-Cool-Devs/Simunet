@@ -111,8 +111,8 @@ function syncRoom() {
     buildCoolingUnits(document.getElementById("coolingToggle").checked); buildPowerUnit();
     const parts = [...rackArea.querySelectorAll(".server")];
     const countBy = key => parts.filter(part => part.dataset.part === key).length;
-    roomHardware.textContent = `${racks.length} RACK${racks.length === 1 ? "" : "S"} · ${parts.length} PART${parts.length === 1 ? "" : "S"}`;
-    const summary = parts.length ? `${parts.length} component${parts.length === 1 ? "" : "s"} installed across ${racks.length} open rack${racks.length === 1 ? "" : "s"}. ${countBy("gpu")} GPU accelerator${countBy("gpu") === 1 ? "" : "s"}; ${countBy("switch") + countBy("router") + countBy("loadbalancer")} network component${countBy("switch") + countBy("router") + countBy("loadbalancer") === 1 ? "" : "s"}.` : "Open racks are ready. Drag parts into the bays below to assemble your data center.";
+    roomHardware.textContent = `${racks.length} RACK${racks.length === 1 ? "" : "S"} · ${parts.length} EQUIPMENT PIECE${parts.length === 1 ? "" : "S"}`;
+    const summary = parts.length ? `${parts.length} piece${parts.length === 1 ? "" : "s"} of equipment installed across ${racks.length} open rack${racks.length === 1 ? "" : "s"}. ${countBy("gpu")} graphics processor${countBy("gpu") === 1 ? "" : "s"}; ${countBy("switch") + countBy("router") + countBy("loadbalancer")} network part${countBy("switch") + countBy("router") + countBy("loadbalancer") === 1 ? "" : "s"}.` : "Open racks are ready. Drag parts into the spaces below to set up your data center.";
     roomDescription.textContent = summary;
     container.setAttribute("aria-label", `Interactive 3D data center with ${racks.length} racks and ${parts.length} installed hardware parts. Drag to orbit and scroll to zoom.`);
 }
