@@ -6,115 +6,9 @@
 <title>Journey To The Cloud</title>
 <script src="js/accessibility.js"></script>
 <link rel="stylesheet" href="style.css">
-
-<style>
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#0f172a;
-    color:white;
-    text-align:center;
-}
-
-html[data-theme="light"] body{
-    color:#192a33;
-    background:#f3f6f8;
-}
-
-html[data-theme="high-contrast"] body{
-    color:#fff;
-    background:#000;
-}
-
-h1{
-    padding:20px;
-}
-
-#container{
-    max-width:1000px;
-    margin:auto;
-    padding:20px;
-}
-
-.step{
-    display:none;
-}
-
-.active{
-    display:block;
-}
-
-.card{
-    background:#1e293b;
-    padding:20px;
-    border-radius:12px;
-    margin:20px;
-}
-
-html[data-theme="light"] .card,
-html[data-theme="light"] .node{
-    color:#192a33;
-    background:#fff;
-}
-
-html[data-theme="high-contrast"] .card,
-html[data-theme="high-contrast"] .node{
-    color:#fff;
-    background:#000;
-    outline:1px solid #fff;
-}
-
-button{
-    padding:12px 25px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    background:#3b82f6;
-    color:white;
-    font-size:1rem;
-}
-
-button:hover{
-    background:#2563eb;
-}
-
-html[data-theme="high-contrast"] button{
-    color:#fff;
-    background:#000;
-    border:2px solid #fff;
-}
-
-.node{
-    display:inline-block;
-    margin:20px;
-    padding:20px;
-    background:#334155;
-    border-radius:10px;
-}
-
-#file{
-    font-size:3.125rem;
-    transition:1s;
-}
-
-#progress{
-    width:100%;
-    background:#334155;
-    border-radius:10px;
-    margin-bottom:20px;
-}
-
-#bar{
-    width:0%;
-    height:20px;
-    background:limegreen;
-    border-radius:10px;
-    transition:0.5s;
-}
-</style>
 </head>
 
-<body>
+<body class="reference-page">
 
 <h1>☁ Journey To The Cloud ☁</h1>
 
@@ -140,7 +34,7 @@ html[data-theme="high-contrast"] button{
 <div class="step" id="step2">
 <div class="card">
 <h2>2. Split Into Packets</h2>
-<div style="font-size:2.1875rem;">📦 📦 📦 📦 📦</div>
+<div class="packet-icons">📦 📦 📦 📦 📦</div>
 <p>Large files are split into packets.</p>
 <button onclick="nextStep(3)">Continue</button>
 </div>
@@ -191,7 +85,7 @@ html[data-theme="high-contrast"] button{
 <div class="card">
 <h2>6. Replicate Data</h2>
 
-<div style="font-size:1.875rem;">
+<div class="server-list">
 🖥️ Server A<br><br>
 🖥️ Server B<br><br>
 🖥️ Server C
@@ -246,7 +140,7 @@ Can you still recover the file?
 You learned:
 </p>
 
-<ul style="text-align:left;display:inline-block;">
+<ul class="learning-list">
 <li>Uploading</li>
 <li>Packet Creation</li>
 <li>Networking</li>
