@@ -2270,3 +2270,127 @@ html[data-theme="high-contrast"] .mini-photo-frame,html[data-theme="high-contras
 @media (max-width:620px) { .server-defense { grid-template-columns:minmax(0,1fr) minmax(120px,1fr);grid-template-rows:repeat(3,auto);gap:10px;padding:28px 12px 14px; }.defense-traffic { grid-column:1; }.defense-suspicious { grid-row:1; }.defense-trusted { grid-row:3; }.defense-server { grid-column:2;grid-row:1 / 4;min-height:145px; }.defense-result { grid-column:1;min-height:48px; }.defense-blocked { grid-row:2; }.defense-served { grid-row:3; }.server-defense.is-routed .defense-suspicious::after,.server-defense.is-routed .defense-trusted::after { display:none; } }
 @media (prefers-reduced-motion:reduce) { .server-defense *, .server-defense *::before,.server-defense *::after { animation-duration:.01ms !important;transition-duration:.01ms !important; } }
 html[data-reduced-motion="true"] .server-defense *,html[data-reduced-motion="true"] .server-defense *::before,html[data-reduced-motion="true"] .server-defense *::after { animation-duration:.01ms !important;transition-duration:.01ms !important; }
+
+/* ---------- Shared grid alignment (moved from accessibility.js) ---------- */
+.about-grid, .manual-server-grid, .manual-columns, .metrics-grid {
+    align-items: stretch;
+}
+.about-card, .manual-server-card, .manual-info-card, .metric-panel {
+    min-width: 0;
+}
+@media (min-width: 901px) {
+    .dashboard { grid-template-columns: minmax(270px, .82fr) minmax(0, 2fr); align-items: start; }
+    .sidebar { align-content: start; }
+}
+
+/* ---------- Journey firewall exercise ---------- */
+.firewall-attacker-panel {
+    display: grid;
+    gap: 12px;
+    margin: 18px 0;
+    padding: 18px;
+    border: 1px solid var(--panel-edge);
+    background: rgba(5, 10, 15, .55);
+}
+.firewall-attacker-panel h3 { margin: 0; color: var(--text); font-size: .9rem; text-transform: uppercase; }
+.firewall-attacker-panel p { margin: 0; color: var(--muted); font-size: .76rem; line-height: 1.6; }
+.firewall-attacker-panel label { color: var(--muted); font-size: .72rem; }
+.firewall-attacker-panel select { margin: 0; }
+.firewall-attacker-panel button { width: fit-content; }
+.firewall-attacker-panel [role="status"] { min-height: 1.3em; }
+.firewall-visual.is-threat-blocked .threat-node { border-color: var(--lime); box-shadow: 0 0 16px rgba(136, 255, 204, .2); }
+.firewall-visual.is-threat-passed .threat-node { border-color: var(--red); box-shadow: 0 0 16px rgba(255, 90, 90, .22); }
+html[data-theme="light"] .firewall-attacker-panel { background: #f3f6f8; }
+
+/* ---------- Simulator: metrics + live operations ---------- */
+.metrics-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.metric-panel small {
+    display: block;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: .64rem;
+    line-height: 1.5;
+}
+.metric-panel.is-warning::before, .meter span.is-warning { background: var(--orange); box-shadow: none; }
+.metric-panel.is-danger::before, .meter span.is-danger { background: var(--red); box-shadow: none; }
+.metric-panel.is-warning strong { color: var(--orange); }
+.metric-panel.is-danger strong { color: var(--red); }
+
+.ops-panel .ops-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+}
+.ops-grid div {
+    padding: 10px;
+    border: 1px solid var(--panel-edge);
+    background: rgba(5, 10, 15, .45);
+}
+.ops-grid dt { color: var(--muted); font-size: .62rem; letter-spacing: 1px; text-transform: uppercase; }
+.ops-grid dd { margin: 4px 0 0; color: var(--text); font-size: .95rem; font-weight: bold; }
+.ops-grid dd.is-warning { color: var(--orange); }
+.ops-grid dd.is-danger { color: var(--red); }
+.ops-grid dd.is-good { color: var(--lime); }
+html[data-theme="light"] .ops-grid div { background: #f3f6f8; }
+
+.incident-banner {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    border: 1px solid var(--panel-edge);
+    border-left: 3px solid var(--muted);
+    color: var(--muted);
+    font-size: .72rem;
+    line-height: 1.55;
+}
+.incident-banner.is-danger { border-left-color: var(--red); color: var(--text); }
+.incident-banner.is-good { border-left-color: var(--lime); }
+.incident-banner.is-warning { border-left-color: var(--orange); color: var(--text); }
+
+.ops-controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ops-controls button { width: auto; }
+.ops-controls label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: .7rem; }
+.ops-controls select { width: auto; margin: 0; }
+
+.mission-panel .mission-progress { color: var(--muted); font-size: .7rem; }
+.mission-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.mission-list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px;
+    border: 1px solid var(--panel-edge);
+    color: var(--muted);
+    font-size: .72rem;
+    line-height: 1.45;
+}
+.mission-list li::before {
+    content: "";
+    flex: 0 0 12px;
+    height: 12px;
+    margin-top: 2px;
+    border: 1px solid var(--muted);
+    border-radius: 2px;
+}
+.mission-list li strong { display: block; color: var(--text); font-size: .74rem; }
+.mission-list li.done { border-color: rgba(136, 255, 204, .4); }
+.mission-list li.done::before { background: var(--lime); border-color: var(--lime); }
+
+.event-log p.log-danger { color: var(--red); }
+.event-log p.log-warning { color: var(--orange); }
+.event-log p.log-good { color: var(--lime); }
+
+@media (max-width: 680px) {
+    .dashboard { grid-template-columns: minmax(0, 1fr); }
+    .sidebar { grid-template-columns: minmax(0, 1fr); }
+    .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .lower-grid { grid-template-columns: minmax(0, 1fr); }
+    .about-grid, .manual-server-grid, .manual-columns { grid-template-columns: minmax(0, 1fr); }
+}

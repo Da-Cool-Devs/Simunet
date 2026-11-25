@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#090c10">
     <meta name="description" content="Cloud Computing Simulator - build, install, monitor, and deploy a cloud data center.">
+    <link rel="icon" href="/Simunet/favicon.svg" type="image/svg+xml">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SimuNet">
+    <meta property="og:title" content="Cloud Computing Simulator">
+    <meta property="og:description" content="Cloud Computing Simulator - build, install, monitor, and deploy a cloud data center.">
     <title>Cloud Computing Simulator</title>
     <script src="/Simunet/js/accessibility.js"></script>
     <link rel="stylesheet" href="/Simunet/style.css">
@@ -39,6 +44,7 @@
                     <li><span>Choose hardware</span> Select a part, then choose an empty bay.</li>
                     <li><span>Track resources</span> Monitor CPU, memory, storage, and service status.</li>
                     <li><span>Go live</span> Install a Web server and another server, then deploy.</li>
+                    <li><span>Keep it running</span> Handle heat, outages, and attacks as customers arrive.</li>
                 </ol>
                 <div class="quick-start-links">
                     <a class="manual-link" href="/Simunet/journey/">Follow a file through the cloud</a>
@@ -76,8 +82,9 @@
                 </div>
                 <p id="buildMessage" class="build-message" role="status" aria-live="polite">Build a rack, then select a hardware part.</p>
                 <div class="toggle-list">
-                    <label class="toggle-row"><span><strong>Cooling</strong><small>Manage server heat</small></span><input id="coolingToggle" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
-                    <label class="toggle-row"><span><strong>UPS</strong><small>Backup power</small></span><input id="upsToggle" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
+                    <label class="toggle-row"><span><strong>Cooling</strong><small>Keeps servers from overheating</small></span><input id="coolingToggle" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
+                    <label class="toggle-row"><span><strong>UPS</strong><small>Backup power during outages</small></span><input id="upsToggle" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
+                    <label class="toggle-row"><span><strong>Firewall</strong><small>Filters malicious traffic</small></span><input id="firewallToggle" type="checkbox"><span class="toggle" aria-hidden="true"></span></label>
                 </div>
             </section>
         </aside>
@@ -104,10 +111,37 @@
                 <article class="metric-panel"><div class="metric-label"><span>MEMORY</span><strong id="memoryValue">0 GB</strong></div><div class="meter"><span id="memoryMeter"></span></div></article>
                 <article class="metric-panel"><div class="metric-label"><span>STORAGE</span><strong id="storageValue">0 TB</strong></div><div class="meter"><span id="storageMeter"></span></div></article>
                 <article class="metric-panel"><div class="metric-label"><span>CUSTOMERS</span><strong id="customersValue">0</strong></div><div class="meter"><span id="customersMeter"></span></div></article>
+                <article class="metric-panel" id="tempPanel"><div class="metric-label"><span>TEMPERATURE</span><strong id="tempValue">22°C</strong></div><div class="meter"><span id="tempMeter"></span></div><small id="tempNote">Room temperature.</small></article>
+                <article class="metric-panel" id="powerPanel"><div class="metric-label"><span>POWER DRAW</span><strong id="powerValue">0.0 kW</strong></div><div class="meter"><span id="powerMeter"></span></div><small id="powerNote">Each rack after three adds 10% facility overhead.</small></article>
             </section>
 
             <section class="lower-grid">
                 <article class="panel services-panel"><div class="panel-heading"><div><p class="section-code">STEP 3 / GO LIVE</p><h2>Deployment Console</h2></div><span id="serviceStatus" class="service-status">OFFLINE</span></div><div class="action-row"><button id="deployBtn" class="primary-button" type="button">Deploy Website</button><button id="backupBtn" class="secondary-button" type="button">Run Backup</button></div><p id="deployMessage" class="deploy-message">Install the required servers to begin.</p></article>
+                <article class="panel ops-panel" aria-labelledby="opsTitle">
+                    <div class="panel-heading"><div><p class="section-code">STEP 4 / OPERATE</p><h2 id="opsTitle">Live Operations</h2></div><button id="pauseBtn" class="text-button" type="button" aria-pressed="false">PAUSE</button></div>
+                    <dl class="ops-grid">
+                        <div><dt>Health</dt><dd id="healthValue">—</dd></div>
+                        <div><dt>Uptime</dt><dd id="uptimeValue">—</dd></div>
+                        <div><dt>Incidents handled</dt><dd id="incidentsValue">0 / 0</dd></div>
+                        <div><dt>Last backup</dt><dd id="backupValue">Never</dd></div>
+                    </dl>
+                    <p id="incidentBanner" class="incident-banner" role="status" aria-live="polite">Deploy your website to start live operations. Random incidents will test your setup.</p>
+                    <div class="ops-controls">
+                        <label for="drillType">Practice drill</label>
+                        <select id="drillType">
+                            <option value="outage">Power outage</option>
+                            <option value="ddos">Traffic flood (DDoS)</option>
+                            <option value="bruteforce">Password attack</option>
+                            <option value="disk">Disk failure</option>
+                            <option value="spike">Viral traffic spike</option>
+                        </select>
+                        <button id="drillBtn" class="secondary-button" type="button">Run drill</button>
+                    </div>
+                </article>
+            </section>
+            <section class="panel mission-panel" aria-labelledby="missionTitle">
+                <div class="panel-heading"><div><p class="section-code">TRAINING / MISSIONS</p><h2 id="missionTitle">Operator Missions</h2></div><span id="missionProgress" class="mission-progress">0 / 0 COMPLETE</span></div>
+                <ul id="missionList" class="mission-list"></ul>
             </section>
             <section class="panel event-panel"><div class="panel-heading"><div><p class="section-code">SYSTEM / EVENTS</p><h2>Operations Log</h2></div><button id="clearLogBtn" class="text-button" type="button">CLEAR</button></div><div id="eventLog" class="event-log" aria-live="polite"></div></section>
         </div>

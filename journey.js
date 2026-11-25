@@ -167,12 +167,60 @@ document.getElementById("encryptAction").addEventListener("click", () => {
     document.getElementById("encryptionLabel").textContent = "PROTECTED • 8F3A-21C7";
     completeStep(document.getElementById("encryptFeedback"), "The sample file is now shown as protected data.");
 });
-document.getElementById("firewallAction").addEventListener("click", () => {
-    const visual = document.getElementById("firewallVisual");
-    playMotion(visual, [{ transform: "scale(0.96)" }, { transform: "scale(1)" }]);
-    visual.classList.add("is-secure");
-    document.getElementById("firewallGateStatus").textContent = "ON";
-    completeStep(document.getElementById("firewallFeedback"), "Firewall on. Suspicious traffic is blocked before it reaches the cloud service.");
+const firewall = {
+    enabled: false,
+    lessonDone: false,
+    visual: document.getElementById("firewallVisual"),
+    toggle: document.getElementById("firewallAction"),
+    gate: document.getElementById("firewallGateStatus"),
+    feedback: document.getElementById("firewallFeedback"),
+    attackerFeedback: document.getElementById("firewallAttackerFeedback"),
+    scenario: document.getElementById("firewallScenario")
+};
+const firewallScenarios = {
+    unknown: "an unknown connection",
+    repeat: "a burst of repeated requests",
+    restricted: "a request for a restricted page"
+};
+function resetFirewallLesson() {
+    firewall.enabled = false;
+    firewall.lessonDone = false;
+    firewall.toggle.textContent = "Enable firewall";
+    firewall.gate.textContent = "INACTIVE";
+    firewall.attackerFeedback.textContent = "The service is waiting for a test attempt.";
+    firewall.visual.classList.remove("is-secure", "is-threat-blocked", "is-threat-passed");
+}
+firewall.toggle.addEventListener("click", () => {
+    firewall.enabled = !firewall.enabled;
+    playMotion(firewall.visual, [{ transform: "scale(0.96)" }, { transform: "scale(1)" }]);
+    firewall.visual.classList.toggle("is-secure", firewall.enabled);
+    firewall.visual.classList.remove("is-threat-blocked", "is-threat-passed");
+    firewall.gate.textContent = firewall.enabled ? "ON" : "INACTIVE";
+    firewall.toggle.textContent = firewall.enabled ? "Disable firewall" : "Enable firewall";
+    firewall.feedback.textContent = firewall.enabled
+        ? "Firewall enabled. Send a simulated attempt to see what changes."
+        : "Firewall disabled. The next simulated attempt can reach the service.";
+    firewall.attackerFeedback.textContent = firewall.enabled
+        ? "Defender's view: the firewall is checking incoming test traffic."
+        : "Attacker's view: the gate is open in this simplified scene.";
+});
+document.getElementById("firewallAttempt").addEventListener("click", () => {
+    const attempt = firewallScenarios[firewall.scenario.value] || firewallScenarios.unknown;
+    firewall.visual.classList.remove("is-threat-blocked", "is-threat-passed");
+    if (!firewall.enabled) {
+        firewall.visual.classList.add("is-threat-passed");
+        firewall.gate.textContent = "INACTIVE · PASSED";
+        firewall.attackerFeedback.textContent = `Reached the service: ${attempt} got through because the firewall is off.`;
+        firewall.feedback.textContent = "The test reached the service. Enable the firewall and repeat the test to block it.";
+        return;
+    }
+    firewall.visual.classList.add("is-threat-blocked");
+    firewall.gate.textContent = "ON · BLOCKED";
+    firewall.attackerFeedback.textContent = `Blocked: ${attempt} did not reach the service. Try turning the firewall off to compare.`;
+    const message = "Firewall on. The simulated attempt was blocked before it reached the cloud service.";
+    if (firewall.lessonDone) { firewall.feedback.textContent = message; return; }
+    firewall.lessonDone = true;
+    completeStep(firewall.feedback, message);
 });
 document.getElementById("replicaAction").addEventListener("click", () => {
     const visual = document.getElementById("replicaVisual");
@@ -216,7 +264,7 @@ document.getElementById("journeyRestart").addEventListener("click", () => {
         visual.classList.remove("is-uploaded", "is-split", "is-routed", "is-encrypted", "is-secure", "is-replicated", "is-recovered", "is-delivered");
     });
     document.getElementById("encryptionLabel").textContent = "project-report.pdf";
-    document.getElementById("firewallGateStatus").textContent = "INACTIVE";
+    resetFirewallLesson();
     const checkStatus = document.getElementById("serverCheckStatus");
     if (checkStatus) checkStatus.textContent = "Waiting for requests";
     document.querySelectorAll("#replicaVisual .replica-node small").forEach(status => { status.textContent = "Waiting"; });
