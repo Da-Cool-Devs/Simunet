@@ -13,6 +13,30 @@ let currentStep = 0;
 let isAdvancing = false;
 let advanceTimer = null;
 
+// Scene 3 demonstrates server-side defense: the server checks incoming requests,
+// rejects suspicious traffic, and continues serving legitimate requests.
+const defenseStage = stages[2];
+if (defenseStage) {
+    defenseStage.innerHTML = `
+        <p class="section-code">SERVER / DEFENSE</p>
+        <h2 id="journeyStageTitle3">3. See how a server stops hackers</h2>
+        <p>A server checks incoming requests. Suspicious traffic is rejected, while legitimate visitors can still reach the service. Scene 5 shows how a firewall adds another layer of protection.</p>
+        <div class="server-defense" id="networkRoute" aria-label="A server blocks suspicious traffic and lets a trusted request through">
+            <div class="defense-traffic defense-suspicious"><span class="traffic-symbol" aria-hidden="true">!</span><strong>Suspicious request</strong><small>Unknown source</small></div>
+            <div class="defense-traffic defense-trusted"><span class="traffic-symbol" aria-hidden="true">✓</span><strong>Trusted request</strong><small>Allowed visitor</small></div>
+            <div class="defense-server"><span class="server-shield" aria-hidden="true">⬡</span><strong>WEB SERVER</strong><small class="server-check-status" id="serverCheckStatus">Waiting for requests</small><div class="server-indicators" aria-hidden="true"><i></i><i></i><i></i></div></div>
+            <div class="defense-result defense-blocked" id="blockedResult"><span aria-hidden="true">×</span><strong>BLOCKED</strong></div>
+            <div class="defense-result defense-served" id="servedResult"><span aria-hidden="true">✓</span><strong>SERVICE REACHED</strong></div>
+        </div>
+        <button id="routeAction" class="primary-button" type="button">Check incoming requests</button>
+        <p id="routeFeedback" class="journey-feedback" role="status"></p>`;
+    if (journeySteps[2]) journeySteps[2].innerHTML = "<span>03</span> Server defense";
+    const defenseStyles = document.createElement("link");
+    defenseStyles.rel = "stylesheet";
+    defenseStyles.href = "css/journey-defense.css";
+    document.head.append(defenseStyles);
+}
+
 try {
     const saved = JSON.parse(localStorage.getItem(settingStorageKey) || "{}");
     if (["slow", "normal", "fast"].includes(saved.speed)) settings.speed = saved.speed;
@@ -28,13 +52,15 @@ const labelsControl = document.getElementById("journeyLabels");
 
 function saveSettings() {
     try { localStorage.setItem(settingStorageKey, JSON.stringify(settings)); } catch (_) { /* Settings still work for this visit. */ }
-    speedControl.value = settings.speed;
-    autoAdvanceControl.checked = settings.autoAdvance;
-    ambientMotionControl.checked = settings.ambientMotion;
-    labelsControl.checked = settings.labels;
-    uploadVisual.dataset.speed = settings.speed;
-    uploadVisual.classList.toggle("motion-paused", !settings.ambientMotion);
-    uploadVisual.classList.toggle("labels-hidden", !settings.labels);
+    if (speedControl) speedControl.value = settings.speed;
+    if (autoAdvanceControl) autoAdvanceControl.checked = settings.autoAdvance;
+    if (ambientMotionControl) ambientMotionControl.checked = settings.ambientMotion;
+    if (labelsControl) labelsControl.checked = settings.labels;
+    if (uploadVisual) {
+        uploadVisual.dataset.speed = settings.speed;
+        uploadVisual.classList.toggle("motion-paused", !settings.ambientMotion);
+        uploadVisual.classList.toggle("labels-hidden", !settings.labels);
+    }
 }
 
 function showStep(step) {
@@ -76,10 +102,10 @@ function completeStep(feedbackElement, message) {
     }, reducedMotion ? 0 : 650);
 }
 
-speedControl.addEventListener("change", () => { settings.speed = speedControl.value; saveSettings(); });
-autoAdvanceControl.addEventListener("change", () => { settings.autoAdvance = autoAdvanceControl.checked; saveSettings(); });
-ambientMotionControl.addEventListener("change", () => { settings.ambientMotion = ambientMotionControl.checked; saveSettings(); });
-labelsControl.addEventListener("change", () => { settings.labels = labelsControl.checked; saveSettings(); });
+if (speedControl) speedControl.addEventListener("change", () => { settings.speed = speedControl.value; saveSettings(); });
+if (autoAdvanceControl) autoAdvanceControl.addEventListener("change", () => { settings.autoAdvance = autoAdvanceControl.checked; saveSettings(); });
+if (ambientMotionControl) ambientMotionControl.addEventListener("change", () => { settings.ambientMotion = ambientMotionControl.checked; saveSettings(); });
+if (labelsControl) labelsControl.addEventListener("change", () => { settings.labels = labelsControl.checked; saveSettings(); });
 
 document.getElementById("uploadAction").addEventListener("click", () => {
     uploadVisual.classList.remove("is-uploaded");
@@ -92,6 +118,13 @@ document.getElementById("packetAction").addEventListener("click", () => {
     completeStep(document.getElementById("packetFeedback"), "The file is now represented as packets ready to travel across the network.");
 });
 document.getElementById("routeAction").addEventListener("click", () => {
+    const defenseScene = document.getElementById("serverCheckStatus");
+    if (defenseScene) {
+        document.getElementById("networkRoute").classList.add("is-routed");
+        defenseScene.textContent = "Suspicious request blocked · trusted request served";
+        completeStep(document.getElementById("routeFeedback"), "The server rejected the suspicious request and continued serving the trusted visitor.");
+        return;
+    }
     document.getElementById("networkRoute").classList.add("is-routed");
     completeStep(document.getElementById("routeFeedback"), "The packets reached the cloud data center by passing through network devices.");
 });
@@ -142,6 +175,8 @@ document.getElementById("journeyRestart").addEventListener("click", () => {
     });
     document.getElementById("encryptionLabel").textContent = "project-report.pdf";
     document.getElementById("firewallGateStatus").textContent = "INACTIVE";
+    const checkStatus = document.getElementById("serverCheckStatus");
+    if (checkStatus) checkStatus.textContent = "Waiting for requests";
     document.querySelectorAll("#replicaVisual .replica-node small").forEach(status => { status.textContent = "Waiting"; });
     document.querySelectorAll(".journey-feedback").forEach(feedback => { feedback.textContent = ""; });
     showStep(0);
