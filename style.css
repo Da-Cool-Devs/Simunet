@@ -19,11 +19,13 @@ body {
     min-height: 100vh;
     color: var(--text);
     font-family: "Courier New", Courier, monospace;
-    background-color: var(--bg);
+    background-color: #06090d;
     background-image:
+        radial-gradient(ellipse at 50% -20%, rgba(32, 99, 123, 0.19), transparent 62%),
         linear-gradient(rgba(102, 217, 239, 0.035) 1px, transparent 1px),
         linear-gradient(90deg, rgba(102, 217, 239, 0.035) 1px, transparent 1px);
-    background-size: 24px 24px;
+    background-repeat: no-repeat, repeat, repeat;
+    background-size: cover, 24px 24px, 24px 24px;
 }
 
 header {
@@ -155,14 +157,25 @@ button:focus-visible {
 }
 
 .topbar {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 20px clamp(16px, 4vw, 48px);
     text-align: left;
+    border-bottom: 1px solid #2b3c49;
+    background:
+        linear-gradient(110deg, rgba(18, 30, 40, 0.98), rgba(8, 13, 19, 0.98) 72%);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.3);
 }
 
 .topbar h1 {
+    margin: 0;
+    color: #e4f6ff;
     font-size: clamp(1.35rem, 4vw, 2rem);
+    letter-spacing: 0.04em;
+    text-shadow: 0 0 18px rgba(102, 217, 239, 0.16);
 }
 
 .topbar-actions {
@@ -245,12 +258,12 @@ button:focus-visible {
 }
 
 .dashboard {
-    width: min(1180px, calc(100% - 32px));
+    width: min(1380px, calc(100% - 40px));
     margin: 0 auto;
-    padding: 24px 0 40px;
+    padding: 28px 0 48px;
     display: grid;
-    grid-template-columns: 250px minmax(0, 1fr);
-    gap: 16px;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 18px;
 }
 
 .sidebar {
@@ -260,7 +273,32 @@ button:focus-visible {
 }
 
 .panel {
+    position: relative;
     margin: 0;
+    padding: 18px;
+    border: 1px solid #263541;
+    border-radius: 3px;
+    background:
+        linear-gradient(145deg, rgba(24, 34, 44, 0.92), rgba(12, 17, 23, 0.98) 72%);
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.2),
+        inset 0 1px rgba(191, 230, 255, 0.035);
+}
+
+.panel h2 {
+    margin: 0 0 12px;
+    color: #e2edf5;
+    font-size: 0.94rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.panel-heading h2 {
+    margin-bottom: 0;
+}
+
+.panel-heading {
+    margin-bottom: 14px;
 }
 
 .panel-copy,
@@ -456,10 +494,26 @@ select {
 }
 
 .metric-panel {
+    position: relative;
+    overflow: hidden;
     padding: 14px;
-    border: 1px solid var(--panel-edge);
-    border-radius: 4px;
-    background: var(--panel);
+    border: 1px solid #263541;
+    border-radius: 3px;
+    background: linear-gradient(145deg, #17222c, #0d131a 72%);
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.22),
+        inset 0 1px rgba(191, 230, 255, 0.04);
+}
+
+.metric-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 14px;
+    width: 42px;
+    height: 2px;
+    background: var(--cyan);
+    box-shadow: 0 0 10px rgba(102, 217, 239, 0.55);
 }
 
 .metric-label {
@@ -734,7 +788,7 @@ select {
 
 @media (max-width: 900px) {
     .dashboard {
-        grid-template-columns: 210px minmax(0, 1fr);
+        grid-template-columns: 220px minmax(0, 1fr);
     }
 
     .metrics-grid {
@@ -767,7 +821,7 @@ select {
     }
 
     .dashboard {
-        width: min(100% - 20px, 1180px);
+        width: min(100% - 20px, 1380px);
         grid-template-columns: 1fr;
     }
 

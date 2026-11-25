@@ -178,6 +178,13 @@
             if (description) description.textContent = "The 3D view could not start in this browser. Your racks are still available in the 2D view below.";
         };
     </script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+            }
+        }
+    </script>
     <script type="module" src="js/room3d.js" onerror="window.showRoomFallback('3D LIBRARY FAILED TO LOAD — SHOWING 2D RACKS')"></script>
     <script src="script.js"></script>
 </body>

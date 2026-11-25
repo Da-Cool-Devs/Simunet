@@ -9,8 +9,8 @@ const roomDescription = document.getElementById("roomDescription");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#081019");
-scene.fog = new THREE.Fog("#081019", 19, 42);
+scene.background = new THREE.Color("#05090e");
+scene.fog = new THREE.Fog("#05090e", 20, 46);
 
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
 camera.position.set(9, 8, 12);
@@ -36,29 +36,36 @@ renderer.domElement.setAttribute("aria-hidden", "true");
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(0, 1.15, 0);
 controls.enableDamping = true;
-controls.dampingFactor = 0.07;
+controls.dampingFactor = 0.055;
 controls.minDistance = 5;
 controls.maxDistance = 24;
 controls.maxPolarAngle = Math.PI * 0.48;
 
-scene.add(new THREE.HemisphereLight(0xb9e8ff, 0x17202b, 2.1));
-const keyLight = new THREE.DirectionalLight(0xd4f2ff, 3.2);
-keyLight.position.set(-5, 11, 7);
+scene.add(new THREE.HemisphereLight(0x9bdcff, 0x101722, 1.65));
+const keyLight = new THREE.DirectionalLight(0xb5e7ff, 3.7);
+keyLight.position.set(-5, 10, 7);
 keyLight.castShadow = true;
 keyLight.shadow.mapSize.set(1024, 1024);
 scene.add(keyLight);
 
+const fillLight = new THREE.PointLight(0x13bde0, 18, 18, 2);
+fillLight.position.set(-5, 3.5, 1);
+scene.add(fillLight);
+const warningLight = new THREE.PointLight(0xff5b43, 8, 12, 2);
+warningLight.position.set(6, 3, -4);
+scene.add(warningLight);
+
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(32, 24),
-    new THREE.MeshStandardMaterial({ color: 0x18232e, roughness: 0.82, metalness: 0.18 })
+    new THREE.MeshStandardMaterial({ color: 0x111a22, roughness: 0.68, metalness: 0.32 })
 );
 floor.rotation.x = -Math.PI / 2;
 floor.position.y = -0.035;
 floor.receiveShadow = true;
 scene.add(floor);
 
-const grid = new THREE.GridHelper(32, 32, 0x275367, 0x1a3442);
-grid.position.y = -0.018;
+const grid = new THREE.GridHelper(32, 48, 0x246079, 0x172c39);
+grid.position.y = -0.022;
 scene.add(grid);
 
 const racksGroup = new THREE.Group();
@@ -67,19 +74,28 @@ const equipmentGroup = new THREE.Group();
 scene.add(equipmentGroup);
 const packetGroup = new THREE.Group();
 scene.add(packetGroup);
+const roomDetails = new THREE.Group();
+scene.add(roomDetails);
 
 const materials = {
-    frame: new THREE.MeshStandardMaterial({ color: 0x536474, metalness: 0.78, roughness: 0.33 }),
-    dark: new THREE.MeshStandardMaterial({ color: 0x111a22, metalness: 0.48, roughness: 0.52 }),
-    trim: new THREE.MeshStandardMaterial({ color: 0x7d99ac, metalness: 0.7, roughness: 0.28 }),
-    web: new THREE.MeshStandardMaterial({ color: 0x56d9ef, emissive: 0x0b5262, emissiveIntensity: 0.55, metalness: 0.32, roughness: 0.4 }),
-    database: new THREE.MeshStandardMaterial({ color: 0xffb86c, emissive: 0x59320a, emissiveIntensity: 0.5, metalness: 0.25, roughness: 0.42 }),
-    storage: new THREE.MeshStandardMaterial({ color: 0xa78bfa, emissive: 0x35205e, emissiveIntensity: 0.55, metalness: 0.25, roughness: 0.4 }),
-    backup: new THREE.MeshStandardMaterial({ color: 0x88ffcc, emissive: 0x155a39, emissiveIntensity: 0.48, metalness: 0.28, roughness: 0.4 }),
-    auth: new THREE.MeshStandardMaterial({ color: 0xf0a6ca, emissive: 0x5a2541, emissiveIntensity: 0.5, metalness: 0.24, roughness: 0.4 })
+    frame: new THREE.MeshStandardMaterial({ color: 0x354858, metalness: 0.84, roughness: 0.27 }),
+    dark: new THREE.MeshStandardMaterial({ color: 0x0a1118, metalness: 0.62, roughness: 0.42 }),
+    trim: new THREE.MeshStandardMaterial({ color: 0x88a9bb, metalness: 0.78, roughness: 0.23 }),
+    web: new THREE.MeshStandardMaterial({ color: 0x56d9ef, emissive: 0x087d98, emissiveIntensity: 0.8, metalness: 0.42, roughness: 0.3 }),
+    database: new THREE.MeshStandardMaterial({ color: 0xffb86c, emissive: 0x80450b, emissiveIntensity: 0.72, metalness: 0.36, roughness: 0.3 }),
+    storage: new THREE.MeshStandardMaterial({ color: 0xa78bfa, emissive: 0x5733a4, emissiveIntensity: 0.72, metalness: 0.36, roughness: 0.3 }),
+    backup: new THREE.MeshStandardMaterial({ color: 0x88ffcc, emissive: 0x127047, emissiveIntensity: 0.72, metalness: 0.38, roughness: 0.3 }),
+    auth: new THREE.MeshStandardMaterial({ color: 0xf0a6ca, emissive: 0x8a315b, emissiveIntensity: 0.72, metalness: 0.35, roughness: 0.3 })
 };
 
 const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+const roomMaterials = {
+    wall: new THREE.MeshStandardMaterial({ color: 0x101923, metalness: 0.54, roughness: 0.62 }),
+    panel: new THREE.MeshStandardMaterial({ color: 0x1a2834, metalness: 0.72, roughness: 0.4 }),
+    glow: new THREE.MeshBasicMaterial({ color: 0x2ad9ff }),
+    hazard: new THREE.MeshStandardMaterial({ color: 0xc98a2d, metalness: 0.42, roughness: 0.56 })
+};
+
 function addBox(parent, material, x, y, z, width, height, depth, castShadow = true) {
     const mesh = new THREE.Mesh(boxGeometry, material);
     mesh.position.set(x, y, z);
@@ -88,6 +104,28 @@ function addBox(parent, material, x, y, z, width, height, depth, castShadow = tr
     mesh.receiveShadow = true;
     parent.add(mesh);
     return mesh;
+}
+
+function buildRoomDetails() {
+    addBox(roomDetails, roomMaterials.wall, 0, 2.5, -7, 18, 5, 0.35, false);
+    addBox(roomDetails, roomMaterials.wall, -9, 2.5, -0.5, 0.35, 5, 13, false);
+    addBox(roomDetails, roomMaterials.wall, 9, 2.5, -0.5, 0.35, 5, 13, false);
+
+    for (let x = -8; x <= 8; x += 2) {
+        addBox(roomDetails, materials.frame, x, 2.5, -6.79, 0.055, 4.75, 0.06, false);
+        addBox(roomDetails, roomMaterials.panel, x + 0.82, 2.45, -6.78, 1.45, 2.8, 0.035, false);
+        addBox(roomDetails, roomMaterials.glow, x + 0.25, 4.3, -6.74, 0.28, 0.035, 0.025, false);
+    }
+
+    for (let x = -6; x <= 6; x += 4) {
+        addBox(roomDetails, materials.frame, x, 4.45, -0.2, 0.12, 0.12, 12, false);
+        addBox(roomDetails, roomMaterials.glow, x, 4.38, -0.2, 0.045, 0.025, 8.5, false);
+    }
+
+    for (let index = 0; index < 12; index++) {
+        const stripe = addBox(roomDetails, roomMaterials.hazard, -5.5 + index * 1, 0.012, 5.6, 0.46, 0.025, 0.12, false);
+        stripe.rotation.y = Math.PI / 5;
+    }
 }
 
 function clearGroup(group) {
@@ -116,24 +154,26 @@ function buildRack(x, z, servers, index) {
         addBox(group, materials.frame, 0, 0.045, sideZ, width + 0.05, 0.09, 0.09);
     });
     addBox(group, materials.dark, 0, height / 2, -depth / 2 + 0.045, width - 0.1, height - 0.2, 0.045, false);
+    addBox(group, materials.dark, 0, height / 2, depth / 2 - 0.005, width - 0.12, height - 0.18, 0.035, false);
 
     const serverHeight = 0.205;
     const serverGap = 0.055;
     servers.forEach((type, serverIndex) => {
         const y = 0.2 + serverIndex * (serverHeight + serverGap);
-        addBox(group, materials[type] || materials.web, 0, y, depth / 2 + 0.01, width - 0.17, serverHeight, 0.11);
-        // Small front status lights make installed equipment readable at a glance.
-        const led = new THREE.Mesh(
-            new THREE.SphereGeometry(0.025, 8, 8),
-            new THREE.MeshBasicMaterial({ color: type === "database" ? 0xffb86c : 0x88ffcc })
-        );
-        led.position.set(width * 0.34, y, depth / 2 + 0.075);
-        group.add(led);
+        const frontZ = depth / 2 + 0.01;
+        addBox(group, materials[type] || materials.web, 0, y, frontZ, width - 0.17, serverHeight, 0.11);
+        addBox(group, materials.dark, -0.14, y, frontZ + 0.061, 0.27, 0.095, 0.012, false);
+        addBox(group, materials.dark, 0.21, y, frontZ + 0.061, 0.31, 0.095, 0.012, false);
+        for (let vent = 0; vent < 3; vent++) {
+            addBox(group, materials.trim, -0.14, y - 0.03 + vent * 0.027, frontZ + 0.07, 0.19, 0.008, 0.008, false);
+        }
+        addBox(group, materials.backup, width * 0.34, y, frontZ + 0.07, 0.035, 0.035, 0.012, false);
     });
 
     // Rack number plaque.
     const plaque = addBox(group, materials.dark, 0, height + 0.1, 0, 0.72, 0.18, 0.045, false);
     plaque.userData.rackNumber = index + 1;
+    addBox(group, roomMaterials.glow, -0.25, height + 0.1, 0.03, 0.12, 0.025, 0.012, false);
 }
 
 function buildCoolingUnits(active) {
@@ -212,6 +252,7 @@ function buildPackets() {
 }
 
 buildPackets();
+buildRoomDetails();
 syncRoom();
 loading?.remove();
 
