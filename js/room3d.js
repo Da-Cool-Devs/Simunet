@@ -11,7 +11,8 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color("#05090e");
 scene.fog = new THREE.Fog("#05090e", 20, 46);
 const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
-camera.position.set(9, 8, 12);
+const HOME_VIEW = { position: [5.6, 4.3, 8.4], target: [0, 1.35, -0.2] };
+camera.position.set(...HOME_VIEW.position);
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false }); }
 catch (error) { console.error("Could not initialize the 3D server room:", error); window.showRoomFallback("WEBGL UNAVAILABLE — RACK ASSEMBLY IS STILL AVAILABLE"); throw error; }
@@ -24,16 +25,52 @@ renderer.toneMappingExposure = 1.15;
 container.prepend(renderer.domElement);
 renderer.domElement.setAttribute("aria-hidden", "true");
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 1.15, 0);
+controls.target.set(...HOME_VIEW.target);
 controls.enableDamping = !reducedMotion;
 controls.dampingFactor = 0.055;
 controls.minDistance = 5;
 controls.maxDistance = 30;
 controls.maxPolarAngle = Math.PI * 0.48;
-scene.add(new THREE.HemisphereLight(0x9bdcff, 0x101722, 1.65));
+const ambient = new THREE.HemisphereLight(0x9bdcff, 0x101722, 1.65);
+scene.add(ambient);
+// Status lighting: red when overheating, flashes on incidents, dark during outages.
+const alarmLight = new THREE.PointLight(0xff3b3b, 0, 22, 1.6);
+alarmLight.position.set(0, 4.2, 0.5);
+scene.add(alarmLight);
+let flash = { until: 0, color: 0xff3b3b };
+window.addEventListener("simunet:incident", event => {
+    const handled = event.detail && event.detail.handled;
+    flash = { until: performance.now() + 2200, color: handled ? 0x4dffb0 : 0xff3b3b };
+    if (reducedMotion) { updateStatusLighting(performance.now()); renderer.render(scene, camera); }
+});
+function updateStatusLighting(now) {
+    const sim = window.simunetState;
+    if (!sim) return;
+    const down = sim.deployed && sim.tick < sim.downUntil;
+    ambient.intensity = down ? 0.35 : 1.65;
+    keyLight.intensity = down ? 0.6 : 3.7;
+    let intensity = 0;
+    let color = 0xff3b3b;
+    if (now < flash.until) {
+        color = flash.color;
+        intensity = reducedMotion ? 14 : 14 + Math.sin(now / 90) * 10;
+    } else if (sim.temp >= 42) {
+        intensity = reducedMotion ? 16 : 12 + Math.sin(now / 260) * 8;
+        color = 0xff3b3b;
+    } else if (sim.temp >= 35) {
+        intensity = 7;
+        color = 0xff9a3b;
+    }
+    alarmLight.color.setHex(color);
+    alarmLight.intensity = Math.max(0, intensity);
+    roomHud.classList.toggle("is-alert", intensity > 0 && color !== 0x4dffb0);
+}
+const roomHud = document.querySelector(".room-hud");
 const keyLight = new THREE.DirectionalLight(0xb5e7ff, 3.7);
 keyLight.position.set(-5, 10, 7); keyLight.castShadow = true; keyLight.shadow.mapSize.set(1024, 1024); scene.add(keyLight);
-scene.add(new THREE.PointLight(0x13bde0, 18, 18, 2)).position.set(-5, 3.5, 1);
+const accentLight = new THREE.PointLight(0x13bde0, 18, 18, 2);
+accentLight.position.set(-5, 3.5, 1); // set on the light itself, not on the scene
+scene.add(accentLight);
 const floor = new THREE.Mesh(new THREE.PlaneGeometry(32, 24), new THREE.MeshStandardMaterial({ color: 0x111a22, roughness: 0.68, metalness: 0.32 }));
 floor.rotation.x = -Math.PI / 2; floor.position.y = -0.035; floor.receiveShadow = true; scene.add(floor);
 const grid = new THREE.GridHelper(32, 48, 0x246079, 0x172c39); grid.position.y = -0.022; scene.add(grid);
@@ -150,7 +187,7 @@ new MutationObserver(applySceneTheme).observe(document.documentElement, { attrib
 new MutationObserver(syncRoom).observe(rackArea, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "data-part", "data-rack-type"] });
 window.addEventListener("simunet:hardware-change", syncRoom);
 ["coolingToggle", "upsToggle"].forEach(id => document.getElementById(id).addEventListener("change", syncRoom));
-document.getElementById("roomResetView").addEventListener("click", () => { camera.position.set(9, 8, 12); controls.target.set(0, 1.15, 0); controls.update(); });
+document.getElementById("roomResetView").addEventListener("click", () => { camera.position.set(...HOME_VIEW.position); controls.target.set(...HOME_VIEW.target); controls.update(); renderer.render(scene, camera); });
 new ResizeObserver(() => { const width = container.clientWidth, height = container.clientHeight; if (!width || !height) return; renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix(); renderer.render(scene, camera); }).observe(container);
 controls.addEventListener("change", () => {
     if (reducedMotion) renderer.render(scene, camera);
@@ -160,7 +197,10 @@ function animate() {
     const time = performance.now() * 0.001;
     packetGroup.children.forEach(packet => { const progress = (time * 0.12 + packet.userData.phase) % 1; packet.position.set(-5 + progress * 10, 0.35 + Math.sin(progress * Math.PI * 2) * 0.08, 1.25); packet.visible = document.getElementById("serviceStatus").classList.contains("online"); });
     equipmentGroup.children.forEach(unit => { const fan = unit.children.find(child => child.geometry?.type === "CylinderGeometry"); if (fan) fan.rotation.z += 0.025; });
+    updateStatusLighting(performance.now());
     controls.update(); renderer.render(scene, camera);
 }
-if (reducedMotion) renderer.render(scene, camera);
-else animate();
+if (reducedMotion) {
+    renderer.render(scene, camera);
+    setInterval(() => { updateStatusLighting(performance.now()); renderer.render(scene, camera); }, 2000);
+} else animate();

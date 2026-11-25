@@ -2,23 +2,32 @@ const state = {
     racks: 0, cooling: false, ups: false, firewall: false, deployed: false,
     paused: false, tick: 0, temp: 22, health: 100, customers: 0,
     liveTicks: 0, upTicks: 0, downUntil: 0, lastBackupTick: null,
-    incidents: 0, handled: 0, spikeUntil: 0, nextIncidentTick: 0, capacityAlert: null
+    incidents: 0, handled: 0, spikeUntil: 0, nextIncidentTick: 0, capacityAlert: null,
+    money: 8000, earned: 0, spent: 0, peakCustomers: 0, failures: {}, lastIncome: 0
 };
+const START_MONEY = 8000;
+const REFUND_RATE = 0.5;
+const REVENUE_PER_CUSTOMER = 0.02;  // dollars per customer per tick
+const POWER_PRICE = 3;              // dollars per kW per tick
+const UPS_UPKEEP = 6;               // dollars per tick
+const FIREWALL_UPKEEP = 5;          // dollars per tick
+const money = value => `${value < 0 ? "-" : ""}$${Math.abs(Math.round(value)).toLocaleString()}`;
+const BEST_KEY = "simunet.bestScore";
 const TICK_MS = 2000;
 const BACKUP_FRESH_TICKS = 30;
 const profiles = {
-    web: { label: "Web server", cpu: 12, memory: 8, storage: 2, kind: "server", kw: 0.5 },
-    database: { label: "Database server", cpu: 18, memory: 16, storage: 8, kind: "server", kw: 0.5 },
-    storage: { label: "Storage server", cpu: 8, memory: 8, storage: 20, kind: "server", kw: 0.5 },
-    backup: { label: "Backup server", cpu: 6, memory: 4, storage: 25, kind: "server", kw: 0.5 },
-    auth: { label: "Authentication server", cpu: 10, memory: 8, storage: 3, kind: "server", kw: 0.5 },
-    gpu: { label: "GPU accelerator", cpu: 0, memory: 16, storage: 0, kind: "accelerator", kw: 0.7 },
-    switch: { label: "Network switch", cpu: 0, memory: 0, storage: 0, kind: "network", kw: 0.15 },
-    router: { label: "Router", cpu: 0, memory: 0, storage: 0, kind: "network", kw: 0.15 },
-    loadbalancer: { label: "Load balancer", cpu: 2, memory: 2, storage: 0, kind: "network", kw: 0.2 }
+    web: { cost: 800, label: "Web server", cpu: 12, memory: 8, storage: 2, kind: "server", kw: 0.5 },
+    database: { cost: 1200, label: "Database server", cpu: 18, memory: 16, storage: 8, kind: "server", kw: 0.5 },
+    storage: { cost: 900, label: "Storage server", cpu: 8, memory: 8, storage: 20, kind: "server", kw: 0.5 },
+    backup: { cost: 700, label: "Backup server", cpu: 6, memory: 4, storage: 25, kind: "server", kw: 0.5 },
+    auth: { cost: 900, label: "Authentication server", cpu: 10, memory: 8, storage: 3, kind: "server", kw: 0.5 },
+    gpu: { cost: 2500, label: "GPU accelerator", cpu: 0, memory: 16, storage: 0, kind: "accelerator", kw: 0.7 },
+    switch: { cost: 300, label: "Network switch", cpu: 0, memory: 0, storage: 0, kind: "network", kw: 0.15 },
+    router: { cost: 400, label: "Router", cpu: 0, memory: 0, storage: 0, kind: "network", kw: 0.15 },
+    loadbalancer: { cost: 1000, label: "Load balancer", cpu: 2, memory: 2, storage: 0, kind: "network", kw: 0.2 }
 };
 const stock = { web: 6, database: 4, storage: 4, backup: 3, auth: 3, gpu: 4, switch: 3, router: 2, loadbalancer: 2 };
-const racks = { standard: { label: "Standard", slots: 9 }, gpu: { label: "GPU-ready", slots: 9 }, dense: { label: "High-density", slots: 12 } };
+const racks = { standard: { label: "Standard", slots: 9, cost: 1000 }, gpu: { label: "GPU-ready", slots: 9, cost: 1500 }, dense: { label: "High-density", slots: 12, cost: 1800 } };
 const $ = id => document.getElementById(id);
 const rackArea = $("rackArea");
 const inventory = $("partInventory");
@@ -42,19 +51,39 @@ function refreshInventory() {
         const countLabel = document.querySelector(`[data-count="${type}"]`);
         const card = document.querySelector(`.part-card[data-part="${type}"]`);
         if (countLabel) countLabel.textContent = `× ${count}`;
-        if (card) card.disabled = count < 1;
+        if (!card) return;
+        card.disabled = count < 1;
+        let price = card.querySelector(".part-price");
+        if (!price) {
+            price = document.createElement("span");
+            price.className = "part-price";
+            card.querySelector("small")?.prepend(price);
+        }
+        price.textContent = `${money(profiles[type].cost)} · `;
+        card.classList.toggle("unaffordable", profiles[type].cost > state.money);
     });
+}
+function spend(amount, what) {
+    if (amount > state.money) {
+        buildMessage.textContent = `Not enough budget for ${what} (${money(amount)}). You have ${money(state.money)}. Deploy your site to earn revenue.`;
+        log(`Can't afford ${what}: ${money(amount)} needed.`, "warning");
+        return false;
+    }
+    state.money -= amount;
+    state.spent += amount;
+    return true;
 }
 function selectPart(type) {
     if (!profiles[type] || stock[type] < 1) return;
     selectedPart = type;
     document.querySelectorAll(".part-card").forEach(card => card.setAttribute("aria-pressed", String(card.dataset.part === type)));
-    buildMessage.textContent = `${profiles[type].label} selected. Click or tap an empty bay to install it, or drag it into a bay.`;
+    buildMessage.textContent = `${profiles[type].label} selected (${money(profiles[type].cost)}). Click or tap an empty bay to install it, or drag it into a bay.`;
 }
 function notifyRoom() { window.dispatchEvent(new CustomEvent("simunet:hardware-change")); }
 function drawRack() {
     const selected = $("rackType").value;
     const profile = racks[selected] || racks.standard;
+    if (!spend(profile.cost, `a ${profile.label} rack`)) return;
     if (rackArea.querySelector(".empty-rack-state")) rackArea.replaceChildren();
     const index = rackArea.querySelectorAll(":scope > .rack").length + 1;
     const rack = document.createElement("div");
@@ -78,8 +107,9 @@ function drawRack() {
     rackArea.append(rack);
     state.racks = rackArea.querySelectorAll(":scope > .rack").length;
     $("rackCount").textContent = `${state.racks} RACK${state.racks === 1 ? "" : "S"}`;
-    buildMessage.textContent = `Rack ${index} built. Select hardware and choose an empty bay.`;
-    log(`${profile.label} rack ${index} built.`);
+    buildMessage.textContent = `Rack ${index} built for ${money(profile.cost)}. Select hardware and choose an empty bay.`;
+    log(`${profile.label} rack ${index} built (${money(profile.cost)}).`);
+    refreshInventory();
     notifyRoom();
     updateDashboard();
 }
@@ -94,6 +124,11 @@ function installPart(type, bay) {
     }
     const rack = bay.closest(".rack");
     if (!rack) return false;
+    if (type === "gpu" && rack.dataset.rackType !== "gpu") {
+        buildMessage.textContent = "GPU accelerators need extra power and cooling. Build a GPU-ready rack for them.";
+        return false;
+    }
+    if (!spend(profiles[type].cost, `a ${profiles[type].label}`)) return false;
     const part = document.createElement("div");
     part.className = `server part-${type}`;
     part.dataset.part = type;
@@ -115,7 +150,7 @@ function installPart(type, bay) {
     draggedPart = null;
     document.querySelectorAll(".part-card").forEach(card => card.setAttribute("aria-pressed", "false"));
     buildMessage.textContent = `${profiles[type].label} installed in Rack ${rack.dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}.`;
-    log(`${profiles[type].label} installed in Rack ${rack.dataset.rackIndex}.`);
+    log(`${profiles[type].label} installed in Rack ${rack.dataset.rackIndex} (${money(profiles[type].cost)}).`);
     refreshInventory();
     notifyRoom();
     updateDashboard();
@@ -126,11 +161,13 @@ function removePart(part) {
     const bay = part.closest(".rack-slot");
     if (!type || !bay) return;
     stock[type]++;
+    const refund = Math.round(profiles[type].cost * REFUND_RATE);
+    state.money += refund;
     bay.innerHTML = `<span class="slot-number">${String(Number(bay.dataset.slot) + 1).padStart(2, "0")}</span><span class="slot-prompt">ADD PART</span>`;
     bay.classList.remove("occupied");
     bay.setAttribute("aria-label", `Rack ${bay.closest(".rack").dataset.rackIndex}, bay ${Number(bay.dataset.slot) + 1}, empty. Select a part and activate this bay, or drag a part here.`);
-    buildMessage.textContent = `${profiles[type].label} removed. Select it from inventory to install it again.`;
-    log(`${profiles[type].label} removed.`);
+    buildMessage.textContent = `${profiles[type].label} removed and sold for ${money(refund)} (half price).`;
+    log(`${profiles[type].label} removed, resold for ${money(refund)}.`);
     refreshInventory();
     notifyRoom();
     updateDashboard();
@@ -245,6 +282,133 @@ function updateDashboard() {
     setTone($("backupValue"), state.lastBackupTick === null ? "" : backupIsFresh() ? "good" : "warning");
 
     updateMissions(parts);
+    updateHud(parts);
+}
+function missionsDone() { return completedMissions.size; }
+function uptimeRatio() { return state.liveTicks ? state.upTicks / state.liveTicks : 1; }
+function score() {
+    const base = missionsDone() * 400 + state.handled * 150 + state.peakCustomers / 10 + state.earned / 5;
+    return Math.max(0, Math.round(base * (0.5 + 0.5 * uptimeRatio())));
+}
+function grade(points) {
+    return points >= 6000 ? "A" : points >= 4000 ? "B" : points >= 2000 ? "C" : points >= 800 ? "D" : "F";
+}
+function readBest() {
+    try { return Number(localStorage.getItem(BEST_KEY)) || 0; } catch { return 0; }
+}
+function saveBest(points) {
+    try { if (points > readBest()) localStorage.setItem(BEST_KEY, String(points)); } catch {}
+}
+function coachText(parts) {
+    if (state.money < 0) return "You're in debt! Cut costs: turn off what you don't need, or sell unused hardware.";
+    if (state.deployed && isDown()) return "Your site is down. Wait for it to recover, and check the log to see what caused it.";
+    if (state.temp >= 35 && !state.cooling) return "Servers are heating up. Turn on Cooling in the hardware panel.";
+    const next = missions.find(mission => !completedMissions.has(mission.id));
+    if (!next) return "All missions complete! Select End shift to see your grade, or keep growing your score.";
+    return `${next.title}: ${next.detail}`;
+}
+function updateHud(parts) {
+    refreshInventory();
+    const budget = $("budgetValue");
+    budget.textContent = money(state.money);
+    budget.classList.toggle("is-negative", state.money < 0);
+    const income = $("incomeValue");
+    income.textContent = state.deployed ? `${state.lastIncome >= 0 ? "+" : ""}${money(state.lastIncome * 30)}/min` : "Not earning yet";
+    income.classList.toggle("is-negative", state.deployed && state.lastIncome < 0);
+    $("scoreValue").textContent = score().toLocaleString();
+    const best = readBest();
+    $("bestValue").textContent = best ? `Best: ${best.toLocaleString()}` : "Best: none yet";
+    $("coachText").textContent = coachText(parts);
+}
+
+// ---------- Quick start (one-click demo) ----------
+function quickStart() {
+    if (state.deployed) {
+        setBanner("Quick start only works before your site is live. You're already running!", "warning");
+        return;
+    }
+    if (!rackArea.querySelector(":scope > .rack")) {
+        $("rackType").value = "standard";
+        drawRack();
+    }
+    const rack = rackArea.querySelector(":scope > .rack");
+    if (!rack) return;
+    const wanted = ["web", "web", "database", "loadbalancer", "backup"];
+    const have = installedParts();
+    wanted.forEach(type => {
+        const missing = wanted.filter(item => item === type).length - have.filter(item => item === type).length;
+        if (missing <= 0) return;
+        have.push(type);
+        const bay = rack.querySelector(".rack-slot:not(.occupied)");
+        if (bay) installPart(type, bay);
+    });
+    if (!state.cooling) { $("coolingToggle").checked = true; $("coolingToggle").dispatchEvent(new Event("change")); }
+    $("deployBtn").click();
+    log("Quick start: starter data center built and deployed. Now protect it!", "good");
+}
+
+// ---------- Shift report ----------
+const tipsByFailure = {
+    outage: "A power outage took you down. Enable the UPS so servers keep running when the grid fails.",
+    ddos: "A traffic flood got through. Turn on the Firewall, and add a Load balancer to spread the load.",
+    bruteforce: "Attackers guessed customer passwords. Install an Auth server to lock accounts under attack.",
+    disk: "You lost data in a disk failure. Install a Backup server and run backups regularly."
+};
+function buildReport() {
+    const points = score();
+    const letter = grade(points);
+    const parts = installedParts();
+    const tips = Object.keys(state.failures).map(type => type === "disk" && parts.includes("backup")
+        ? "You lost data in a disk failure because your backup was out of date. Select Run Backup regularly."
+        : tipsByFailure[type]).filter(Boolean);
+    if (state.maxTemp >= 42) tips.push("Your servers overheated. Turn Cooling on before adding lots of hardware.");
+    if (!state.deployed && !state.liveTicks) tips.push("Deploy your website. You only earn revenue and points while it's live.");
+    if (state.capacityAlert || state.peakCustomers >= capacity(parts) * 0.95 && capacity(parts)) tips.push("You hit your capacity limit. Add Web servers, a Database, or a Load balancer to serve more customers.");
+    if (state.money < 0) tips.push("You ended in debt. Watch running costs: power, UPS, and firewall all cost money every second.");
+    const missing = missions.filter(mission => !completedMissions.has(mission.id)).slice(0, 2);
+    missing.forEach(mission => tips.push(`Try the "${mission.title}" mission: ${mission.detail}`));
+    if (!tips.length) tips.push("Flawless shift! Try a harder challenge: reach 10,000 customers with a single rack.");
+    const summaries = { A: "Outstanding. Your cloud stayed fast, safe, and profitable.", B: "Strong shift. A few weak spots to shore up.", C: "Solid start. Your site ran, but incidents hurt it.", D: "Rough shift. Protect your servers before growing.", F: "Your cloud is just getting started. Use Quick start, then add protection." };
+    return { points, letter, tips: tips.slice(0, 4), summary: summaries[letter] };
+}
+function openReport() {
+    const report = buildReport();
+    saveBest(report.points);
+    $("reportGrade").textContent = report.letter;
+    $("reportGrade").dataset.grade = report.letter;
+    $("reportGrade").setAttribute("aria-label", `Grade ${report.letter}`);
+    $("reportSummary").textContent = report.summary;
+    const stats = [
+        ["Score", report.points.toLocaleString()],
+        ["Uptime", state.liveTicks ? `${(uptimeRatio() * 100).toFixed(1)}%` : "Not deployed"],
+        ["Incidents handled", `${state.handled} / ${state.incidents}`],
+        ["Peak customers", state.peakCustomers.toLocaleString()],
+        ["Revenue earned", money(state.earned)],
+        ["Missions", `${missionsDone()} / ${missions.length}`]
+    ];
+    $("reportStats").replaceChildren(...stats.map(([label, value]) => {
+        const wrap = document.createElement("div");
+        const dt = document.createElement("dt"); dt.textContent = label;
+        const dd = document.createElement("dd"); dd.textContent = value;
+        wrap.append(dt, dd);
+        return wrap;
+    }));
+    $("reportTips").replaceChildren(...report.tips.map(tip => { const li = document.createElement("li"); li.textContent = tip; return li; }));
+    $("copyStatus").textContent = "";
+    state.paused = true;
+    $("pauseBtn").textContent = "RESUME";
+    $("pauseBtn").setAttribute("aria-pressed", "true");
+    const dialog = $("reportDialog");
+    if (typeof dialog.showModal === "function") dialog.showModal(); else dialog.setAttribute("open", "");
+    updateHud(installedParts());
+    log(`Shift report: grade ${report.letter}, ${report.points.toLocaleString()} points.`, "good");
+}
+function closeReport() {
+    const dialog = $("reportDialog");
+    if (typeof dialog.close === "function") dialog.close(); else dialog.removeAttribute("open");
+    state.paused = false;
+    $("pauseBtn").textContent = "PAUSE";
+    $("pauseBtn").setAttribute("aria-pressed", "false");
 }
 function backupIsFresh() {
     return state.lastBackupTick !== null && state.tick - state.lastBackupTick <= BACKUP_FRESH_TICKS;
@@ -256,12 +420,15 @@ function damage(amount, customerLoss, downTicks = 0) {
     state.customers = Math.round(state.customers * (1 - customerLoss));
     if (downTicks) state.downUntil = Math.max(state.downUntil, state.tick + downTicks);
 }
-function resolve(handled, message) {
+function resolve(handled, message, type = currentIncident) {
     state.incidents++;
     if (handled) state.handled++;
+    else state.failures[type] = (state.failures[type] || 0) + 1;
+    window.dispatchEvent(new CustomEvent("simunet:incident", { detail: { type, handled } }));
     setBanner(message, handled ? "good" : "danger");
     log(message, handled ? "good" : "danger");
 }
+let currentIncident = null;
 const incidents = {
     outage() {
         if (state.ups) return resolve(true, "Power outage! The UPS kept every server running until grid power returned.");
@@ -295,6 +462,7 @@ const incidents = {
         const lb = countOf(installedParts(), "loadbalancer") > 0;
         state.incidents++;
         state.handled++;
+        window.dispatchEvent(new CustomEvent("simunet:incident", { detail: { type: "spike", handled: true } }));
         const message = lb ? "Viral traffic spike! The load balancer is spreading thousands of new visitors across your web servers."
             : "Viral traffic spike! Thousands of new visitors are arriving. Watch CPU, and add web servers or a load balancer.";
         setBanner(message, "warning");
@@ -302,6 +470,7 @@ const incidents = {
     }
 };
 function triggerIncident(type) {
+    currentIncident = type;
     if (!state.deployed) {
         setBanner("Deploy your website before running a drill.", "warning");
         return;
@@ -318,6 +487,7 @@ function simulate() {
     const it = itLoadKw(parts);
     const target = 22 + it * (state.cooling ? 1.2 : 6);
     state.temp += (target - state.temp) * 0.25;
+    state.maxTemp = Math.max(state.maxTemp || 0, state.temp);
 
     if (state.deployed) {
         state.liveTicks++;
@@ -346,9 +516,17 @@ function simulate() {
         if (state.temp < 35 && !overloaded && !isDown()) state.health = Math.min(100, state.health + 1);
         if (state.tick >= state.nextIncidentTick) {
             const types = Object.keys(incidents);
-            incidents[types[Math.floor(Math.random() * types.length)]]();
+            currentIncident = types[Math.floor(Math.random() * types.length)];
+            incidents[currentIncident]();
             state.nextIncidentTick = state.tick + 12 + Math.floor(Math.random() * 12);
         }
+        const revenue = isDown() ? 0 : state.customers * REVENUE_PER_CUSTOMER;
+        const upkeep = powerDrawKw(parts) * POWER_PRICE + (state.ups ? UPS_UPKEEP : 0) + (state.firewall ? FIREWALL_UPKEEP : 0);
+        state.money += revenue - upkeep;
+        state.earned += revenue;
+        state.spent += upkeep;
+        state.lastIncome = revenue - upkeep;
+        state.peakCustomers = Math.max(state.peakCustomers, state.customers);
         if (state.health <= 0) {
             state.deployed = false;
             state.customers = 0;
@@ -503,6 +681,19 @@ $("clearLogBtn").addEventListener("click", () => { $("eventLog").replaceChildren
 $("coolingToggle").addEventListener("change", event => { state.cooling = event.target.checked; log(state.cooling ? "Cooling systems activated." : "Cooling systems disabled."); updateDashboard(); notifyRoom(); });
 $("upsToggle").addEventListener("change", event => { state.ups = event.target.checked; log(state.ups ? "UPS backup power enabled." : "UPS backup power disabled."); updateDashboard(); notifyRoom(); });
 $("firewallToggle").addEventListener("change", event => { state.firewall = event.target.checked; log(state.firewall ? "Firewall enabled." : "Firewall disabled."); updateDashboard(); });
+
+$("quickStartBtn").addEventListener("click", quickStart);
+$("endShiftBtn").addEventListener("click", openReport);
+$("closeReportBtn").addEventListener("click", closeReport);
+$("reportDialog").addEventListener("cancel", event => { event.preventDefault(); closeReport(); });
+$("newShiftBtn").addEventListener("click", () => window.location.reload());
+$("copyReportBtn").addEventListener("click", async () => {
+    const report = buildReport();
+    const text = `I ran a SimuNet data center and got grade ${report.letter} (${report.points.toLocaleString()} points): ${state.handled}/${state.incidents} incidents handled, ${state.peakCustomers.toLocaleString()} peak customers. Try it: https://da-cool-devs.github.io/Simunet/simulator/`;
+    try { await navigator.clipboard.writeText(text); $("copyStatus").textContent = "Copied! Paste it anywhere to share."; }
+    catch { $("copyStatus").textContent = text; }
+});
+window.simunetState = state;
 
 renderMissions();
 refreshInventory();

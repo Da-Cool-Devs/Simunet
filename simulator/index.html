@@ -34,7 +34,18 @@
     <main id="main" class="dashboard">
         <section class="sim-titlebar" aria-labelledby="simTitle">
             <div><p class="section-code">SIMUNET // FACILITY A-01</p><h1 id="simTitle">Cloud Operations Center</h1><p class="sim-subtitle">Build a data center, launch a website, and keep it running through outages and attacks.</p></div>
-            <div id="systemStatus" class="system-status" role="status"><span class="status-dot"></span>SYSTEM OFFLINE</div>
+            <div class="sim-hud">
+                <div class="hud-stat"><span>Budget</span><strong id="budgetValue">$8,000</strong><small id="incomeValue">Not earning yet</small></div>
+                <div class="hud-stat"><span>Score</span><strong id="scoreValue">0</strong><small id="bestValue">Best: none yet</small></div>
+                <div id="systemStatus" class="system-status" role="status"><span class="status-dot"></span>SYSTEM OFFLINE</div>
+            </div>
+        </section>
+        <section class="coach-bar" aria-label="Next step">
+            <p><span class="coach-label">NEXT STEP</span> <span id="coachText">Build a rack to start your data center.</span></p>
+            <div class="coach-actions">
+                <button id="quickStartBtn" class="secondary-button" type="button" title="Builds a starter rack, installs servers, turns on cooling, and deploys">Quick start</button>
+                <button id="endShiftBtn" class="primary-button" type="button">End shift &amp; get report</button>
+            </div>
         </section>
         <aside class="sidebar" aria-label="Build controls">
             <details class="panel quick-start-panel" open>
@@ -161,6 +172,22 @@
             <p class="footer-note">An educational simulation: nothing here connects to a real cloud service. Made by Da Cool Devs and released into the public domain.</p>
         </div>
     </footer>
+
+    <dialog id="reportDialog" class="report-dialog" aria-labelledby="reportTitle">
+        <div class="report-head">
+            <div><p class="section-code">SHIFT REPORT</p><h2 id="reportTitle">How did your data center do?</h2><p id="reportSummary" class="report-summary"></p></div>
+            <div id="reportGrade" class="report-grade" aria-label="Grade">A</div>
+        </div>
+        <dl id="reportStats" class="ops-grid report-stats"></dl>
+        <h3 class="report-subtitle">What to try next</h3>
+        <ul id="reportTips" class="report-tips"></ul>
+        <div class="report-actions">
+            <button id="copyReportBtn" class="secondary-button" type="button">Copy result</button>
+            <button id="newShiftBtn" class="secondary-button" type="button">Start a new shift</button>
+            <button id="closeReportBtn" class="primary-button" type="button">Keep playing</button>
+        </div>
+        <p id="copyStatus" class="report-copy-status" role="status" aria-live="polite"></p>
+    </dialog>
 
     <script>window.showRoomFallback=function(message){var room=document.getElementById("serverRoom");var loading=document.getElementById("roomLoading");if(loading)loading.textContent=message||"3D VIEW UNAVAILABLE — RACK ASSEMBLY IS STILL AVAILABLE";if(room)room.classList.add("room-unavailable");};</script>
     <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}</script>

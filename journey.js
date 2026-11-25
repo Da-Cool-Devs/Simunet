@@ -272,5 +272,39 @@ document.getElementById("journeyRestart").addEventListener("click", () => {
     showStep(0);
 });
 
+// ---------- End-of-journey knowledge check ----------
+const quizForm = document.getElementById("journeyQuiz");
+const quizExplanations = {
+    q1: "Networks move data in small packets; they are reassembled at the destination.",
+    q2: "A firewall filters traffic, blocking unwanted connections before they reach the service.",
+    q3: "Replicas on separate servers let the service recover when one server fails."
+};
+function resetQuiz() {
+    quizForm.reset();
+    quizForm.querySelectorAll("fieldset").forEach(set => set.classList.remove("is-correct", "is-wrong"));
+    quizForm.querySelectorAll(".quiz-feedback").forEach(feedback => { feedback.textContent = ""; });
+    document.getElementById("quizScore").textContent = "";
+}
+quizForm.addEventListener("submit", event => {
+    event.preventDefault();
+    let correct = 0;
+    const sets = [...quizForm.querySelectorAll("fieldset")];
+    sets.forEach(set => {
+        const chosen = set.querySelector("input:checked");
+        const name = set.querySelector("input").name;
+        const right = Boolean(chosen && chosen.hasAttribute("data-correct"));
+        if (right) correct++;
+        set.classList.toggle("is-correct", right);
+        set.classList.toggle("is-wrong", !right);
+        set.querySelector(".quiz-feedback").textContent = !chosen ? "Pick an answer." : right ? `Correct! ${quizExplanations[name]}` : `Not quite. ${quizExplanations[name]}`;
+    });
+    const message = correct === sets.length
+        ? `${correct} / ${sets.length}: perfect! You're ready to build your own cloud in the simulator.`
+        : `${correct} / ${sets.length}. Read the explanations, then try again or replay the journey.`;
+    document.getElementById("quizScore").textContent = message;
+    announcement.textContent = message;
+});
+document.getElementById("journeyRestart").addEventListener("click", resetQuiz);
+
 saveSettings();
 showStep(0);

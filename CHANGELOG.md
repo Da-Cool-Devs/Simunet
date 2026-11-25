@@ -1,5 +1,29 @@
 # Changelog
 
+## Hackathon polish
+
+### Gameplay
+- **Budget and economy:** start with $8,000. Racks ($1,000–$1,800) and hardware ($300–$2,500) cost money, and selling a part refunds half. Customers pay revenue every second while the site is up. Power (including cooling), the UPS and the firewall have running costs.
+- **Score:** points from missions, incidents handled, peak customers and revenue, scaled by uptime. Shown live next to the budget.
+- **Shift report:** "End shift & get report" opens a report card with a letter grade (A–F), six stats, and personalised tips based on what went wrong in your game. Best score is saved in the browser, and "Copy result" gives you a shareable summary.
+- **Quick start:** one click builds a starter rack, installs five servers, turns on cooling and deploys, so a new player sees the action in seconds.
+- **Next-step coach:** a bar above the simulator always says what to do next (the next mission, or a warning about debt, downtime or overheating).
+- **GPU rule enforced:** GPU accelerators now really need a GPU-ready rack, as the UI always claimed.
+- Parts show their price, and turn red when you can't afford them.
+
+### 3D server room
+- **Bug fix:** a light was accidentally added in a way that moved the *entire* 3D world (`scene.add(light).position.set(...)` moves the scene, not the light). The camera ended up inside a wall, which showed up as a giant black slab. The room now renders correctly.
+- Better default camera angle, and Reset View works properly.
+- **Reacts to the simulation:** orange glow when servers run hot, pulsing red alarm when overheating, a green or red flash on each incident, darkened lights during an outage, and an "ALERT" tag on the room display. Reduced-motion mode gets the same cues without pulsing.
+
+### Learning
+- **Journey knowledge check:** three questions at the end of the Cloud Journey, with an explanation for every answer.
+- **Manual:** new "Money in, money out" and "How your shift is graded" sections.
+- Home page copy updated for the budget, grading and quiz.
+
+### Presentation
+- **README rewritten for judges:** pitch, a 60-second demo script, a feature tour with five real screenshots (`docs/screenshots/`), the incident/defense table, tech stack, project layout, and how to run it locally.
+
 ## Site revamp: organization and layout
 
 ### Navigation and structure

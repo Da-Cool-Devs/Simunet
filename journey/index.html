@@ -112,7 +112,32 @@
                         <p class="section-code">DELIVERY / DOWNLOAD</p><h2 id="journeyStageTitle8">8. Download the recovered file</h2><p>Your request travels to the cloud, retrieves the available copy, and returns it to your device.</p><div class="download-visual" id="downloadVisual"><div class="route-node"><span>CLOUD</span><strong>Recovered copy</strong></div><span class="route-connector" aria-hidden="true"></span><div class="route-node"><span>NETWORK</span><strong>Secure transfer</strong></div><span class="route-connector" aria-hidden="true"></span><div class="route-node"><span>DEVICE</span><strong>Your device</strong></div></div><button id="downloadAction" class="primary-button" type="button">Complete download</button><p id="downloadFeedback" class="journey-feedback" role="status"></p>
                     </section>
                     <section class="journey-stage journey-complete" id="journeyStage9" aria-labelledby="journeyStageTitle9" hidden>
-                        <p class="section-code">SIMULATION COMPLETE / LEARNER</p><h2 id="journeyStageTitle9">Your file made the journey.</h2><p>You explored the key steps that help cloud services move, protect, and recover data.</p><ul class="journey-learnings"><li>Files are broken into small pieces for the network.</li><li>Routers guide traffic between devices and data centers.</li><li>Encryption and firewalls protect data and services.</li><li>Extra copies help a service recover when a server fails.</li></ul><div class="journey-finish-actions"><a class="journey-simulator-link" href="/Simunet/simulator/">Build the system in the simulator</a><button id="journeyRestart" class="secondary-button" type="button">Run the journey again</button></div>
+                        <p class="section-code">SIMULATION COMPLETE / LEARNER</p><h2 id="journeyStageTitle9">Your file made the journey.</h2><p>You explored the key steps that help cloud services move, protect, and recover data.</p><ul class="journey-learnings"><li>Files are broken into small pieces for the network.</li><li>Routers guide traffic between devices and data centers.</li><li>Encryption and firewalls protect data and services.</li><li>Extra copies help a service recover when a server fails.</li></ul><section class="journey-quiz" aria-labelledby="quizTitle">
+                            <h3 id="quizTitle">Quick check: 3 questions</h3>
+                            <form id="journeyQuiz">
+                                <fieldset><legend>1. Why is a file split into packets before it travels?</legend>
+                                    <label><input type="radio" name="q1" value="a"> To make the file smaller forever</label>
+                                    <label><input type="radio" name="q1" value="b" data-correct> So small pieces can travel across the network and be put back together</label>
+                                    <label><input type="radio" name="q1" value="c"> So the file can skip the router</label>
+                                    <p class="quiz-feedback" aria-live="polite"></p>
+                                </fieldset>
+                                <fieldset><legend>2. What does a firewall do?</legend>
+                                    <label><input type="radio" name="q2" value="a" data-correct> Checks traffic and blocks connections that should not reach the service</label>
+                                    <label><input type="radio" name="q2" value="b"> Keeps servers cool</label>
+                                    <label><input type="radio" name="q2" value="c"> Makes extra copies of files</label>
+                                    <p class="quiz-feedback" aria-live="polite"></p>
+                                </fieldset>
+                                <fieldset><legend>3. A server holding your file breaks. What lets the service recover it?</legend>
+                                    <label><input type="radio" name="q3" value="a"> Turning encryption off</label>
+                                    <label><input type="radio" name="q3" value="b"> Uploading the file again later</label>
+                                    <label><input type="radio" name="q3" value="c" data-correct> A copy (replica) stored on a different server</label>
+                                    <p class="quiz-feedback" aria-live="polite"></p>
+                                </fieldset>
+                                <button class="primary-button" type="submit">Check my answers</button>
+                                <p id="quizScore" class="quiz-score" role="status" aria-live="polite"></p>
+                            </form>
+                        </section>
+                        <div class="journey-finish-actions"><a class="journey-simulator-link" href="/Simunet/simulator/">Build the system in the simulator</a><button id="journeyRestart" class="secondary-button" type="button">Run the journey again</button></div>
                     </section>
                 </div>
             </div>
