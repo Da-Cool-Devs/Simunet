@@ -1,5 +1,30 @@
 # Changelog
 
+## Site revamp: organization and layout
+
+### Navigation and structure
+- **New compact header on every page:** a SimuNet logo that links home, plus Journey, Camera Lab, Manual, an "Aa" accessibility shortcut, and an "Open Simulator" button. It replaces the large repeated "Cloud Computing Simulator" banner and stays visible while scrolling.
+- **Mobile menu:** a Menu button on phones opens the navigation. It closes with Escape or by tapping outside.
+- **New footer on every page,** grouped into Learn (Journey, Camera Lab, Manual), Build (Simulator, Incidents guide) and SimuNet (About, Accessibility, GitHub).
+- About moved from the top navigation to the footer, so the header focuses on the main activities.
+- A "Skip to content" link for keyboard users. Each page now has exactly one main heading (h1) for screen readers and search engines.
+
+### Home page (rebuilt)
+- New hero, "Build the cloud. Keep it running.", with clear buttons for the simulator and the journey, plus an animated server-rack illustration.
+- **Learning path:** four numbered steps (Cloud Journey, Manual, Simulator, Camera Lab), each with an estimated time.
+- "What you will practice" section (Build, Operate, Defend).
+- Privacy note with a link to accessibility settings.
+
+### Simulator
+- New page title bar, "Cloud Operations Center". The system status badge moved here from the header.
+- The "How to build" guide can be collapsed to save space.
+
+### Manual
+- "On this page" index linking to each section.
+- New **Incidents** section: a table of each incident, what happens, and how to prevent it.
+- Updated the switch and metric descriptions to match the live simulation (temperature, power draw, health), and added a fifth build step, "Keep it running".
+- Sections reordered: build, hardware, controls & metrics, incidents, camera lab.
+
 ## Unreleased — Live operations update
 
 ### New in the Simulator
