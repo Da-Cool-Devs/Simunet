@@ -675,7 +675,7 @@ select {
 }
 
 .error-panel {
-    width: min(680px, 100%);
+    width: min(680px, calc(100% - 32px));
     margin: auto;
     padding: clamp(24px, 7vw, 52px);
     border: 1px solid var(--panel-edge);
