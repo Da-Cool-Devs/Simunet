@@ -20,6 +20,7 @@ for (const [key, values] of Object.entries(allowedValues)) {
     const storedValue = localStorage.getItem(`${storagePrefix}${key}`);
     preferences[key] = values.includes(storedValue) ? storedValue : defaults[key];
 }
+const draftPreferences = { ...preferences };
 
 function applyPreferences() {
     root.dataset.theme = preferences.theme;
@@ -27,12 +28,6 @@ function applyPreferences() {
     root.dataset.fontFamily = preferences.fontFamily;
     root.dataset.reducedMotion = preferences.reducedMotion;
     root.dataset.underlineLinks = preferences.underlineLinks;
-}
-
-function storePreference(key, value) {
-    preferences[key] = value;
-    localStorage.setItem(`${storagePrefix}${key}`, value);
-    applyPreferences();
 }
 
 applyPreferences();
@@ -44,47 +39,56 @@ document.addEventListener("DOMContentLoaded", () => {
     const reducedMotionCheckbox = document.getElementById("reducedMotionPreference");
     const underlineLinksCheckbox = document.getElementById("underlineLinksPreference");
     const status = document.getElementById("accessibilityStatus");
+    const saveButton = document.getElementById("saveAccessibility");
     const resetButton = document.getElementById("resetAccessibility");
 
     if (!themeSelect) return;
 
-    themeSelect.value = preferences.theme;
-    fontSizeSelect.value = preferences.fontSize;
-    fontFamilySelect.value = preferences.fontFamily;
-    reducedMotionCheckbox.checked = preferences.reducedMotion === "true";
-    underlineLinksCheckbox.checked = preferences.underlineLinks === "true";
+    function syncControls() {
+        themeSelect.value = draftPreferences.theme;
+        fontSizeSelect.value = draftPreferences.fontSize;
+        fontFamilySelect.value = draftPreferences.fontFamily;
+        reducedMotionCheckbox.checked = draftPreferences.reducedMotion === "true";
+        underlineLinksCheckbox.checked = draftPreferences.underlineLinks === "true";
+    }
 
+    function updateDraft(key, value) {
+        draftPreferences[key] = value;
+        status.textContent = "Unsaved changes. Select Save preferences to apply them.";
+    }
+
+    function savePreferences() {
+        for (const [key, value] of Object.entries(draftPreferences)) {
+            preferences[key] = value;
+            localStorage.setItem(`${storagePrefix}${key}`, value);
+        }
+        applyPreferences();
+    }
+
+    syncControls();
     themeSelect.addEventListener("change", () => {
-        storePreference("theme", themeSelect.value);
-        status.textContent = "Color theme updated and saved.";
+        updateDraft("theme", themeSelect.value);
     });
     fontSizeSelect.addEventListener("change", () => {
-        storePreference("fontSize", fontSizeSelect.value);
-        status.textContent = "Text size updated and saved.";
+        updateDraft("fontSize", fontSizeSelect.value);
     });
     fontFamilySelect.addEventListener("change", () => {
-        storePreference("fontFamily", fontFamilySelect.value);
-        status.textContent = "Font family updated and saved.";
+        updateDraft("fontFamily", fontFamilySelect.value);
     });
     reducedMotionCheckbox.addEventListener("change", () => {
-        const value = String(reducedMotionCheckbox.checked);
-        storePreference("reducedMotion", value);
-        status.textContent = "Motion preference updated and saved.";
+        updateDraft("reducedMotion", String(reducedMotionCheckbox.checked));
     });
     underlineLinksCheckbox.addEventListener("change", () => {
-        const value = String(underlineLinksCheckbox.checked);
-        storePreference("underlineLinks", value);
-        status.textContent = "Link appearance updated and saved.";
+        updateDraft("underlineLinks", String(underlineLinksCheckbox.checked));
+    });
+    saveButton.addEventListener("click", () => {
+        savePreferences();
+        status.textContent = "Preferences saved and applied.";
     });
     resetButton.addEventListener("click", () => {
-        for (const [key, value] of Object.entries(defaults)) {
-            storePreference(key, value);
-        }
-        themeSelect.value = defaults.theme;
-        fontSizeSelect.value = defaults.fontSize;
-        fontFamilySelect.value = defaults.fontFamily;
-        reducedMotionCheckbox.checked = false;
-        underlineLinksCheckbox.checked = false;
-        status.textContent = "Preferences reset to defaults.";
+        Object.assign(draftPreferences, defaults);
+        syncControls();
+        savePreferences();
+        status.textContent = "Preferences reset and saved.";
     });
 });
